@@ -34,6 +34,7 @@ Once Docker is installed, when you open up the project folder in VSCode, you wil
 
 You may need to reinstall some vscode extensions in the dev environment if you are opening it for the first time, but this should only be for the first time running it.
 
+Some extensions are installed automatically (e.g. linting). You may need to reload the window after all of these extensions are installed.
 
 ### Managing Docker
 There are many ways to manager Docker containers, but generally if you download the vscode docker extension, you will be able to stop/start/remove all containers and images.

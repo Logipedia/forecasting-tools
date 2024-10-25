@@ -5,7 +5,7 @@ import pandas as pd
 import functools
 from typing import Callable, Any
 
-NAME_OF_PACKAGE: str = "pro_con_searcher"
+NAME_OF_PACKAGE: str = "forecasting-tools"
 
 
 def get_absolute_path(path_in_package: str = "") -> str:
