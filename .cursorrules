@@ -1,0 +1,2 @@
+- `asyncio_mode = auto` is set in pytest.ini so when making tests don't mark tests with pytest.mark.asyncio
+- all functions should have type hints for parameters and outputs. For built in type hints (like `list`, `dict`, `tuple`) don't import the typing library, just use the built in type hint.
