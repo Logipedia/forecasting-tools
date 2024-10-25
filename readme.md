@@ -3,7 +3,6 @@ Last Update: Oct 25 2024
 # Overview
 This repository contains forecasting and research tools built with Python and Streamlit. The project aims to assist users in making predictions, conducting research, and analyzing data related to hard to answer questions (especially those from Metaculus). Find the demo website here: https://mokoresearch.streamlit.app/
 
-
 Here are the key components and features of the project:
 - General Forecaster that integrates with the Metaculus AI benchmarking competition
 - Historical Base Rate Researcher
