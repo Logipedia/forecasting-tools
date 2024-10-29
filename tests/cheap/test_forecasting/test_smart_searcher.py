@@ -5,7 +5,6 @@ import pytest
 
 from src.forecasting.llms.smart_searcher import SmartSearcher
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -24,7 +23,9 @@ async def test_ask_question_basic() -> None:
     assert report, "Result should not be empty"
     assert isinstance(report, str), "Result should be a string"
 
-    citation_numbers: list[int] = [int(num) for num in re.findall(r"\[(\d+)\]", report)]
+    citation_numbers: list[int] = [
+        int(num) for num in re.findall(r"\[(\d+)\]", report)
+    ]
     for citation_number in citation_numbers:
         citation_number_appears_at_least_twice = (
             report.count(f"[{citation_number}]") >= 2
@@ -45,7 +46,9 @@ async def test_ask_question_basic() -> None:
         ), f"All hyperlinks for citation [{citation_number}] should be identical"
 
 
-@pytest.mark.skip("Not implemented yet. Cost would not be worth increase in visibility")
+@pytest.mark.skip(
+    "Not implemented yet. Cost would not be worth increase in visibility"
+)
 async def test_ask_question_without_works_cited_list() -> None:
     raise NotImplementedError
 

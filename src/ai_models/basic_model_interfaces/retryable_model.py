@@ -17,7 +17,9 @@ T = TypeVar("T")
 class RetryableModel(AiModel, ABC):
     _DEFAULT_ALLOWED_TRIES: int = 3
 
-    def __init__(self, allowed_tries: int = _DEFAULT_ALLOWED_TRIES, **kwargs) -> None:
+    def __init__(
+        self, allowed_tries: int = _DEFAULT_ALLOWED_TRIES, **kwargs
+    ) -> None:
         super().__init__(**kwargs)
         if isinstance(allowed_tries, int) and allowed_tries > 0:
             self.allowed_tries = allowed_tries
@@ -33,7 +35,9 @@ class RetryableModel(AiModel, ABC):
     @allowed_tries.setter
     def allowed_tries(self, value: int) -> None:
         if not isinstance(value, int) or value < 1:
-            raise ValueError("allowed_tries must be an integer greater than 0.")
+            raise ValueError(
+                "allowed_tries must be an integer greater than 0."
+            )
         self.__allowed_tries = value
 
     @staticmethod
@@ -51,7 +55,9 @@ class RetryableModel(AiModel, ABC):
                 reraise=True,
                 stop=stop_after_attempt(self.allowed_tries),
             )
-            async def wrapper_with_action(self: RetryableModel, *args, **kwargs) -> T:
+            async def wrapper_with_action(
+                self: RetryableModel, *args, **kwargs
+            ) -> T:
                 result = await func(self, *args, **kwargs)
                 return result
 

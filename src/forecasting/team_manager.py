@@ -79,13 +79,17 @@ class TeamManager:
         elif evaluation_depth == "deep":
             num_questions_to_benchmark_on = 30
 
-        questions = MetaculusApi.get_benchmark_questions(num_questions_to_benchmark_on)
+        questions = MetaculusApi.get_benchmark_questions(
+            num_questions_to_benchmark_on
+        )
         assert len(questions) == num_questions_to_benchmark_on
         reports = await self.__run_forecast_on_questions(questions)
-        average_deviation_score = BinaryReport.calculate_average_deviation_score(
-            reports
+        average_deviation_score = (
+            BinaryReport.calculate_average_deviation_score(reports)
         )
         rounded_score = round(average_deviation_score, 4)
         file_path_to_save_reports = f"logs/forecasts/benchmarks/benchmark_reports__score_{rounded_score}__{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.json"
-        BinaryReport.save_object_list_to_file_path(reports, file_path_to_save_reports)
+        BinaryReport.save_object_list_to_file_path(
+            reports, file_path_to_save_reports
+        )
         return average_deviation_score

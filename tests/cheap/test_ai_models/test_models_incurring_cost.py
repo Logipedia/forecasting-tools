@@ -39,7 +39,9 @@ def run_cheap_invoke(subclass: type[AiModel]) -> None:
     asyncio.run(async_run_cheap_invoke(subclass))
 
 
-def run_cheap_invoke_and_track_cost(subclass: type[AiModel], max_cost: float) -> float:
+def run_cheap_invoke_and_track_cost(
+    subclass: type[AiModel], max_cost: float
+) -> float:
     running_cost: float = 0
     with MonetaryCostManager(max_cost) as cost_manager:
         run_cheap_invoke(subclass)
@@ -64,10 +66,13 @@ async def find_number_of_hard_limit_exceptions_in_run(
     )
 
     coroutines = [
-        async_run_cheap_invoke(subclass) for _ in range(number_of_calls_to_make)
+        async_run_cheap_invoke(subclass)
+        for _ in range(number_of_calls_to_make)
     ]
     exception_handled_coroutines = (
-        async_batching.wrap_coroutines_to_return_not_raise_exceptions(coroutines)
+        async_batching.wrap_coroutines_to_return_not_raise_exceptions(
+            coroutines
+        )
     )
 
     with MonetaryCostManager(max_cost):
@@ -81,7 +86,11 @@ async def find_number_of_hard_limit_exceptions_in_run(
         [result for result in results if isinstance(result, Exception)]
     )
     number_of_hard_limit_exceptions = len(
-        [result for result in results if isinstance(result, HardLimitExceededError)]
+        [
+            result
+            for result in results
+            if isinstance(result, HardLimitExceededError)
+        ]
     )
     assert (
         number_of_hard_limit_exceptions == number_of_exceptions
@@ -94,7 +103,9 @@ async def find_number_of_hard_limit_exceptions_in_run(
 
 
 @pytest.mark.parametrize("subclass", ModelsToTest.INCURS_COST_LIST)
-def test_cost_manager_notices_cost_without_mocks(subclass: type[AiModel]) -> None:
+def test_cost_manager_notices_cost_without_mocks(
+    subclass: type[AiModel],
+) -> None:
     if not issubclass(subclass, IncursCost):
         raise ValueError(NOT_INCURS_COST_ERROR_MESSAGE)
 
@@ -119,7 +130,9 @@ def test_cost_manager_notices_cost_with_mocks(
 
 
 @pytest.mark.parametrize("subclass", ModelsToTest.INCURS_COST_LIST)
-def test_error_thrown_when_limit_reached(mocker: Mock, subclass: type[AiModel]) -> None:
+def test_error_thrown_when_limit_reached(
+    mocker: Mock, subclass: type[AiModel]
+) -> None:
     if not issubclass(subclass, IncursCost):
         raise ValueError(NOT_INCURS_COST_ERROR_MESSAGE)
 
@@ -174,7 +187,11 @@ async def test_error_thrown_when_many_calls_with_a_larger_than_0_cost_limit(
         cost_of_mock_call = 0.005  # Estimate
 
     percentage_we_want_to_error = 0.5
-    max_cost = cost_of_mock_call * number_of_calls_to_make * percentage_we_want_to_error
+    max_cost = (
+        cost_of_mock_call
+        * number_of_calls_to_make
+        * percentage_we_want_to_error
+    )
     number_of_expected_exceptions_given_perfect_cost_prediction = (
         int(number_of_calls_to_make * percentage_we_want_to_error) - 1
     )
@@ -191,5 +208,7 @@ async def test_error_thrown_when_many_calls_with_a_larger_than_0_cost_limit(
         >= number_of_expected_exceptions_given_perfect_cost_prediction
     )
 
-    number_of_calls_that_did_not_error = number_of_calls_to_make - num_hard_limit_errors
+    number_of_calls_that_did_not_error = (
+        number_of_calls_to_make - num_hard_limit_errors
+    )
     assert number_of_calls_that_did_not_error > 1

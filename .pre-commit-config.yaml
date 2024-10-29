@@ -31,7 +31,8 @@ repos:
     rev: v0.6.7
     hooks:
       - id: ruff
-        args: ['--ignore=E741', '--ignore=E731', '--fix']
+        args: ['--ignore=E741', '--ignore=E731', '--ignore=E402', '--ignore=E711', '--ignore=E712', '--ignore=E721', '--fix']
+# user can unignore E712, E711, E721, and E402 to see errors
 ################################################################################
 # TYPOS
 ################################################################################

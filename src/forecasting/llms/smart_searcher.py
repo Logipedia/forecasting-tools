@@ -6,8 +6,15 @@ from datetime import datetime
 
 from src.ai_models.basic_model_interfaces.ai_model import AiModel
 from src.ai_models.basic_model_interfaces.outputs_text import OutputsText
-from src.ai_models.exa_searcher import ExaHighlightQuote, ExaSearcher, SearchInput
-from src.forecasting.llms.configured_llms import BaseRateProjectLlm, clean_indents
+from src.ai_models.exa_searcher import (
+    ExaHighlightQuote,
+    ExaSearcher,
+    SearchInput,
+)
+from src.forecasting.llms.configured_llms import (
+    BaseRateProjectLlm,
+    clean_indents,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +68,9 @@ class SmartSearcher(OutputsText, AiModel):
         final_report = self.__add_links_to_citations(report, quotes)
         return final_report, quotes
 
-    async def __come_up_with_search_queries(self, prompt: str) -> list[SearchInput]:
+    async def __come_up_with_search_queries(
+        self, prompt: str
+    ) -> list[SearchInput]:
         prompt = clean_indents(
             f"""
             You have been given the following instructions. Instructions are included between <><><><><><><><><><><><> tags.
@@ -70,7 +79,7 @@ class SmartSearcher(OutputsText, AiModel):
             {prompt}
             <><><><><><>END INSTRUCTIONS<><><><><><>
 
-            Generate {self.number_of_searches_to_run} google searches that will help you fullfill any questions in the instructions.
+            Generate {self.number_of_searches_to_run} google searches that will help you fulfill any questions in the instructions.
             Consider and walk through the following before giving your json answers:
             - What are some possible search queries and strategies that would be useful?
             - What are the aspects of the question that are most important? Are there multiple aspects?
@@ -79,7 +88,7 @@ class SmartSearcher(OutputsText, AiModel):
             - What filters would help you achieve this to increase the information density of the results?
             - You have limited searches, which approaches would be highest priority?
             Please only use the additional search fields ONLY IF it would return useful results.
-            Don't unecessarily constrain results.
+            Don't unnecessarily constrain results.
             Remember today is {datetime.now().strftime("%Y-%m-%d")}.
 
             {self.llm.get_schema_format_instructions_for_pydantic_type(SearchInput)}
@@ -104,11 +113,15 @@ class SmartSearcher(OutputsText, AiModel):
     ) -> list[ExaHighlightQuote]:
         all_results: list[list[ExaHighlightQuote]] = await asyncio.gather(
             *[
-                self.exa_searcher.invoke_for_highlights_in_relevance_order(search)
+                self.exa_searcher.invoke_for_highlights_in_relevance_order(
+                    search
+                )
                 for search in search_inputs
             ]
         )
-        flattened_results = [result for sublist in all_results for result in sublist]
+        flattened_results = [
+            result for sublist in all_results for result in sublist
+        ]
         unique_highlights: dict[str, ExaHighlightQuote] = {}
         for result in flattened_results:
             if result.highlight_text not in unique_highlights:
@@ -125,14 +138,18 @@ class SmartSearcher(OutputsText, AiModel):
         return most_relevant_results
 
     async def __compile_report(
-        self, search_results: list[ExaHighlightQuote], original_instructions: str
+        self,
+        search_results: list[ExaHighlightQuote],
+        original_instructions: str,
     ) -> str:
         assert len(search_results) > 0, "No search results found"
         assert (
             len(search_results) <= self.num_quotes_to_evaluate_from_search
         ), "Too many search results found"
-        search_result_context = self.__turn_highlights_into_search_context_for_prompt(
-            search_results
+        search_result_context = (
+            self.__turn_highlights_into_search_context_for_prompt(
+                search_results
+            )
         )
         logger.info(f"Generating response using {len(search_results)} quotes")
         logger.debug(f"Search results:\n{search_result_context}")
@@ -179,7 +196,9 @@ class SmartSearcher(OutputsText, AiModel):
     def __create_works_cited_list(
         citations: list[ExaHighlightQuote], report: str
     ) -> str:
-        works_cited_dict = SmartSearcher.__build_works_cited_dict(citations, report)
+        works_cited_dict = SmartSearcher.__build_works_cited_dict(
+            citations, report
+        )
         return SmartSearcher.__format_works_cited_list(works_cited_dict)
 
     @staticmethod
@@ -190,7 +209,9 @@ class SmartSearcher(OutputsText, AiModel):
         for i, citation in enumerate(citations):
             if f"[{i+1}]" not in report:
                 continue
-            url_domain = SmartSearcher.__extract_url_domain_from_highlight(citation)
+            url_domain = SmartSearcher.__extract_url_domain_from_highlight(
+                citation
+            )
             source_key = f"{citation.source.title} ({url_domain})"
             works_cited_dict.setdefault(source_key, []).append(
                 (i + 1, citation.highlight_text)
@@ -198,7 +219,9 @@ class SmartSearcher(OutputsText, AiModel):
         return works_cited_dict
 
     @staticmethod
-    def __extract_url_domain_from_highlight(citation: ExaHighlightQuote) -> str | None:
+    def __extract_url_domain_from_highlight(
+        citation: ExaHighlightQuote,
+    ) -> str | None:
         try:
             assert citation.source.url is not None, "Source URL is None"
             url_domain = urllib.parse.urlparse(citation.source.url).netloc
@@ -211,10 +234,14 @@ class SmartSearcher(OutputsText, AiModel):
         works_cited_dict: dict[str, list[tuple[int, str]]]
     ) -> str:
         works_cited_list = ""
-        for source_num, (source, highlights) in enumerate(works_cited_dict.items(), 1):
+        for source_num, (source, highlights) in enumerate(
+            works_cited_dict.items(), 1
+        ):
             works_cited_list += f"Source {source_num}: {source}\n"
             for citation_num, highlight in highlights:
-                works_cited_list += f'- [{citation_num}] Quote: "{highlight}"\n'
+                works_cited_list += (
+                    f'- [{citation_num}] Quote: "{highlight}"\n'
+                )
             works_cited_list += "\n"
         return works_cited_list
 
@@ -227,10 +254,18 @@ class SmartSearcher(OutputsText, AiModel):
             if less_than_10_words:
                 text_fragment = highlight.highlight_text
             else:
-                first_five_words = " ".join(highlight.highlight_text.split()[:5])
-                last_five_words = " ".join(highlight.highlight_text.split()[-5:])
-                encoded_first_five_words = urllib.parse.quote(first_five_words, safe="")
-                encoded_last_five_words = urllib.parse.quote(last_five_words, safe="")
+                first_five_words = " ".join(
+                    highlight.highlight_text.split()[:5]
+                )
+                last_five_words = " ".join(
+                    highlight.highlight_text.split()[-5:]
+                )
+                encoded_first_five_words = urllib.parse.quote(
+                    first_five_words, safe=""
+                )
+                encoded_last_five_words = urllib.parse.quote(
+                    last_five_words, safe=""
+                )
                 text_fragment = f"{encoded_first_five_words},{encoded_last_five_words}"  # Comma indicates that anything can be included in between
             text_fragment = text_fragment.replace("-", "%2D").strip(",")
             fragment_url = f"{highlight.source.url}#:~:text={text_fragment}"

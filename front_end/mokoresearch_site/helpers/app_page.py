@@ -22,7 +22,9 @@ class AppPage(ABC):
                     "You forgot to define FILE_PATH_IN_FRONT_END_FOLDER"
                 )
             if cls.PAGE_DISPLAY_NAME is NotImplemented:
-                raise NotImplementedError("You forgot to define PAGE_DISPLAY_NAME")
+                raise NotImplementedError(
+                    "You forgot to define PAGE_DISPLAY_NAME"
+                )
             if cls.URL_PATH is NotImplemented:
                 raise NotImplementedError("You forgot to define URL_PATH")
 

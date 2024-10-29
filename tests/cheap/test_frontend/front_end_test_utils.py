@@ -2,7 +2,9 @@ import logging
 
 from streamlit.testing.v1 import AppTest
 
-from front_end.mokoresearch_site.helpers.report_displayer import ReportDisplayer
+from front_end.mokoresearch_site.helpers.report_displayer import (
+    ReportDisplayer,
+)
 from front_end.mokoresearch_site.Home import AppPage
 from src.forecasting.forecast_reports.binary_report import BinaryReport
 
@@ -29,18 +31,30 @@ class FrontEndTestUtils:
             return
         reports = ReportDisplayer._make_new_list_of_sorted_reports(reports)
         num_reports_expected = len(reports)
-        report_selectbox = app_test.selectbox(ReportDisplayer.REPORT_SELECTBOX_KEY)
+        report_selectbox = app_test.selectbox(
+            ReportDisplayer.REPORT_SELECTBOX_KEY
+        )
         assert len(report_selectbox.options) == num_reports_expected
-        assert not app_test.exception, f"Exception occurred: {app_test.exception}"
+        assert (
+            not app_test.exception
+        ), f"Exception occurred: {app_test.exception}"
         assert num_reports_expected > 0
         for i, _ in enumerate(report_selectbox.options):
-            report_selectbox = app_test.selectbox(ReportDisplayer.REPORT_SELECTBOX_KEY)
+            report_selectbox = app_test.selectbox(
+                ReportDisplayer.REPORT_SELECTBOX_KEY
+            )
             report_selectbox.select(i)
             app_test.run()
-            assert not app_test.exception, f"Exception occurred: {app_test.exception}"
+            assert (
+                not app_test.exception
+            ), f"Exception occurred: {app_test.exception}"
             expected_markdown = reports[i].explanation
-            cls.__assert_correct_number_of_sections(app_test, expected_markdown)
-            cls.__assert_report_text_matches_expected(app_test, expected_markdown)
+            cls.__assert_correct_number_of_sections(
+                app_test, expected_markdown
+            )
+            cls.__assert_report_text_matches_expected(
+                app_test, expected_markdown
+            )
 
     @classmethod
     def __assert_correct_number_of_sections(
@@ -71,11 +85,14 @@ class FrontEndTestUtils:
         expected_explanation_compressed = ReportDisplayer.clean_markdown(
             expected_report_markdown
         ).replace("\n", "")
-        actual_combined_explanation_compressed = ReportDisplayer.clean_markdown(
-            actual_combined_explanation
-        ).replace("\n", "")
+        actual_combined_explanation_compressed = (
+            ReportDisplayer.clean_markdown(
+                actual_combined_explanation
+            ).replace("\n", "")
+        )
         assert (
-            expected_explanation_compressed in actual_combined_explanation_compressed
+            expected_explanation_compressed
+            in actual_combined_explanation_compressed
         ), f"Explanation does not match, expected '{expected_explanation_compressed}', got '{actual_combined_explanation_compressed}'"
 
     @staticmethod

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from pydantic import BaseModel
 import re
+
+from pydantic import BaseModel
 
 
 class ReportSection(BaseModel):
@@ -18,7 +19,9 @@ class ReportSection(BaseModel):
         return text
 
     @classmethod
-    def turn_markdown_into_report_sections(cls, markdown: str) -> list[ReportSection]:
+    def turn_markdown_into_report_sections(
+        cls, markdown: str
+    ) -> list[ReportSection]:
         final_heirarchial_sections: list[ReportSection] = []
         lines = markdown.splitlines()
         flattened_running_section_stack: list[ReportSection] = []
@@ -31,10 +34,14 @@ class ReportSection(BaseModel):
                 not at_top_level and not line_is_header
             )
             within_intro_section_without_header = (
-                final_heirarchial_sections and not line_is_header and at_top_level
+                final_heirarchial_sections
+                and not line_is_header
+                and at_top_level
             )
             should_create_intro_section_without_header = (
-                not final_heirarchial_sections and not line_is_header and at_top_level
+                not final_heirarchial_sections
+                and not line_is_header
+                and at_top_level
             )
 
             if should_create_new_header_section:
@@ -54,7 +61,10 @@ class ReportSection(BaseModel):
             elif should_create_intro_section_without_header:
                 final_heirarchial_sections.append(
                     ReportSection(
-                        level=0, title=None, section_content=line, sub_sections=[]
+                        level=0,
+                        title=None,
+                        section_content=line,
+                        sub_sections=[],
                     )
                 )
             elif within_intro_section_without_header:
@@ -77,7 +87,10 @@ class ReportSection(BaseModel):
         heading_level = line.count("#")
         title = line.strip("# ").strip()
         section = ReportSection(
-            level=heading_level, title=title, section_content=line, sub_sections=[]
+            level=heading_level,
+            title=title,
+            section_content=line,
+            sub_sections=[],
         )
         return section
 

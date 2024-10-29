@@ -57,7 +57,9 @@ class TestPydanticModel2(BaseModel):
 
 
 instance_of_test_model_1 = TestPydanticModel(int_value=1, float_value=1.0)
-sub_model_instance_1 = SubPydanticModel2(str_value="hello", list_value=[1, 2, 3])
+sub_model_instance_1 = SubPydanticModel2(
+    str_value="hello", list_value=[1, 2, 3]
+)
 instance_of_test_model_2 = TestPydanticModel2(
     str_value="hello",
     list_value=[1, 2, 3],
@@ -109,8 +111,16 @@ instance_of_test_model_2 = TestPydanticModel2(
             [instance_of_test_model_1, instance_of_test_model_1],
         ),
         (list[str], '```["string1","string2"]```', ["string1", "string2"]),
-        (list[str], '```json\n["string1","string2"]```', ["string1", "string2"]),
-        (list[str], '```python["string1","string2"]```', ["string1", "string2"]),
+        (
+            list[str],
+            '```json\n["string1","string2"]```',
+            ["string1", "string2"],
+        ),
+        (
+            list[str],
+            '```python["string1","string2"]```',
+            ["string1", "string2"],
+        ),
         (
             list[str],
             'Here is a list of strings \n["string1","string2"]\n',
@@ -148,7 +158,10 @@ instance_of_test_model_2 = TestPydanticModel2(
     ],
 )
 def test_type_verification_works_for_valid_types(
-    mocker: Mock, type_to_return: type, mock_value_for_invoke: str, expected_output: Any
+    mocker: Mock,
+    type_to_return: type,
+    mock_value_for_invoke: str,
+    expected_output: Any,
 ) -> None:
     mock_the_value_output_of_invoke(mocker, Gpt4o, mock_value_for_invoke)
     ai_model = Gpt4o()
@@ -199,7 +212,11 @@ def test_type_verification_fails_for_invalid_types(
 @pytest.mark.parametrize(
     ("mock_value_for_invoke", "expected_output_type", "expected_value"),
     [
-        ('```python\nfinal_result = {"key":"value"}\n```', dict, {"key": "value"}),
+        (
+            '```python\nfinal_result = {"key":"value"}\n```',
+            dict,
+            {"key": "value"},
+        ),
         ('```\nfinal_result = {"key":"value"}```', dict, {"key": "value"}),
         ('final_result = {"key":"value"}', dict, {"key": "value"}),
         ("a=1\nb=2\nfinal_result = a+b", int, 3),
@@ -239,8 +256,10 @@ def test_schema_generation_works() -> None:
         float_value: float
         list_value: list[int]
 
-    format_instructions = Gpt4o().get_schema_format_instructions_for_pydantic_type(
-        TestPydanticModel
+    format_instructions = (
+        Gpt4o().get_schema_format_instructions_for_pydantic_type(
+            TestPydanticModel
+        )
     )
     logger.debug(format_instructions)
     assert "int_value" in format_instructions

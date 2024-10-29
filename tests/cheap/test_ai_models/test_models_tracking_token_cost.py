@@ -4,18 +4,27 @@ import pytest
 
 from src.ai_models.ai_utils.response_types import TextTokenCostResponse
 from src.ai_models.basic_model_interfaces.ai_model import AiModel
-from src.ai_models.basic_model_interfaces.priced_per_request import PricedPerRequest
-from src.ai_models.basic_model_interfaces.tokens_incur_cost import TokensIncurCost
-from src.ai_models.model_archetypes.traditional_online_llm import TraditionalOnlineLlm
-from tests.cheap.test_ai_models.models_to_test import ModelsToTest
+from src.ai_models.basic_model_interfaces.priced_per_request import (
+    PricedPerRequest,
+)
+from src.ai_models.basic_model_interfaces.tokens_incur_cost import (
+    TokensIncurCost,
+)
 from src.ai_models.gpto1 import GptO1
+from src.ai_models.model_archetypes.traditional_online_llm import (
+    TraditionalOnlineLlm,
+)
+from tests.cheap.test_ai_models.models_to_test import ModelsToTest
+
 
 @pytest.mark.parametrize("subclass", ModelsToTest.TOKENS_INCUR_COST_LIST)
 def test_predicted_cost_and_tokens_correct_for_cheap_input(
     subclass: type[TokensIncurCost],
 ) -> None:
     if issubclass(subclass, GptO1):
-        pytest.skip("GptO1 has a weird tokenization scheme that doesn't allow for predicting tokens, and is sometimes 1 token off on small prompts. This is after following official instructions")
+        pytest.skip(
+            "GptO1 has a weird tokenization scheme that doesn't allow for predicting tokens, and is sometimes 1 token off on small prompts. This is after following official instructions"
+        )
     model = subclass()
     assert_cost_and_tokens_correct_for_cheap_input(model)
 
@@ -24,16 +33,22 @@ def test_predicted_cost_and_tokens_correct_for_cheap_input(
 def test_system_prompt_cost_and_tokens_correct_for_cheap_input(
     subclass: type[TokensIncurCost],
 ) -> None:
-    if not issubclass(subclass, TraditionalOnlineLlm) or issubclass(subclass, GptO1):
+    if not issubclass(subclass, TraditionalOnlineLlm) or issubclass(
+        subclass, GptO1
+    ):
         pytest.skip("Model doesn't have a system prompt")
 
     model_without_system_prompt = subclass()
-    model_with_system_prompt = subclass(system_prompt="This is a system prompt")
+    model_with_system_prompt = subclass(
+        system_prompt="This is a system prompt"
+    )
     cheap_input = model_without_system_prompt._get_cheap_input_for_invoke()
 
-    with_system_prompt_tokens = model_with_system_prompt.input_to_tokens(cheap_input)
-    model_without_system_prompt_tokens = model_without_system_prompt.input_to_tokens(
+    with_system_prompt_tokens = model_with_system_prompt.input_to_tokens(
         cheap_input
+    )
+    model_without_system_prompt_tokens = (
+        model_without_system_prompt.input_to_tokens(cheap_input)
     )
     assert (
         with_system_prompt_tokens != model_without_system_prompt_tokens
@@ -42,16 +57,20 @@ def test_system_prompt_cost_and_tokens_correct_for_cheap_input(
     assert_cost_and_tokens_correct_for_cheap_input(model_with_system_prompt)
 
 
-def assert_cost_and_tokens_correct_for_cheap_input(model: TokensIncurCost) -> None:
+def assert_cost_and_tokens_correct_for_cheap_input(
+    model: TokensIncurCost,
+) -> None:
     assert isinstance(model, AiModel), "model must be an instance of AiModel"
 
     cheap_input = model._get_cheap_input_for_invoke()
 
     predicted_prompt_tokens = model.input_to_tokens(cheap_input)
-    predicted_prompt_cost_v1 = model.caculate_cost_from_tokens(
+    predicted_prompt_cost_v1 = model.calculate_cost_from_tokens(
         predicted_prompt_tokens, 0
     )
-    predicted_prompt_cost_v2 = model.cost_per_token_prompt * predicted_prompt_tokens
+    predicted_prompt_cost_v2 = (
+        model.cost_per_token_prompt * predicted_prompt_tokens
+    )
 
     response = asyncio.run(model._mockable_direct_call_to_model(cheap_input))
 
@@ -64,7 +83,7 @@ def assert_cost_and_tokens_correct_for_cheap_input(model: TokensIncurCost) -> No
     actual_completion_tokens = response.completion_tokens_used
     actual_cost = response.cost
 
-    predicted_completion_cost_v1 = model.caculate_cost_from_tokens(
+    predicted_completion_cost_v1 = model.calculate_cost_from_tokens(
         0, actual_completion_tokens
     )
     if isinstance(model, PricedPerRequest):
@@ -73,8 +92,12 @@ def assert_cost_and_tokens_correct_for_cheap_input(model: TokensIncurCost) -> No
         model.cost_per_token_completion * actual_completion_tokens
     )
 
-    predicted_total_cost_v1 = predicted_prompt_cost_v1 + predicted_completion_cost_v1
-    predicted_total_cost_v2 = predicted_prompt_cost_v2 + predicted_completion_cost_v2
+    predicted_total_cost_v1 = (
+        predicted_prompt_cost_v1 + predicted_completion_cost_v1
+    )
+    predicted_total_cost_v2 = (
+        predicted_prompt_cost_v2 + predicted_completion_cost_v2
+    )
 
     allowed_error = 0.0001
     assert (

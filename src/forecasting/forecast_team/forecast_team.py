@@ -4,9 +4,14 @@ import datetime
 import logging
 import time
 
-from src.ai_models.resource_managers.monetary_cost_manager import MonetaryCostManager
+from src.ai_models.resource_managers.monetary_cost_manager import (
+    MonetaryCostManager,
+)
 from src.forecasting.forecast_reports.binary_report import ForecastReport
-from src.forecasting.forecast_team.final_decision_agent import FinalDecisionAgent
+from src.forecasting.forecast_team.final_decision_agent import (
+    FinalDecisionAgent,
+)
+from src.forecasting.forecast_team.research_manager import ResearchManager
 from src.forecasting.metaculus_question import (
     BinaryQuestion,
     DateQuestion,
@@ -14,7 +19,6 @@ from src.forecasting.metaculus_question import (
     NumericQuestion,
 )
 from src.util import async_batching
-from src.forecasting.forecast_team.research_manager import ResearchManager
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +34,11 @@ class ForecastTeam:
         number_of_base_rate_questions_to_ask: int = 3,
         number_of_base_rates_to_do_deep_research_on: int = 0,
     ) -> None:
-        working_question_types = [BinaryQuestion, NumericQuestion, DateQuestion]
+        working_question_types = [
+            BinaryQuestion,
+            NumericQuestion,
+            DateQuestion,
+        ]
         assert any(
             isinstance(question, t) for t in working_question_types
         ), f"Question must be one of the following types: {working_question_types}"
@@ -40,7 +48,9 @@ class ForecastTeam:
         self.number_of_background_questions_to_ask = (
             number_of_background_questions_to_ask
         )
-        self.number_of_base_rate_questions_to_ask = number_of_base_rate_questions_to_ask
+        self.number_of_base_rate_questions_to_ask = (
+            number_of_base_rate_questions_to_ask
+        )
         self.number_of_base_rates_to_do_deep_research_on = (
             number_of_base_rates_to_do_deep_research_on
         )
@@ -52,11 +62,12 @@ class ForecastTeam:
                 self.__research_and_make_forecast()
                 for _ in range(self.num_reports_to_aggregate)
             ]
-            log_function = lambda error, _: logger.exception(f"Error while researching and making forecast in ForecastTeam: {error.__class__.__name__} Exception - {error}")
+            log_function = lambda error, _: logger.exception(
+                f"Error while researching and making forecast in ForecastTeam: {error.__class__.__name__} Exception - {error}"
+            )
             reports, _ = (
                 async_batching.run_coroutines_while_removing_and_logging_exceptions(
-                    report_tasks,
-                    action_on_exception=log_function
+                    report_tasks, action_on_exception=log_function
                 )
             )
             assert len(reports) > 0, "No reports were created"
@@ -75,10 +86,12 @@ class ForecastTeam:
     async def __research_and_make_forecast(self) -> ForecastReport:
         with MonetaryCostManager() as cost_manager:
             research_manager = ResearchManager(self.question)
-            combined_markdown = await research_manager.create_full_markdown_research_report(
-                self.number_of_background_questions_to_ask,
-                self.number_of_base_rate_questions_to_ask,
-                self.number_of_base_rates_to_do_deep_research_on,
+            combined_markdown = (
+                await research_manager.create_full_markdown_research_report(
+                    self.number_of_background_questions_to_ask,
+                    self.number_of_base_rate_questions_to_ask,
+                    self.number_of_base_rates_to_do_deep_research_on,
+                )
             )
             decision_agent = FinalDecisionAgent(
                 combined_markdown,
@@ -88,7 +101,6 @@ class ForecastTeam:
             )
             report = await decision_agent.run_decision_agent()
             return report
-
 
     def __create_log_file_path(self) -> str:
         shortened_question_text = (

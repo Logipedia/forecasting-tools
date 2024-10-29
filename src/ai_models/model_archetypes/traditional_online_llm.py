@@ -8,9 +8,15 @@ from src.ai_models.basic_model_interfaces.request_limited_model import (
     RequestLimitedModel,
 )
 from src.ai_models.basic_model_interfaces.retryable_model import RetryableModel
-from src.ai_models.basic_model_interfaces.time_limited_model import TimeLimitedModel
-from src.ai_models.basic_model_interfaces.token_limited_model import TokenLimitedModel
-from src.ai_models.basic_model_interfaces.tokens_incur_cost import TokensIncurCost
+from src.ai_models.basic_model_interfaces.time_limited_model import (
+    TimeLimitedModel,
+)
+from src.ai_models.basic_model_interfaces.token_limited_model import (
+    TokenLimitedModel,
+)
+from src.ai_models.basic_model_interfaces.tokens_incur_cost import (
+    TokensIncurCost,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +39,9 @@ class TraditionalOnlineLlm(
         system_prompt: str | None = None,
     ) -> None:
         super().__init__(allowed_tries=allowed_tries)
-        assert temperature >= 0, "Temperature must be greater than or equal to 0"
+        assert (
+            temperature >= 0
+        ), "Temperature must be greater than or equal to 0"
         assert temperature <= 1, "Temperature must be less than or equal to 1"
         self.temperature: float = temperature
         self.system_prompt: str | None = system_prompt

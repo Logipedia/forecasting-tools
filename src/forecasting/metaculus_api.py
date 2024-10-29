@@ -5,10 +5,10 @@ import logging
 import os
 import random
 from datetime import datetime, timedelta
-from typing import Any, TypeVar, Sequence
-import typeguard
+from typing import Any, Sequence, TypeVar
 
 import requests
+import typeguard
 
 from src.forecasting.metaculus_question import (
     BinaryQuestion,
@@ -38,11 +38,13 @@ class MetaculusApi:
 
     METACULUS_TOKEN = os.getenv("METACULUS_TOKEN")
     AUTH_HEADERS = {"headers": {"Authorization": f"Token {METACULUS_TOKEN}"}}
-    API_BASE_URL = f"https://www.metaculus.com/api2"
+    API_BASE_URL = "https://www.metaculus.com/api2"
     MAX_QUESTIONS_FROM_QUESTION_API = 100
 
     @classmethod
-    def post_question_comment(cls, question_id: int, comment_text: str) -> None:
+    def post_question_comment(
+        cls, question_id: int, comment_text: str
+    ) -> None:
         response = requests.post(
             f"{cls.API_BASE_URL}/comments/",
             json={
@@ -153,7 +155,8 @@ class MetaculusApi:
             f"Reduced to {len(qs_with_community_vote_and_enough_forecasters)} questions with enough forecasters"
         )
         random_sample = random.sample(
-            qs_with_community_vote_and_enough_forecasters, num_of_questions_to_return
+            qs_with_community_vote_and_enough_forecasters,
+            num_of_questions_to_return,
         )
         return random_sample
 
@@ -175,9 +178,10 @@ class MetaculusApi:
             "limit": number_of_questions,
         }
         questions = cls.__get_questions_from_api(params)
-        checked_questions = typeguard.check_type(questions, list[BinaryQuestion])
+        checked_questions = typeguard.check_type(
+            questions, list[BinaryQuestion]
+        )
         return checked_questions
-
 
     @classmethod
     def _get_open_binary_questions_from_current_quarterly_cup(
@@ -188,10 +192,13 @@ class MetaculusApi:
             filter_by_open=True,
         )
         binary_questions = [
-            question for question in questions if isinstance(question, BinaryQuestion)
+            question
+            for question in questions
+            if isinstance(question, BinaryQuestion)
         ]
         assert all(
-            isinstance(question, BinaryQuestion) for question in binary_questions
+            isinstance(question, BinaryQuestion)
+            for question in binary_questions
         )
         return binary_questions  # type: ignore
 
@@ -208,11 +215,15 @@ class MetaculusApi:
         response = requests.get(url, params=params, **cls.AUTH_HEADERS)  # type: ignore
         raise_for_status_with_additional_info(response)
         data = json.loads(response.content)
-        questions = [cls.__metaculus_api_json_to_question(q) for q in data["results"]]
+        questions = [
+            cls.__metaculus_api_json_to_question(q) for q in data["results"]
+        ]
         return questions
 
     @classmethod
-    def __metaculus_api_json_to_question(cls, api_json: dict) -> MetaculusQuestion:
+    def __metaculus_api_json_to_question(
+        cls, api_json: dict
+    ) -> MetaculusQuestion:
         question_type = api_json["question"]["type"]  # type: ignore
         if question_type == "binary":
             return BinaryQuestion.from_metaculus_api_json(api_json)

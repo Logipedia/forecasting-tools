@@ -14,7 +14,7 @@ from src.ai_models.resource_managers.monetary_cost_manager import (
 class TokensIncurCost(TokensAreCalculatable, IncursCost, ABC):
 
     @abstractmethod
-    def caculate_cost_from_tokens(
+    def calculate_cost_from_tokens(
         self, prompt_tkns: int, completion_tkns: int
     ) -> float:
         pass
@@ -36,8 +36,12 @@ class TokensIncurCost(TokensAreCalculatable, IncursCost, ABC):
 
     @property
     def cost_per_token_completion(self) -> float:
-        return self.caculate_cost_from_tokens(prompt_tkns=0, completion_tkns=1)
+        return self.calculate_cost_from_tokens(
+            prompt_tkns=0, completion_tkns=1
+        )
 
     @property
     def cost_per_token_prompt(self) -> float:
-        return self.caculate_cost_from_tokens(prompt_tkns=1, completion_tkns=0)
+        return self.calculate_cost_from_tokens(
+            prompt_tkns=1, completion_tkns=0
+        )

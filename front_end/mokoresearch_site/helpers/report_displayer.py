@@ -18,7 +18,9 @@ class ReportDisplayer:
     REPORT_SELECTBOX_KEY = "select_report_selectbox"
 
     @classmethod
-    def display_report_list(cls, reports_to_display: list[BinaryReport]) -> None:
+    def display_report_list(
+        cls, reports_to_display: list[BinaryReport]
+    ) -> None:
         if len(reports_to_display) == 0:
             return
 
@@ -65,7 +67,9 @@ class ReportDisplayer:
         sorted_reports = sorted(
             copy_of_reports,
             key=lambda r: (
-                r.deviation_score if r.deviation_score is not None else float("inf")
+                r.deviation_score
+                if r.deviation_score is not None
+                else float("inf")
             ),
             reverse=True,
         )
@@ -100,12 +104,16 @@ class ReportDisplayer:
         )
 
     @classmethod
-    def __display_normal_tab(cls, tab: DeltaGenerator, section: ReportSection) -> None:
+    def __display_normal_tab(
+        cls, tab: DeltaGenerator, section: ReportSection
+    ) -> None:
         with tab:
             st.markdown(cls.clean_markdown(section.section_content))
             for sub_section in section.sub_sections:
                 with st.expander(sub_section.title or "Untitled"):
-                    st.markdown(cls.clean_markdown(sub_section.section_content))
+                    st.markdown(
+                        cls.clean_markdown(sub_section.section_content)
+                    )
                     cls.__display_nested_sections(sub_section.sub_sections)
 
     @staticmethod
@@ -114,7 +122,9 @@ class ReportDisplayer:
     ) -> None:
         with tab:
             st.write(f"**Question Text:** {question.question_text}")
-            st.write(f"**Resolution Criteria:** {question.resolution_criteria}")
+            st.write(
+                f"**Resolution Criteria:** {question.resolution_criteria}"
+            )
             st.write(f"**Fine Print:** {question.fine_print}")
             st.write(f"**Background Info:** {question.background_info}")
             st.write(f"**Question Type:** {type(question)}")
@@ -126,7 +136,9 @@ class ReportDisplayer:
                 if question.community_prediction_at_access_time is not None
                 else "N/A"
             )
-            st.write(f"**Community Prediction:** {community_prediction_formatted}")
+            st.write(
+                f"**Community Prediction:** {community_prediction_formatted}"
+            )
             st.write(f"**Date Accessed:** {question.date_accessed}")
             st.write(f"**State at Access:** {question.state.value}")
             if question.close_time:
@@ -148,7 +160,9 @@ class ReportDisplayer:
     ) -> None:
         for section in sections:
             st.markdown(cls.clean_markdown(section.section_content))
-            ReportDisplayer.__display_nested_sections(section.sub_sections, level + 1)
+            ReportDisplayer.__display_nested_sections(
+                section.sub_sections, level + 1
+            )
 
     @staticmethod
     def clean_markdown(text: str) -> str:

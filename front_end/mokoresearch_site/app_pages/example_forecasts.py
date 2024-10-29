@@ -3,7 +3,9 @@ import streamlit as st
 
 from front_end.mokoresearch_site.helpers.app_page import AppPage
 from front_end.mokoresearch_site.helpers.general import footer, header
-from front_end.mokoresearch_site.helpers.report_displayer import ReportDisplayer
+from front_end.mokoresearch_site.helpers.report_displayer import (
+    ReportDisplayer,
+)
 from src.forecasting.forecast_reports.binary_report import BinaryReport
 
 
@@ -37,10 +39,10 @@ class ExampleForecastsPage(AppPage):
 
     @classmethod
     def get_example_reports(cls) -> list[BinaryReport]:
-        report_file_path = (
-            "front_end/mokoresearch_site/app_pages/example_forecast_reports.json"
+        report_file_path = "front_end/mokoresearch_site/app_pages/example_forecast_reports.json"
+        return BinaryReport.convert_project_file_path_to_object_list(
+            report_file_path
         )
-        return BinaryReport.convert_project_file_path_to_object_list(report_file_path)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,14 @@
 import asyncio
 import logging
-from typing import Any, Callable, TypeGuard, TypeVar, Union, get_args, get_origin
+from typing import (
+    Any,
+    Callable,
+    TypeGuard,
+    TypeVar,
+    Union,
+    get_args,
+    get_origin,
+)
 
 T = TypeVar("T")
 
@@ -19,7 +27,9 @@ async def try_function_till_tries_run_out(
             tries_left -= 1
             if tries_left == 0:
                 raise e
-            logger.warning(f"Retrying function {function.__name__} due to error: {e}")
+            logger.warning(
+                f"Retrying function {function.__name__} due to error: {e}"
+            )
             await asyncio.sleep(1)
 
 
@@ -66,7 +76,8 @@ def validate_complex_type(value: T, expected_type: type[T]) -> TypeGuard[T]:
             return False
         key_type, value_type = args
         return all(
-            validate_complex_type(k, key_type) and validate_complex_type(v, value_type)
+            validate_complex_type(k, key_type)
+            and validate_complex_type(v, value_type)
             for k, v in value.items()
         )
 
@@ -83,7 +94,9 @@ def clean_indents(text: str) -> str:
             indent_level_of_first_line, indent_level_of_second_line
         )
     except IndexError:
-        greatest_indent_level_of_first_two_lines = find_indent_level_of_string(lines[0])
+        greatest_indent_level_of_first_two_lines = find_indent_level_of_string(
+            lines[0]
+        )
 
     new_lines = []
     for line in lines:

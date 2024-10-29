@@ -11,11 +11,19 @@ sys.path.append(top_level_dir)
 
 from front_end.mokoresearch_site.app_pages.base_rate_page import BaseRatePage
 from front_end.mokoresearch_site.app_pages.benchmark_page import BenchmarkPage
-from front_end.mokoresearch_site.app_pages.example_forecasts import ExampleForecastsPage
-from front_end.mokoresearch_site.app_pages.forecaster_page import ForecasterPage
-from front_end.mokoresearch_site.app_pages.niche_list_researcher_page import NicheListResearchPage
 from front_end.mokoresearch_site.app_pages.estimator_page import EstimatorPage
-from front_end.mokoresearch_site.app_pages.key_factors_page import KeyFactorsPage
+from front_end.mokoresearch_site.app_pages.example_forecasts import (
+    ExampleForecastsPage,
+)
+from front_end.mokoresearch_site.app_pages.forecaster_page import (
+    ForecasterPage,
+)
+from front_end.mokoresearch_site.app_pages.key_factors_page import (
+    KeyFactorsPage,
+)
+from front_end.mokoresearch_site.app_pages.niche_list_researcher_page import (
+    NicheListResearchPage,
+)
 from front_end.mokoresearch_site.helpers.app_page import AppPage
 from front_end.mokoresearch_site.helpers.general import footer, header
 from src.util.custom_logger import CustomLogger
@@ -59,6 +67,10 @@ if __name__ == "__main__":
     dotenv.load_dotenv()
     CustomLogger.setup_logging()
     all_pages = [HomePage] + HomePage.NON_HOME_PAGES
-    navigation = st.navigation([page.convert_to_streamlit_page() for page in all_pages])
-    st.set_page_config(page_title="Moko Research", page_icon=":material/explore:")
+    navigation = st.navigation(
+        [page.convert_to_streamlit_page() for page in all_pages]
+    )
+    st.set_page_config(
+        page_title="Moko Research", page_icon=":material/explore:"
+    )
     navigation.run()

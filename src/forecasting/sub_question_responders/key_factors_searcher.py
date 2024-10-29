@@ -4,7 +4,10 @@ from enum import Enum
 from pydantic import BaseModel
 
 from src.forecasting.forecast_team.research_manager import ResearchManager
-from src.forecasting.llms.configured_llms import BaseRateProjectLlm, clean_indents
+from src.forecasting.llms.configured_llms import (
+    BaseRateProjectLlm,
+    clean_indents,
+)
 from src.forecasting.llms.smart_searcher import SmartSearcher
 from src.forecasting.metaculus_api import MetaculusQuestion
 from src.forecasting.sub_question_responders.deduplicator import Deduplicator
@@ -40,11 +43,15 @@ class KeyFactorsSearcher:
             num_questions_to_research_with - num_background_questions
         )
         research_manager = ResearchManager(metaculus_question)
-        background_questions = await research_manager.brainstorm_background_questions(
-            num_background_questions
+        background_questions = (
+            await research_manager.brainstorm_background_questions(
+                num_background_questions
+            )
         )
-        base_rate_questions = await research_manager.brainstorm_base_rate_questions(
-            num_base_rate_questions,
+        base_rate_questions = (
+            await research_manager.brainstorm_base_rate_questions(
+                num_base_rate_questions,
+            )
         )
         combined_questions = background_questions + base_rate_questions
         key_factor_tasks = [
@@ -67,7 +74,9 @@ class KeyFactorsSearcher:
             scored_key_factors, key=lambda x: x.score or 0, reverse=True
         )
         top_key_factors = sorted_key_factors[:num_key_factors_to_return]
-        deduplicated_key_factors = await cls.__deduplicate_key_factors(top_key_factors)
+        deduplicated_key_factors = await cls.__deduplicate_key_factors(
+            top_key_factors
+        )
         logger.info(
             f"Found {len(deduplicated_key_factors)} final key factors (deduplicated and filtering for top scores)"
         )
@@ -108,8 +117,10 @@ class KeyFactorsSearcher:
         cls, key_factors: list[KeyFigure]
     ) -> list[KeyFigure]:
         strings_to_check = [factor.text for factor in key_factors]
-        deduplicated_strings = await Deduplicator.deduplicate_list_one_item_at_a_time(
-            strings_to_check, use_internet_search=False
+        deduplicated_strings = (
+            await Deduplicator.deduplicate_list_one_item_at_a_time(
+                strings_to_check, use_internet_search=False
+            )
         )
         deduplicated_factors: list[KeyFigure] = []
         for factor in key_factors:
@@ -119,7 +130,9 @@ class KeyFactorsSearcher:
 
     @classmethod
     async def __score_key_factor_list(
-        cls, metaculus_question: MetaculusQuestion, key_factors: list[KeyFigure]
+        cls,
+        metaculus_question: MetaculusQuestion,
+        key_factors: list[KeyFigure],
     ) -> list[KeyFigure]:
         scoring_coroutines = [
             cls.__score_key_factor(metaculus_question.question_text, factor)

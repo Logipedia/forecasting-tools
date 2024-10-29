@@ -26,7 +26,9 @@ class CustomAuth:
                     st.warning(
                         "Passphrase required to access this feature. See side bar."
                     )
-                    st.sidebar.warning("Incorrect passphrase. Please try again.")
+                    st.sidebar.warning(
+                        "Incorrect passphrase. Please try again."
+                    )
 
             return wrapper
 

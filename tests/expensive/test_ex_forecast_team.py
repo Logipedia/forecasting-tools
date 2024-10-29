@@ -1,9 +1,10 @@
 import logging
-import re
 
 import pytest
 
-from src.ai_models.resource_managers.monetary_cost_manager import MonetaryCostManager
+from src.ai_models.resource_managers.monetary_cost_manager import (
+    MonetaryCostManager,
+)
 from src.forecasting.forecast_reports.report_organizer import ReportOrganizer
 from src.forecasting.forecast_team.forecast_team import ForecastTeam
 from src.forecasting.metaculus_question import MetaculusQuestion
@@ -20,8 +21,12 @@ logger = logging.getLogger(__name__)
 # TeamManager can take in a question and return a corresponding report
 
 
-@pytest.mark.parametrize("question_type", ReportOrganizer.get_all_question_types())
-async def test_predicts_test_question(question_type: type[MetaculusQuestion]) -> None:
+@pytest.mark.parametrize(
+    "question_type", ReportOrganizer.get_all_question_types()
+)
+async def test_predicts_test_question(
+    question_type: type[MetaculusQuestion],
+) -> None:
     question = ReportOrganizer.get_live_example_question_of_type(question_type)
     assert isinstance(question, question_type)
     target_cost_in_usd = 2
@@ -30,8 +35,8 @@ async def test_predicts_test_question(question_type: type[MetaculusQuestion]) ->
         logger.info(f"Report: \n{report}")
         logger.info(f"Cost of forecast: {cost_manager.current_usage}")
         logger.info(f"Report Explanation: \n{report.explanation}")
-        expected_report_type = ReportOrganizer.get_report_type_for_question_type(
-            question_type
+        expected_report_type = (
+            ReportOrganizer.get_report_type_for_question_type(question_type)
         )
         assert isinstance(report, expected_report_type)
         assert cost_manager.current_usage <= target_cost_in_usd

@@ -13,7 +13,9 @@ from src.forecasting.metaculus_question import (
     NumericQuestion,
     QuestionState,
 )
-from tests.cheap.test_forecasting.forecasting_test_manager import ForecastingTestManager
+from tests.cheap.test_forecasting.forecasting_test_manager import (
+    ForecastingTestManager,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +51,7 @@ def test_get_numeric_question_type_from_id() -> None:
     assert question.upper_bound_is_hard_limit
     assert_basic_question_attributes_not_none(question, question_id)
 
+
 def test_get_date_question_type_from_id() -> None:
     question_id = ReportOrganizer.get_example_question_id_for_question_type(
         DateQuestion
@@ -61,6 +64,7 @@ def test_get_date_question_type_from_id() -> None:
     assert question.lower_bound_is_hard_limit
     assert not question.upper_bound_is_hard_limit
     assert_basic_question_attributes_not_none(question, question_id)
+
 
 def test_get_multiple_choice_question_type_from_id() -> None:
     question_id = ReportOrganizer.get_example_question_id_for_question_type(
@@ -76,10 +80,11 @@ def test_get_multiple_choice_question_type_from_id() -> None:
     assert_basic_question_attributes_not_none(question, question_id)
 
 
-
 def test_post_comment_on_question() -> None:
     question = ForecastingTestManager.get_question_safe_to_pull_and_push_to()
-    MetaculusApi.post_question_comment(question.question_id, "This is a test comment")
+    MetaculusApi.post_question_comment(
+        question.question_id, "This is a test comment"
+    )
     # No assertion needed, just check that the request did not raise an exception
 
 
@@ -109,7 +114,9 @@ def test_questions_returned_from_list_questions() -> None:
     ai_tournament_id = (
         ForecastingTestManager.TOURNAMENT_WITH_MIXTURE_OF_OPEN_AND_NOT_OPEN
     )
-    questions = MetaculusApi.get_all_questions_from_tournament(ai_tournament_id)
+    questions = MetaculusApi.get_all_questions_from_tournament(
+        ai_tournament_id
+    )
     assert len(questions) > 0
     for question in questions:
         assert isinstance(question, BinaryQuestion)
@@ -164,24 +171,30 @@ def test_get_benchmark_questions() -> None:
         assert question.community_prediction_at_access_time is not None
         logger.info(f"Found question: {question.question_text}")
     question_ids = [question.question_id for question in questions]
-    assert len(question_ids) == len(set(question_ids)), "Not all questions are unique"
+    assert len(question_ids) == len(
+        set(question_ids)
+    ), "Not all questions are unique"
 
 
 def test_get_questions_from_current_quartely_cup() -> None:
     expected_question_text = "Will BirdCast report 1 billion birds flying over the United States at any point before January 1, 2025?"
-    questions = MetaculusApi._get_open_binary_questions_from_current_quarterly_cup()
+    questions = (
+        MetaculusApi._get_open_binary_questions_from_current_quarterly_cup()
+    )
 
     if ForecastingTestManager.quarterly_cup_is_not_active():
         assert len(questions) == 0
     else:
         assert len(questions) > 0
         assert any(
-            question.question_text == expected_question_text for question in questions
+            question.question_text == expected_question_text
+            for question in questions
         )
 
 
-
-def assert_basic_question_attributes_not_none(question: MetaculusQuestion, question_id: int) -> None:
+def assert_basic_question_attributes_not_none(
+    question: MetaculusQuestion, question_id: int
+) -> None:
     assert question.resolution_criteria is not None
     assert question.fine_print is not None
     assert question.background_info is not None
@@ -190,10 +203,15 @@ def assert_basic_question_attributes_not_none(question: MetaculusQuestion, quest
     assert question.scheduled_resolution_time is not None
     assert isinstance(question.state, QuestionState)
     assert isinstance(question.page_url, str)
-    assert question.page_url == f"https://www.metaculus.com/questions/{question_id}"
+    assert (
+        question.page_url
+        == f"https://www.metaculus.com/questions/{question_id}"
+    )
     assert isinstance(question.num_forecasters, int)
     assert isinstance(question.num_predictions, int)
-    assert question.actual_resolution_time is None or isinstance(question.actual_resolution_time, datetime)
+    assert question.actual_resolution_time is None or isinstance(
+        question.actual_resolution_time, datetime
+    )
     assert isinstance(question.api_json, dict)
     assert question.close_time > datetime.now()
     if question.scheduled_resolution_time:

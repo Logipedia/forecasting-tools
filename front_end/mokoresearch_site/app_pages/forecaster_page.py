@@ -6,15 +6,17 @@ import streamlit as st
 
 from front_end.mokoresearch_site.helpers.app_page import AppPage
 from front_end.mokoresearch_site.helpers.general import footer, header
-from front_end.mokoresearch_site.helpers.report_displayer import ReportDisplayer
+from front_end.mokoresearch_site.helpers.report_displayer import (
+    ReportDisplayer,
+)
 from src.forecasting.forecast_database_manager import (
     ForecastDatabaseManager,
     ForecastRunType,
 )
 from src.forecasting.forecast_reports.binary_report import BinaryReport
 from src.forecasting.forecast_team.forecast_team import ForecastTeam
-from src.forecasting.metaculus_question import BinaryQuestion, QuestionState
 from src.forecasting.metaculus_api import MetaculusApi
+from src.forecasting.metaculus_question import BinaryQuestion, QuestionState
 
 logger = logging.getLogger(__name__)
 
@@ -46,41 +48,57 @@ class ForecasterPage(AppPage):
     def __display_title_info(cls) -> None:
         st.title("Forecast a Question with AI")
         st.write(
-            "Enter the information for your question. Exa.ai is used to gather up to date information. Each citation attempts to link to a higlight of the a ~4 sentence quote found with Exa.ai. This project is in beta some inaccuracies are expected."
+            "Enter the information for your question. Exa.ai is used to gather up to date information. Each citation attempts to link to a highlight of the a ~4 sentence quote found with Exa.ai. This project is in beta some inaccuracies are expected."
         )
 
     @classmethod
     def __display_metaculus_url_input(cls) -> None:
         with st.expander("Use an existing Metaculus Binary question"):
-            st.write("Enter a Metaculus question URL to autofill the form below.")
+            st.write(
+                "Enter a Metaculus question URL to autofill the form below."
+            )
 
-            metaculus_url = st.text_input("Metaculus Question URL", key=cls.METACULUS_URL_INPUT)
+            metaculus_url = st.text_input(
+                "Metaculus Question URL", key=cls.METACULUS_URL_INPUT
+            )
             fetch_button = st.button("Fetch Question", key=cls.FETCH_BUTTON)
 
             if fetch_button and metaculus_url:
                 with st.spinner("Fetching question details..."):
                     try:
                         question_id = cls.__extract_question_id(metaculus_url)
-                        metaculus_question = MetaculusApi.get_question_by_id(question_id)
+                        metaculus_question = MetaculusApi.get_question_by_id(
+                            question_id
+                        )
                         if isinstance(metaculus_question, BinaryQuestion):
                             cls.__autofill_form(metaculus_question)
                         else:
-                            st.error("Only binary questions are supported at this time.")
+                            st.error(
+                                "Only binary questions are supported at this time."
+                            )
                     except Exception as e:
-                        st.error(f"An error occurred while fetching the question: {e.__class__.__name__}: {e}")
+                        st.error(
+                            f"An error occurred while fetching the question: {e.__class__.__name__}: {e}"
+                        )
 
     @classmethod
     def __extract_question_id(cls, url: str) -> int:
-        match = re.search(r'/questions/(\d+)/', url)
+        match = re.search(r"/questions/(\d+)/", url)
         if match:
             return int(match.group(1))
-        raise ValueError("Invalid Metaculus question URL. Please ensure it's in the format: https://metaculus.com/questions/[ID]/[question-title]/")
+        raise ValueError(
+            "Invalid Metaculus question URL. Please ensure it's in the format: https://metaculus.com/questions/[ID]/[question-title]/"
+        )
 
     @classmethod
     def __autofill_form(cls, question: BinaryQuestion) -> None:
         st.session_state[cls.QUESTION_TEXT_BOX] = question.question_text
-        st.session_state[cls.BACKGROUND_INFO_BOX] = question.background_info or ""
-        st.session_state[cls.RESOLUTION_CRITERIA_BOX] = question.resolution_criteria or ""
+        st.session_state[cls.BACKGROUND_INFO_BOX] = (
+            question.background_info or ""
+        )
+        st.session_state[cls.RESOLUTION_CRITERIA_BOX] = (
+            question.resolution_criteria or ""
+        )
         st.session_state[cls.FINE_PRINT_BOX] = question.fine_print or ""
 
     @classmethod
@@ -94,7 +112,9 @@ class ForecasterPage(AppPage):
                 "Resolution Criteria (optional)",
                 key=cls.RESOLUTION_CRITERIA_BOX,
             )
-            fine_print = st.text_area("Fine Print (optional)", key=cls.FINE_PRINT_BOX)
+            fine_print = st.text_area(
+                "Fine Print (optional)", key=cls.FINE_PRINT_BOX
+            )
             background_info = st.text_area(
                 "Background Info (optional)", key=cls.BACKGROUND_INFO_BOX
             )
@@ -102,11 +122,17 @@ class ForecasterPage(AppPage):
             col1, col2 = st.columns(2)
             with col1:
                 num_background_questions = st.number_input(
-                    "Number of background questions to ask", min_value=1, max_value=5, value=4
+                    "Number of background questions to ask",
+                    min_value=1,
+                    max_value=5,
+                    value=4,
                 )
             with col2:
                 num_base_rate_questions = st.number_input(
-                    "Number of base rate questions to ask", min_value=1, max_value=5, value=4
+                    "Number of base rate questions to ask",
+                    min_value=1,
+                    max_value=5,
+                    value=4,
                 )
             submitted = st.form_submit_button("Submit")
 
@@ -128,11 +154,17 @@ class ForecasterPage(AppPage):
                 report = await ForecastTeam(
                     filled_in_metaculus_question,
                     number_of_reports_to_aggregate=1,
-                    number_of_background_questions_to_ask=int(num_background_questions),
-                    number_of_base_rate_questions_to_ask=int(num_base_rate_questions),
-                    number_of_base_rates_to_do_deep_research_on=0
+                    number_of_background_questions_to_ask=int(
+                        num_background_questions
+                    ),
+                    number_of_base_rate_questions_to_ask=int(
+                        num_base_rate_questions
+                    ),
+                    number_of_base_rates_to_do_deep_research_on=0,
                 ).run_forecast()
-                assert isinstance(report, BinaryReport), "Report is not a BinaryReport"
+                assert isinstance(
+                    report, BinaryReport
+                ), "Report is not a BinaryReport"
                 cls.__save_forecast_report_to_database_and_session(report)
 
     @classmethod

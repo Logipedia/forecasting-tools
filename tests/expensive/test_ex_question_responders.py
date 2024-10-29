@@ -10,8 +10,12 @@ from src.forecasting.sub_question_responders.base_rate_responder import (
 from src.forecasting.sub_question_responders.general_search_responder import (
     GeneralSearchResponder,
 )
-from src.forecasting.sub_question_responders.question_responder import QuestionResponder
-from src.forecasting.sub_question_responders.question_router import QuestionRouter
+from src.forecasting.sub_question_responders.question_responder import (
+    QuestionResponder,
+)
+from src.forecasting.sub_question_responders.question_router import (
+    QuestionRouter,
+)
 
 
 #################################### HELPERS ####################################
@@ -46,7 +50,9 @@ RESPONDERS_WITH_TEST_QUESTIONS = [
 #################################### TESTS ####################################
 
 
-@pytest.mark.parametrize("responder_class, question", RESPONDERS_WITH_TEST_QUESTIONS)
+@pytest.mark.parametrize(
+    "responder_class, question", RESPONDERS_WITH_TEST_QUESTIONS
+)
 async def test_responders_give_answer(
     responder_class: type[QuestionResponder], question: str
 ) -> None:
@@ -104,7 +110,9 @@ def test_responders_error_if_question_too_long(
     "correct_responder, router_question", RESPONDERS_WITH_TEST_QUESTIONS
 )
 def test_question_router_calls_correct_responder(
-    mocker: Mock, correct_responder: type[QuestionResponder], router_question: str
+    mocker: Mock,
+    correct_responder: type[QuestionResponder],
+    router_question: str,
 ) -> None:
     mocked_functions: list[Mock] = []
     for responder in QuestionRouter.AVAILABLE_REPONDERS:
@@ -113,7 +121,9 @@ def test_question_router_calls_correct_responder(
         )
 
     router = QuestionRouter()
-    asyncio.run(router.answer_question_with_markdown_using_routing(router_question))
+    asyncio.run(
+        router.answer_question_with_markdown_using_routing(router_question)
+    )
 
     for responder, mocked_function in zip(
         QuestionRouter.AVAILABLE_REPONDERS, mocked_functions
@@ -124,9 +134,13 @@ def test_question_router_calls_correct_responder(
             mocked_function.assert_not_called()
 
 
-def test_question_router_raises_error_if_responder_errors(mocker: Mock) -> None:
+def test_question_router_raises_error_if_responder_errors(
+    mocker: Mock,
+) -> None:
     for responder in QuestionRouter.AVAILABLE_REPONDERS:
-        mock_question_responder__answer_with_markdown__with_error(mocker, responder)
+        mock_question_responder__answer_with_markdown__with_error(
+            mocker, responder
+        )
 
     router = QuestionRouter()
     with pytest.raises(Exception):

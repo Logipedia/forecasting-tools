@@ -7,7 +7,10 @@ from src.forecasting.forecast_reports.forecast_report import (
     ForecastReport,
     ReasonedPrediction,
 )
-from src.forecasting.llms.configured_llms import BasicCompetitionLlm, clean_indents
+from src.forecasting.llms.configured_llms import (
+    BasicCompetitionLlm,
+    clean_indents,
+)
 from src.forecasting.metaculus_question import NumericQuestion
 
 logger = logging.getLogger(__name__)
@@ -76,7 +79,9 @@ class NumericReport(ForecastReport):
         final_prediction_model = BasicCompetitionLlm(temperature=0.7)
         gpt_forecast = await final_prediction_model.invoke(prompt)
         prediction = cls.__extract_prediction_from_response(gpt_forecast)
-        return ReasonedPrediction(prediction_value=prediction, reasoning=gpt_forecast)
+        return ReasonedPrediction(
+            prediction_value=prediction, reasoning=gpt_forecast
+        )
 
     @classmethod
     def __extract_prediction_from_response(

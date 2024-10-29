@@ -25,16 +25,18 @@ class ForecastReport(BaseModel, Jsonable, ABC):
     forecast_info: list[Any] = []
     prediction: Any
 
-    @field_validator('explanation')
+    @field_validator("explanation")
     @classmethod
     def validate_explanation_starts_with_hash(cls, v: str) -> str:
-        if not v.strip().startswith('#'):
+        if not v.strip().startswith("#"):
             raise ValueError("Explanation must start with a '#' character")
         return v
 
     @property
     def report_sections(self) -> list[ReportSection]:
-        return ReportSection.turn_markdown_into_report_sections(self.explanation)
+        return ReportSection.turn_markdown_into_report_sections(
+            self.explanation
+        )
 
     @property
     def summary(self) -> str:
@@ -50,24 +52,32 @@ class ForecastReport(BaseModel, Jsonable, ABC):
 
     @abstractmethod
     async def publish_report_to_metaculus(self) -> None:
-        raise NotImplementedError("Subclass must implement this abstract method")
+        raise NotImplementedError(
+            "Subclass must implement this abstract method"
+        )
 
     @classmethod
     @abstractmethod
     async def aggregate_predictions(cls, predictions: list[T]) -> T:
-        raise NotImplementedError("Subclass must implement this abstract method")
+        raise NotImplementedError(
+            "Subclass must implement this abstract method"
+        )
 
     @classmethod
     @abstractmethod
     async def run_prediction(
         cls, question: MetaculusQuestion, research: str
     ) -> ReasonedPrediction[Any]:
-        raise NotImplementedError("Subclass must implement this abstract method")
+        raise NotImplementedError(
+            "Subclass must implement this abstract method"
+        )
 
     @classmethod
     @abstractmethod
     def make_readable_prediction(cls, prediction: Any) -> str:
-        raise NotImplementedError("Subclass must implement this abstract method")
+        raise NotImplementedError(
+            "Subclass must implement this abstract method"
+        )
 
     @classmethod
     async def combine_report_list_into_one(
@@ -132,8 +142,8 @@ class ForecastReport(BaseModel, Jsonable, ABC):
                     reports, section_contents, final_cost, duration_in_minutes
                 )
             else:
-                combined_explanation += await cls.__combine_non_summary_sections(
-                    section_contents
+                combined_explanation += (
+                    await cls.__combine_non_summary_sections(section_contents)
                 )
         return combined_explanation.strip()
 
@@ -150,10 +160,14 @@ class ForecastReport(BaseModel, Jsonable, ABC):
         aggregated_prediction = await report_type.aggregate_predictions(
             [report.prediction for report in reports]
         )
-        final_prediction = report_type.make_readable_prediction(aggregated_prediction)
+        final_prediction = report_type.make_readable_prediction(
+            aggregated_prediction
+        )
         combined_explanation += f"Final Cost: ${final_cost:.2f}\n\n"
         combined_explanation += f"Final Prediction: {final_prediction}\n\n"
-        combined_explanation += f"Time to run: {duration_in_minutes:.2f} minutes\n\n"
+        combined_explanation += (
+            f"Time to run: {duration_in_minutes:.2f} minutes\n\n"
+        )
         for report_num, content in enumerate(section_contents, 1):
             # Remove the top-level heading from each summary
             lines = content.split("\n")
@@ -163,7 +177,9 @@ class ForecastReport(BaseModel, Jsonable, ABC):
             modified_content = f"## Report {report_num}: Summary\n"
             for line in content_without_heading.split("\n"):
                 if line.startswith("#"):
-                    line = "#" + line  # Add one more # to increase heading level
+                    line = (
+                        "#" + line
+                    )  # Add one more # to increase heading level
                 modified_content += line + "\n"
 
             combined_explanation += modified_content + "\n\n"
@@ -196,5 +212,7 @@ class ForecastReport(BaseModel, Jsonable, ABC):
         content = self.report_sections[index].text_of_section_and_subsections
         first_line = content.split("\n")[0]
         if expected_word not in first_line.lower():
-            raise ValueError(f"Section must contain the word '{expected_word}'")
+            raise ValueError(
+                f"Section must contain the word '{expected_word}'"
+            )
         return content

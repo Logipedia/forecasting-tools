@@ -2,7 +2,9 @@ import logging
 from abc import ABC
 
 from src.ai_models.ai_utils.openai_utils import OpenAiUtils
-from src.ai_models.model_archetypes.openai_text_model import OpenAiTextToTextModel
+from src.ai_models.model_archetypes.openai_text_model import (
+    OpenAiTextToTextModel,
+)
 
 logger = logging.getLogger(__name__)
 from src.ai_models.ai_utils.openai_utils import VisionMessageData
@@ -14,7 +16,9 @@ class OpenAiVisionToTextModel(OpenAiTextToTextModel, ABC):
 
     async def invoke(self, input: VisionMessageData) -> str:
         response: TextTokenCostResponse = (
-            await self._invoke_with_request_cost_time_and_token_limits_and_retry(input)
+            await self._invoke_with_request_cost_time_and_token_limits_and_retry(
+                input
+            )
         )
         return response.data
 
@@ -25,8 +29,10 @@ class OpenAiVisionToTextModel(OpenAiTextToTextModel, ABC):
         messages = self.create_messages_from_input(input)
         prompt_tokens: int = self.input_to_tokens(input)
         max_tokens: int = prompt_tokens + 1000
-        response: TextTokenCostResponse = await self._call_online_model_using_api(
-            messages, self.temperature, max_tokens
+        response: TextTokenCostResponse = (
+            await self._call_online_model_using_api(
+                messages, self.temperature, max_tokens
+            )
         )
         return response
 

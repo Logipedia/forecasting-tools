@@ -1,6 +1,8 @@
 import pytest
 
-from front_end.mokoresearch_site.helpers.report_displayer import ReportDisplayer
+from front_end.mokoresearch_site.helpers.report_displayer import (
+    ReportDisplayer,
+)
 
 
 @pytest.mark.parametrize(

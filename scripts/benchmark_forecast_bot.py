@@ -1,22 +1,21 @@
 from __future__ import annotations
 
-import os
-import sys
+import asyncio
+import logging
 
 import dotenv
+
+from src.ai_models.resource_managers.monetary_cost_manager import (
+    MonetaryCostManager,
+)
+from src.forecasting.team_manager import TeamManager
+from src.util.custom_logger import CustomLogger
 
 # # Dynamically determine the absolute path to the top-level directory
 # current_dir = os.path.dirname(os.path.abspath(__file__))
 # top_level_dir = os.path.abspath(os.path.join(current_dir, "../"))
 # sys.path.append(top_level_dir)
 # dotenv.load_dotenv()
-
-import asyncio
-import logging
-
-from src.ai_models.resource_managers.monetary_cost_manager import MonetaryCostManager
-from src.forecasting.team_manager import TeamManager
-from src.util.custom_logger import CustomLogger
 
 
 async def benchmark_forecast_bot() -> None:

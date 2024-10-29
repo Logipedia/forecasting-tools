@@ -1,11 +1,12 @@
 import asyncio
-import json
 import logging
 
 import pytest
 
 from src.ai_models.gpt4o import Gpt4o, clean_indents
-from src.ai_models.resource_managers.monetary_cost_manager import MonetaryCostManager
+from src.ai_models.resource_managers.monetary_cost_manager import (
+    MonetaryCostManager,
+)
 from src.forecasting.sub_question_responders.niche_list_researcher import (
     FactCheckedItem,
     NicheListResearcher,
@@ -132,9 +133,9 @@ def test_large_lists_fail(things_to_generate: str) -> None:
                 # Apple is defendant http://www.fosspatents.com/2022/09/ericsson-calls-apples-app-store.html#:~:text=Apple%20is%20being%20defended%20against,manual%20app%20review%20%28on%20average%29.
                 "PanOptis vs. Apple",  # $506m and royalties https://appleinsider.com/articles/20/08/11/apple-ordered-to-pay-panoptis-5062m-for-infringing-lte-patents#:~:text=In%20Tuesday%27s%20decision%2C%20the%20jury,patents%20in%20suit%20were%20violated.
                 "Core Wireless Licensing vs. Apple",
-                # Originall won the case for 7.3m https://www.patentlyapple.com/2018/08/a-federal-appeals-court-has-ruled-that-apple-didnt-infringe-one-of-two-patents-in-case-brought-on-by-core-wireless-licensing.html#:~:text=In%202016%20a,wherever%2C%20and%20whenever.%22
+                # Original won the case for 7.3m https://www.patentlyapple.com/2018/08/a-federal-appeals-court-has-ruled-that-apple-didnt-infringe-one-of-two-patents-in-case-brought-on-by-core-wireless-licensing.html#:~:text=In%202016%20a,wherever%2C%20and%20whenever.%22
                 # One claim was revered I think https://law.justia.com/cases/federal/appellate-courts/cafc/17-2102/17-2102-2018-08-16.html#:~:text=The%20court%20reversed%20in%20part%3B%20Core%E2%80%99s%20theory%20of%20infringement%20is%20inadequate%20to%20support%20a%20judgment%20on%20claim%2019.
-                # Might be same case as Nokia v Apple https://www.patentlyapple.com/2018/08/a-federal-appeals-court-has-ruled-that-apple-didnt-infringe-one-of-two-patents-in-case-brought-on-by-core-wireless-licensing.html#:~:text=The%20verdict%20capped%20a%20trial%20that%20kicked%20off%20on%20Dec.%205%20centering%20on%20two%20patents%20that%20were%20originally%20owned%20by%20Nokia
+                # Might be same case as Nokia v Apple https://www.patentlyapple.com/2018/08/a-federal-appeals-court-has-ruled-that-apple-didnt-infringe-one-of-two-patents-in-case-brought-on-by-core-wireless-licensing.html#:~:text=The%20verdict%20capped%20a%20trial%20that%20kicked%20off%20on%20Dec.%205%20centering%20on%20two%20patents%20that%20were%20Originaly%20owned%20by%20Nokia
                 "Apple vs. Caltech (2016-2020)",  # Paid $838m https://appleinsider.com/articles/23/08/11/caltech-may-finally-settle-848-million-patent-case-against-apple?utm_medium=rss#:~:text=Caltech%20began%20its%20legal%20battle,amounts%20they%20had%20to%20pay.
                 # Invalid
                 # Secondar QualComm case
@@ -179,12 +180,16 @@ async def test_exhaustive_list_generation(
         all_items_including_incorrect = asyncio.run(
             NicheListResearcher(
                 type_of_thing_to_generate=things_to_generate
-            ).research_list_of_niche_reference_class(include_incorrect_items=True)
+            ).research_list_of_niche_reference_class(
+                include_incorrect_items=True
+            )
         )
     list_markdown = FactCheckedItem.make_markdown_with_valid_and_invalid_lists(
         all_items_including_incorrect
     )
-    exhaustive_list = [item for item in all_items_including_incorrect if item.is_valid]
+    exhaustive_list = [
+        item for item in all_items_including_incorrect if item.is_valid
+    ]
     logger.info(
         f"\nCost: {cost_manager.current_usage}\nGenerated list: {list_markdown}\n\n Expected list: {expected_items}"
     )

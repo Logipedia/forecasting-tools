@@ -74,7 +74,7 @@ The `MonetatryCostManager` allows for tracking costs between all model providers
 Cost management (for the most part) is tracked through langchain, so make sure to keep the langchain packages updated so model pricing stays current. As of writing, Perplexity costs have to be updated manually.
 
 ## Type Validated Outputs
-The `invoke_and_return_verified_type()` function will garuntee returning any primitive type (e.g. str, int, list[str], list[dict], list[tuple[int,str]]) or pydantic model type you specify. It will retry the prompt a number of times until it is able to parse the result in the desired format.
+The `invoke_and_return_verified_type()` function will guarantee returning any primitive type (e.g. str, int, list[str], list[dict], list[tuple[int,str]]) or pydantic model type you specify. It will retry the prompt a number of times until it is able to parse the result in the desired format.
 
 ## Rate Limiting
 Rate limiting values is setup inside the models as class variables. The model will run a lot of calls in a quick burst, and when the rate limit is about to be reached (for tokens or requests) it will slow down to maintain the usage per period defined in the class variables. All rates have to be updated manually. There are plans to make a configuration file for this.
@@ -92,7 +92,7 @@ Each TimeoutLimitedModel allows you to set a timeout for that model. If any requ
 All RetryableModels have a `allowed_tries` argument when initializing the model. The model will try that many times before giving up
 
 ## System Prompts
-Most models also allow for a sytem prompt to be set when initilizing the model object.
+Most models also allow for a system prompt to be set when initializing the model object.
 
 
 # Testing

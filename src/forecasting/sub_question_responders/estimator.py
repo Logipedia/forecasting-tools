@@ -16,7 +16,9 @@ class EstimationResult(NamedTuple):
 class Estimator:
 
     def __init__(
-        self, type_of_thing_to_estimate: str, previous_research: str | None = None
+        self,
+        type_of_thing_to_estimate: str,
+        previous_research: str | None = None,
     ):
         """
         type_of_thing_to_estimate: The type of thing you are estimating the size of like "number of piano tuners in NYC"
@@ -50,7 +52,7 @@ class Estimator:
             ```
             Note, you are encouraged to reuse your friend's citations, but they must use letters rather than numbers (e.g. [A](https://example.com) not [1](https://example.com))
             When reusing citations, you must use the URL and should include the text fragment as well.
-            If you reusea a citation you MUST say the exact same thing that your friend did. You didn't see the orignial context, and don't want to misquote.
+            If you reusea a citation you MUST say the exact same thing that your friend did. You didn't see the original context, and don't want to misquote.
 
 
             # Payment
@@ -86,9 +88,14 @@ class Estimator:
         model = SmartSearcher(temperature=0)
         estimation = await model.invoke_and_return_verified_type(prompt, dict)
 
-        facts_as_markdown = "\n".join([f"- {fact}" for fact in estimation["facts"]])
+        facts_as_markdown = "\n".join(
+            [f"- {fact}" for fact in estimation["facts"]]
+        )
         estimation_reasoning = "\n".join(
-            [f"{i+1}. {step}" for i, step in enumerate(estimation["reasoning_steps"])]
+            [
+                f"{i+1}. {step}"
+                for i, step in enumerate(estimation["reasoning_steps"])
+            ]
         )
         number_of_hits = estimation["answer"]
         estimation_as_markdown = clean_indents(
@@ -105,6 +112,8 @@ class Estimator:
             """
         )
         if not self.__previous_research:
-            estimation_as_markdown += f"\n\n**Background Research**: {research_to_use}"
+            estimation_as_markdown += (
+                f"\n\n**Background Research**: {research_to_use}"
+            )
         assert isinstance(number_of_hits, int)
         return EstimationResult(number_of_hits, estimation_as_markdown)

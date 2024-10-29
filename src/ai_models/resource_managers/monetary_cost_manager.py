@@ -1,6 +1,8 @@
 from __future__ import annotations
-from src.ai_models.resource_managers.hard_limit_manager import HardLimitManager
-from src.ai_models.resource_managers.hard_limit_manager import HardLimitExceededError # For other files to easily import from this file #NOSONAR
+
+from src.ai_models.resource_managers.hard_limit_manager import (  # For other files to easily import from this file #NOSONAR
+    HardLimitManager,
+)
 
 
 class MonetaryCostManager(HardLimitManager):

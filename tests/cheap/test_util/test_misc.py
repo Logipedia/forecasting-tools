@@ -1,5 +1,6 @@
-import requests
 import pytest
+import requests
+
 from src.util.misc import raise_for_status_with_additional_info
 
 
