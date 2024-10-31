@@ -1,9 +1,17 @@
 from __future__ import annotations
 
 import asyncio
+import os
+import sys
 import time
 
 import dotenv
+
+# Dynamically determine the absolute path to the top-level directory
+current_dir = os.path.dirname(os.path.abspath(__file__))
+top_level_dir = os.path.abspath(os.path.join(current_dir, "../"))
+sys.path.append(top_level_dir)
+dotenv.load_dotenv()
 
 from src.forecasting.forecast_database_manager import (
     ForecastDatabaseManager,
@@ -38,5 +46,4 @@ def run_morning_forecasts() -> None:
 
 
 if __name__ == "__main__":
-    dotenv.load_dotenv()
     run_morning_forecasts()

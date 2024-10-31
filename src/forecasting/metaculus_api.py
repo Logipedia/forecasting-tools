@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import random
+import re
 from datetime import datetime, timedelta
 from typing import Any, Sequence, TypeVar
 
@@ -26,7 +27,7 @@ Q = TypeVar("Q", bound=MetaculusQuestion)
 
 class MetaculusApi:
     """
-    Documentation: https://www.metaculus.com/api/
+    Documentation for the API can be found at https://www.metaculus.com/api/
     """
 
     AI_WARMUP_TOURNAMENT_ID = 3294
@@ -75,6 +76,17 @@ class MetaculusApi:
         raise_for_status_with_additional_info(response)
 
     @classmethod
+    def get_question_by_url(cls, question_url: str) -> MetaculusQuestion:
+        # URL looks like https://www.metaculus.com/questions/28841/will-eric-adams-be-the-nyc-mayor-on-january-1-2025/
+        match = re.search(r"/questions/(\d+)", question_url)
+        if not match:
+            raise ValueError(
+                f"Could not find question ID in URL: {question_url}"
+            )
+        question_id = int(match.group(1))
+        return cls.get_question_by_id(question_id)
+
+    @classmethod
     def get_question_by_id(cls, question_id: int) -> MetaculusQuestion:
         logger.info(f"Retrieving question details for question {question_id}")
         url = f"{cls.API_BASE_URL}/questions/{question_id}/"
@@ -104,7 +116,6 @@ class MetaculusApi:
             "order_by": "-activity",
             "project": tournament_id,
             "type": "forecast",
-            "include_description": "true",
         }
         if filter_by_open:
             url_qparams["status"] = "open"
@@ -169,10 +180,8 @@ class MetaculusApi:
             "type": "forecast",
             "forecast_type": "binary",
             "status": "open",
-            "close_time__lt": three_months_from_now,
             "number_of_forecasters__gte": 40,
-            "resolve_time__lt": three_months_from_now,
-            "include_description": "true",
+            "scheduled_resolve_time__lt": three_months_from_now,
             "order_by": "publish_time",
             "offset": offset,
             "limit": number_of_questions,

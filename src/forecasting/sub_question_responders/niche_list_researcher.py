@@ -3,7 +3,6 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-import re
 
 from pydantic import BaseModel, field_validator
 
@@ -12,6 +11,7 @@ from src.forecasting.llms.configured_llms import BaseRateProjectLlm
 from src.forecasting.llms.smart_searcher import SmartSearcher
 from src.forecasting.sub_question_responders.deduplicator import Deduplicator
 from src.util import async_batching
+from src.util.misc import extract_url_from_markdown_link, is_markdown_citation
 
 logger = logging.getLogger(__name__)
 
@@ -30,8 +30,7 @@ class CriteriaAssessment(Criteria):
     def validate_citation_format(cls, v: str | None) -> str | None:
         if v is None:
             return v
-        pattern = r"\[\d+\]\(https?://\S+\)"
-        if not re.match(pattern, v):
+        if not is_markdown_citation(v):
             raise ValueError(
                 "Citation must be in the markdown friendly format [number](url)"
             )
@@ -41,14 +40,7 @@ class CriteriaAssessment(Criteria):
     def url_proving_assessment(self) -> str | None:
         if not self.citation_proving_assessment:
             return None
-        if self.citation_proving_assessment:
-            match = re.search(r"\((\S+)\)", self.citation_proving_assessment)
-            if match:
-                return match.group(1)
-            else:
-                raise ValueError(
-                    "Citation must be in the markdown friendly format [number](url)"
-                )
+        return extract_url_from_markdown_link(self.citation_proving_assessment)
 
 
 class FactCheck(BaseModel):

@@ -25,14 +25,15 @@ class MetaculusQuestion(BaseModel, Jsonable):
     resolution_criteria: str | None = None
     fine_print: str | None = None
     background_info: str | None = None
-    page_url: str
+    page_url: str | None = None
     num_forecasters: int | None = None
     num_predictions: int | None = None
     close_time: datetime | None = None
     actual_resolution_time: datetime | None = None
     scheduled_resolution_time: datetime | None = None
     api_json: dict = Field(
-        description="The API JSON response used to create the question"
+        description="The API JSON response used to create the question",
+        default_factory=dict,
     )
 
     @classmethod

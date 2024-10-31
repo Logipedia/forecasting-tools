@@ -97,7 +97,7 @@ class AnthropicTextToTextModel(TraditionalOnlineLlm, ABC):
             base_url=None,
         )
         completion_tokens = anthropic_llm.get_num_tokens(probable_output)
-        adjustment = 3  # Through manual experimentation, it was found that the number of tokens returned by the API is 3 off for the completion response
+        adjustment = 9  # Through manual experimentation, it was found that the number of tokens returned by the API is 9 off for the completion response
         completion_tokens += adjustment
         total_cost = model.calculate_cost_from_tokens(
             prompt_tkns=prompt_tokens, completion_tkns=completion_tokens
