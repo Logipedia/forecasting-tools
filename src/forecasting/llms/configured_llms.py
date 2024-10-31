@@ -1,9 +1,5 @@
-from src.ai_models.ai_utils.ai_misc import (
-    clean_indents,  # Keep this import here for easier imports into other files # NOSONAR
-)
 from src.ai_models.gpt4o import Gpt4o
 from src.ai_models.gpto1 import GptO1
-from src.ai_models.metaculus4o import Gpt4oMetaculusProxy
 
 
 class BaseRateProjectLlm(Gpt4o):

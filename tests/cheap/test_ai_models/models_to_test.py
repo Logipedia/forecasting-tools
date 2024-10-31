@@ -5,16 +5,22 @@ from src.ai_models.basic_model_interfaces.request_limited_model import (
     RequestLimitedModel,
 )
 from src.ai_models.basic_model_interfaces.retryable_model import RetryableModel
-from src.ai_models.basic_model_interfaces.time_limited_model import TimeLimitedModel
-from src.ai_models.basic_model_interfaces.token_limited_model import TokenLimitedModel
-from src.ai_models.basic_model_interfaces.tokens_incur_cost import TokensIncurCost
+from src.ai_models.basic_model_interfaces.time_limited_model import (
+    TimeLimitedModel,
+)
+from src.ai_models.basic_model_interfaces.token_limited_model import (
+    TokenLimitedModel,
+)
+from src.ai_models.basic_model_interfaces.tokens_incur_cost import (
+    TokensIncurCost,
+)
 from src.ai_models.claude35sonnet import Claude35Sonnet
 from src.ai_models.exa_searcher import ExaSearcher
 from src.ai_models.gpt4o import Gpt4o
 from src.ai_models.gpt4ovision import Gpt4oVision
+from src.ai_models.gpto1 import GptO1
 from src.ai_models.metaculus4o import Gpt4oMetaculusProxy
 from src.ai_models.perplexity import Perplexity
-from src.ai_models.gpto1 import GptO1
 
 
 class ModelsToTest:

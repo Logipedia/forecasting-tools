@@ -9,10 +9,7 @@ from src.forecasting.forecast_team.forecast_team import ForecastTeam
 from src.forecasting.metaculus_api import MetaculusApi
 from src.forecasting.metaculus_question import (
     BinaryQuestion,
-    DateQuestion,
     MetaculusQuestion,
-    MultipleChoiceQuestion,
-    NumericQuestion,
 )
 
 T = TypeVar("T", bound=MetaculusQuestion)
@@ -20,7 +17,9 @@ T = TypeVar("T", bound=MetaculusQuestion)
 
 class ForecastingTestManager:
     TOURNAMENT_SAFE_TO_PULL_AND_PUSH_TO = MetaculusApi.AI_WARMUP_TOURNAMENT_ID
-    TOURNAMENT_WITH_MIXTURE_OF_OPEN_AND_NOT_OPEN = MetaculusApi.AI_COMPETITION_ID_Q4
+    TOURNAMENT_WITH_MIXTURE_OF_OPEN_AND_NOT_OPEN = (
+        MetaculusApi.AI_COMPETITION_ID_Q4
+    )
     TOURNAMENT_WITH_MIX_OF_QUESTION_TYPES = MetaculusApi.Q4_2024_QUARTERLY_CUP
 
     @classmethod
@@ -77,7 +76,9 @@ class ForecastingTestManager:
             f"{ForecastTeam.run_forecast.__module__}.{ForecastTeam.run_forecast.__qualname__}"
         )
         assert isinstance(test_binary_question, BinaryQuestion)
-        mock_function.return_value = ForecastingTestManager.get_fake_forecast_report()
+        mock_function.return_value = (
+            ForecastingTestManager.get_fake_forecast_report()
+        )
         return mock_function
 
     @staticmethod

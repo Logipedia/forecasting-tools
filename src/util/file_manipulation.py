@@ -1,9 +1,10 @@
-import os
-import json
 import datetime as dat
-import pandas as pd
 import functools
-from typing import Callable, Any
+import json
+import os
+from typing import Callable
+
+import pandas as pd
 
 NAME_OF_PACKAGE: str = "forecasting-tools"
 
@@ -31,18 +32,20 @@ def get_absolute_path(path_in_package: str = "") -> str:
 
 def skip_if_file_writing_not_allowed(func: Callable) -> Callable:
     @functools.wraps(func)
-    def wrapper(*args, **kwargs): # NOSONAR
-        not_allowed_to_write_to_files_string: str = os.environ.get("FILE_WRITING_ALLOWED", "TRUE")
+    def wrapper(*args, **kwargs):  # NOSONAR
+        not_allowed_to_write_to_files_string: str = os.environ.get(
+            "FILE_WRITING_ALLOWED", "TRUE"
+        )
         is_allowed = not_allowed_to_write_to_files_string.upper() == "TRUE"
         if is_allowed:
             return func(*args, **kwargs)
         else:
-            print("WARNING: Skipping function execution as file writing is not allowed.")
+            print(
+                "WARNING: Skipping function execution as file writing is not allowed."
+            )
             return None
+
     return wrapper
-
-
-
 
 
 def load_json_file(project_file_path: str) -> list[dict]:
@@ -55,7 +58,9 @@ def load_json_file(project_file_path: str) -> list[dict]:
         return json.load(file)
 
 
-def csv_to_dataframe(file_path_in_package: str, delimiter: str = ",") -> pd.DataFrame:
+def csv_to_dataframe(
+    file_path_in_package: str, delimiter: str = ","
+) -> pd.DataFrame:
     """
     This function converts a csv file into a pandas dataframe
     """
@@ -67,7 +72,6 @@ def load_text_file(file_path_in_package: str) -> str:
     full_file_path = get_absolute_path(file_path_in_package)
     with open(full_file_path, "r") as file:
         return file.read()
-
 
 
 def write_json_file(file_path_in_package: str, input: list[dict]) -> None:
@@ -82,7 +86,7 @@ def create_or_overwrite_file(file_path_in_package: str, text: str) -> None:
     """
     full_file_path = get_absolute_path(file_path_in_package)
     os.makedirs(os.path.dirname(full_file_path), exist_ok=True)
-    with open(full_file_path, 'w') as file:
+    with open(full_file_path, "w") as file:
         file.write(text)
 
 
@@ -93,12 +97,14 @@ def create_or_append_to_file(file_path_in_package: str, text: str) -> None:
     """
     full_file_path = get_absolute_path(file_path_in_package)
     os.makedirs(os.path.dirname(full_file_path), exist_ok=True)
-    with open(full_file_path, 'a') as file:
+    with open(full_file_path, "a") as file:
         file.write(text)
 
 
 @skip_if_file_writing_not_allowed
-def write_dataframe_to_csv_file(dataframe: pd.DataFrame, file_path_in_package: str, delimiter: str = ",") -> None:
+def write_dataframe_to_csv_file(
+    dataframe: pd.DataFrame, file_path_in_package: str, delimiter: str = ","
+) -> None:
     """
     This function converts a pandas dataframe into a csv file
     """
@@ -108,19 +114,21 @@ def write_dataframe_to_csv_file(dataframe: pd.DataFrame, file_path_in_package: s
 
 
 @skip_if_file_writing_not_allowed
-def log_to_file(file_path_in_package: str, text: str, type: str = "DEBUG") -> None:
+def log_to_file(
+    file_path_in_package: str, text: str, type: str = "DEBUG"
+) -> None:
     """
     This function writes text to a file but adds a time stamp and a type statement
     """
     new_text = f"{type} - {dat.datetime.now()} - {text}"
     full_file_path = get_absolute_path(file_path_in_package)
     os.makedirs(os.path.dirname(full_file_path), exist_ok=True)
-    with open(full_file_path, 'a+') as file:
+    with open(full_file_path, "a+") as file:
         file.write(new_text + "\n")
 
 
 def current_date_time_string() -> str:
-    return dat.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    return dat.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
 
 if __name__ == "__main__":

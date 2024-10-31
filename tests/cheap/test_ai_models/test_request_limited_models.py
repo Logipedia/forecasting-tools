@@ -15,7 +15,9 @@ from enum import Enum
 from src.ai_models.basic_model_interfaces.request_limited_model import (
     RequestLimitedModel,
 )
-from src.ai_models.basic_model_interfaces.token_limited_model import TokenLimitedModel
+from src.ai_models.basic_model_interfaces.token_limited_model import (
+    TokenLimitedModel,
+)
 from src.ai_models.basic_model_interfaces.tokens_are_calculatable import (
     TokensAreCalculatable,
 )
@@ -35,11 +37,15 @@ class NumModelMode(Enum):
 class BurstMode(Enum):
     TESTING_ONLY_BURST = "testing_only_burst"
     TESTING_BURST_AND_AFTER_IS_CORRECT_RATE = "testing_burst_and_after_rate"
-    TESTING_BURST_AND_AFTER_TAKES_TIME = "testing_burst_and_after_rate_takes_time"
+    TESTING_BURST_AND_AFTER_TAKES_TIME = (
+        "testing_burst_and_after_rate_takes_time"
+    )
 
 
 class RunSetUp:
-    def __init__(self, subclass: type[RequestLimitedModel], mode: NumModelMode) -> None:
+    def __init__(
+        self, subclass: type[RequestLimitedModel], mode: NumModelMode
+    ) -> None:
         self.subclass = subclass
         self.mode = mode
 
@@ -50,7 +56,10 @@ class RunSetUp:
 
 class RequestLimitTestResults:
     def __init__(
-        self, duration: float, number_of_invokes: int, number_of_direct_calls: int
+        self,
+        duration: float,
+        number_of_invokes: int,
+        number_of_direct_calls: int,
     ) -> None:
         self.duration = duration
         self.number_of_invokes = number_of_invokes
@@ -85,22 +94,33 @@ def get_testing_instances() -> list[tuple[str, RunSetUp]]:
 
 
 @pytest.mark.parametrize(("_", "run_setup"), get_testing_instances())
-def test_burst_happens_quickly(mocker: Mock, _: str, run_setup: RunSetUp) -> None:
-    number_of_calls = get_number_of_coroutines_for_initial_burst(run_setup.subclass)
+def test_burst_happens_quickly(
+    mocker: Mock, _: str, run_setup: RunSetUp
+) -> None:
+    number_of_calls = get_number_of_coroutines_for_initial_burst(
+        run_setup.subclass
+    )
     run_request_limit_test(
         mocker, run_setup, number_of_calls, BurstMode.TESTING_ONLY_BURST
     )
 
 
 @pytest.mark.parametrize(("_", "run_setup"), get_testing_instances())
-def test_calls_after_burst_take_time(mocker: Mock, _: str, run_setup: RunSetUp) -> None:
-    burst_calls = get_number_of_coroutines_for_initial_burst(run_setup.subclass)
+def test_calls_after_burst_take_time(
+    mocker: Mock, _: str, run_setup: RunSetUp
+) -> None:
+    burst_calls = get_number_of_coroutines_for_initial_burst(
+        run_setup.subclass
+    )
     regular_calls = get_number_of_calls_that_takes_10s_to_run_given_model_rate(
         run_setup.subclass
     )
     number_of_calls = burst_calls + regular_calls
     run_request_limit_test(
-        mocker, run_setup, number_of_calls, BurstMode.TESTING_BURST_AND_AFTER_TAKES_TIME
+        mocker,
+        run_setup,
+        number_of_calls,
+        BurstMode.TESTING_BURST_AND_AFTER_TAKES_TIME,
     )
 
 
@@ -198,10 +218,8 @@ def run_burst_for_model_subclass(run_setup: RunSetUp) -> None:
 def set_up_mocking_for_request_limit_tests(
     mocker: Mock, subclass: type[RequestLimitedModel]
 ) -> Mock:
-    mocked_direct_call = (
-        AiModelMockManager.mock_ai_model_direct_call_with_predefined_mock_value(
-            mocker, subclass
-        )
+    mocked_direct_call = AiModelMockManager.mock_ai_model_direct_call_with_predefined_mock_value(
+        mocker, subclass
     )
 
     if issubclass(subclass, TokensAreCalculatable):

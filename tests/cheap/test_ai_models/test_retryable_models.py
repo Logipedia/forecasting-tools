@@ -1,5 +1,4 @@
 import asyncio
-import inspect
 import logging
 from unittest.mock import Mock
 
@@ -16,7 +15,9 @@ RETRYABLE_ERROR_MESSAGE = "Model must be Retryable"
 
 
 @pytest.mark.parametrize("subclass", ModelsToTest.RETRYABLE_LIST)
-def test_ai_model_successfully_retries(mocker: Mock, subclass: type[AiModel]) -> None:
+def test_ai_model_successfully_retries(
+    mocker: Mock, subclass: type[AiModel]
+) -> None:
     if not issubclass(subclass, RetryableModel):
         raise ValueError(RETRYABLE_ERROR_MESSAGE)
 
@@ -33,7 +34,9 @@ def test_ai_model_successfully_retries(mocker: Mock, subclass: type[AiModel]) ->
 
 
 @pytest.mark.parametrize("subclass", ModelsToTest.RETRYABLE_LIST)
-def test_errors_when_runs_out_of_tries(mocker: Mock, subclass: type[AiModel]) -> None:
+def test_errors_when_runs_out_of_tries(
+    mocker: Mock, subclass: type[AiModel]
+) -> None:
     if not issubclass(subclass, RetryableModel):
         raise ValueError(RETRYABLE_ERROR_MESSAGE)
 
@@ -41,14 +44,18 @@ def test_errors_when_runs_out_of_tries(mocker: Mock, subclass: type[AiModel]) ->
         mocker, subclass
     )
     model = subclass()
-    model.allowed_tries = 2  # It should run out of retries with the first 2 errors
+    model.allowed_tries = (
+        2  # It should run out of retries with the first 2 errors
+    )
     model_input = model._get_cheap_input_for_invoke()
     with pytest.raises(Exception):
         asyncio.run(model.invoke(model_input))
 
 
 @pytest.mark.parametrize("subclass", ModelsToTest.RETRYABLE_LIST)
-def test_raises_error_on_tries_setter_if_invalid(subclass: type[AiModel]) -> None:
+def test_raises_error_on_tries_setter_if_invalid(
+    subclass: type[AiModel],
+) -> None:
     if not issubclass(subclass, RetryableModel):
         raise ValueError(RETRYABLE_ERROR_MESSAGE)
 
@@ -67,7 +74,9 @@ def test_raises_error_on_tries_setter_if_invalid(subclass: type[AiModel]) -> Non
 
 
 @pytest.mark.parametrize("subclass", ModelsToTest.RETRYABLE_LIST)
-def test_raises_error_on_tries_init_if_invalid(subclass: type[AiModel]) -> None:
+def test_raises_error_on_tries_init_if_invalid(
+    subclass: type[AiModel],
+) -> None:
     if not issubclass(subclass, RetryableModel):
         raise ValueError(RETRYABLE_ERROR_MESSAGE)
 

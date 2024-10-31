@@ -14,7 +14,9 @@ sys.path.append(top_level_dir)
 
 from front_end.mokoresearch_site.helpers.app_page import AppPage
 from front_end.mokoresearch_site.helpers.general import footer, header
-from front_end.mokoresearch_site.helpers.report_displayer import ReportDisplayer
+from front_end.mokoresearch_site.helpers.report_displayer import (
+    ReportDisplayer,
+)
 from src.forecasting.forecast_database_manager import (
     ForecastDatabaseManager,
     ForecastRunType,
@@ -75,7 +77,9 @@ class BaseRatePage(AppPage):
 
             if submitted:
                 if question_text:
-                    with st.spinner("Analyzing... This may take a minute or two..."):
+                    with st.spinner(
+                        "Analyzing... This may take a minute or two..."
+                    ):
                         await cls.__run_base_rate_analysis(question_text)
                 else:
                     st.error("Please enter a question.")
@@ -83,7 +87,9 @@ class BaseRatePage(AppPage):
     @classmethod
     async def __run_base_rate_analysis(cls, question_text: str) -> None:
         try:
-            report = await BaseRateResponder(question_text).make_base_rate_report()
+            report = await BaseRateResponder(
+                question_text
+            ).make_base_rate_report()
             cls.__save_base_rate_report(report)
         except Exception as e:
             st.error(f"Error: {e}")
@@ -104,13 +110,17 @@ class BaseRatePage(AppPage):
     def __display_all_reports(cls) -> None:
         if "saved_base_rate_list" not in st.session_state:
             st.session_state.saved_base_rate_list = []
-        reports_to_display: list[BaseRateReport] = st.session_state.saved_base_rate_list
+        reports_to_display: list[BaseRateReport] = (
+            st.session_state.saved_base_rate_list
+        )
         for report in reports_to_display:
             assert isinstance(
                 report, BaseRateReport
             ), f"Report is not a BaseRateReport. Type: {type(report)}. Report: {report}"
             with st.expander(report.question):
-                st.markdown(ReportDisplayer.clean_markdown(report.markdown_report))
+                st.markdown(
+                    ReportDisplayer.clean_markdown(report.markdown_report)
+                )
 
 
 if __name__ == "__main__":

@@ -4,10 +4,16 @@ from unittest.mock import Mock
 import pytest
 from streamlit.testing.v1 import AppTest
 
-from front_end.mokoresearch_site.app_pages.forecaster_page import ForecasterPage
-from front_end.mokoresearch_site.helpers.report_displayer import ReportDisplayer
+from front_end.mokoresearch_site.app_pages.forecaster_page import (
+    ForecasterPage,
+)
+from front_end.mokoresearch_site.helpers.report_displayer import (
+    ReportDisplayer,
+)
 from src.forecasting.metaculus_question import BinaryQuestion
-from tests.cheap.test_forecasting.forecasting_test_manager import ForecastingTestManager
+from tests.cheap.test_forecasting.forecasting_test_manager import (
+    ForecastingTestManager,
+)
 from tests.cheap.test_frontend.front_end_test_utils import FrontEndTestUtils
 
 logger = logging.getLogger(__name__)
@@ -39,7 +45,9 @@ def setup_environment(mocker: Mock) -> SetupEnvironment:
         ForecastingTestManager.mock_add_forecast_report_to_database(mocker)
     )
     app_test = FrontEndTestUtils.convert_page_to_app_tester(ForecasterPage)
-    fake_question = ForecastingTestManager.get_question_safe_to_pull_and_push_to()
+    fake_question = (
+        ForecastingTestManager.get_question_safe_to_pull_and_push_to()
+    )
     return SetupEnvironment(
         app_test,
         fake_question,
@@ -82,9 +90,14 @@ def test_errors_if_no_question_text_inputted(
     app_test = setup_environment.app_test
     fake_question = setup_environment.fake_question
     run_forecast_on_forecaster_page(setup_environment.app_test, fake_question)
-    assert len(app_test.error) == 1, "Error component not displayed as expected"
+    assert (
+        len(app_test.error) == 1
+    ), "Error component not displayed as expected"
     assert setup_environment.mocked_run_forecast_function.call_count == 0
-    assert setup_environment.mocked_add_report_to_database_function.call_count == 0
+    assert (
+        setup_environment.mocked_add_report_to_database_function.call_count
+        == 0
+    )
 
 
 @pytest.mark.skip(
@@ -119,7 +132,9 @@ def run_forecast_and_assert_reports_on_page(
 ) -> None:
     run_forecast_on_forecaster_page(set_env.app_test, set_env.fake_question)
 
-    questions_texts = past_question_texts + [set_env.fake_question.question_text]
+    questions_texts = past_question_texts + [
+        set_env.fake_question.question_text
+    ]
     num_questions_on_page = len(questions_texts)
     mock_report = ForecastingTestManager.get_fake_forecast_report()
     FrontEndTestUtils.assert_x_valid_forecast_reports_are_on_the_page(

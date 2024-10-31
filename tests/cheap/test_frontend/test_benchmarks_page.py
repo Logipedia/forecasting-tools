@@ -1,7 +1,9 @@
 import pytest
 
 from front_end.mokoresearch_site.app_pages.benchmark_page import BenchmarkPage
-from front_end.mokoresearch_site.helpers.report_displayer import ReportDisplayer
+from front_end.mokoresearch_site.helpers.report_displayer import (
+    ReportDisplayer,
+)
 from tests.cheap.test_frontend.front_end_test_utils import FrontEndTestUtils
 
 

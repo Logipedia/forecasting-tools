@@ -1,13 +1,18 @@
 import logging
 
-from src.forecasting.llms.configured_llms import BasicCompetitionLlm, clean_indents
+from src.forecasting.llms.configured_llms import (
+    BasicCompetitionLlm,
+    clean_indents,
+)
 from src.forecasting.sub_question_responders.base_rate_responder import (
     BaseRateResponder,
 )
 from src.forecasting.sub_question_responders.general_search_responder import (
     GeneralSearchResponder,
 )
-from src.forecasting.sub_question_responders.question_responder import QuestionResponder
+from src.forecasting.sub_question_responders.question_responder import (
+    QuestionResponder,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +23,9 @@ class QuestionRouter:
         BaseRateResponder,
     ]
 
-    async def answer_question_with_markdown_using_routing(self, question: str) -> str:
+    async def answer_question_with_markdown_using_routing(
+        self, question: str
+    ) -> str:
         available_responder_descriptions = ""
 
         for responder in self.AVAILABLE_REPONDERS:
@@ -37,7 +44,7 @@ class QuestionRouter:
             {available_responder_descriptions}
 
             Lets take this step by step:
-            1. List out the responders whoes description matches the type of question you have
+            1. List out the responders whose description matches the type of question you have
             2. Of the ones who's description matches, pick the one that you think is most likely to give a good answer
             3. Write down the name of the strategy in all caps
 
@@ -58,7 +65,9 @@ class QuestionRouter:
 
         logger.info(f"Chose responder strategy: {chosen_responder.NAME}")
         answer = await chosen_responder(question).respond_with_markdown()
-        logger.info(f"Answered question with strategy: {chosen_responder.NAME}")
+        logger.info(
+            f"Answered question with strategy: {chosen_responder.NAME}"
+        )
 
         if default_strategy_chosen:
             return f"Defaulting to strategy {chosen_responder.NAME}:\n"

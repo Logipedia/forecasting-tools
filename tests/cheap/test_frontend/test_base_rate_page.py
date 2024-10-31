@@ -5,7 +5,9 @@ import pytest
 from streamlit.testing.v1 import AppTest
 
 from front_end.mokoresearch_site.app_pages.base_rate_page import BaseRatePage
-from front_end.mokoresearch_site.helpers.report_displayer import ReportDisplayer
+from front_end.mokoresearch_site.helpers.report_displayer import (
+    ReportDisplayer,
+)
 from src.forecasting.forecast_database_manager import ForecastDatabaseManager
 from src.forecasting.sub_question_responders.base_rate_responder import (
     BaseRateReport,
@@ -18,7 +20,7 @@ from tests.cheap.test_frontend.front_end_test_utils import FrontEndTestUtils
 
 class BaseRatePageUtils:
     valid_example_question = "How often has SpaceX launched rockets over the last 5 years? Using their launches per year, what is the chance they will launch a rocket by Dec 30 2025?"
-    report_cration_function_name = f"{BaseRateResponder.__module__}.{BaseRateResponder.__name__}.{BaseRateResponder.make_base_rate_report.__name__}"
+    report_creation_function_name = f"{BaseRateResponder.__module__}.{BaseRateResponder.__name__}.{BaseRateResponder.make_base_rate_report.__name__}"
     test_error_message = "Arbitrary Test error"
 
     @classmethod
@@ -43,7 +45,7 @@ class BaseRatePageUtils:
         )
         mock_make_base_rate_report = AsyncMock(return_value=mock_report)
         mocker.patch(
-            cls.report_cration_function_name,
+            cls.report_creation_function_name,
             mock_make_base_rate_report,
         )
         return mock_make_base_rate_report
@@ -54,7 +56,7 @@ class BaseRatePageUtils:
             side_effect=Exception(cls.test_error_message)
         )
         mocker.patch(
-            cls.report_cration_function_name,
+            cls.report_creation_function_name,
             mock_make_base_rate_report,
         )
         return mock_make_base_rate_report
@@ -83,7 +85,9 @@ class SetupEnvironment:
 
 @pytest.fixture
 def setup_environment(mocker: Mock) -> SetupEnvironment:
-    mocked_make_base_rate_report = BaseRatePageUtils.mock_report_creation(mocker)
+    mocked_make_base_rate_report = BaseRatePageUtils.mock_report_creation(
+        mocker
+    )
     mocked_add_base_rate_report_to_database = (
         BaseRatePageUtils.mock_add_base_rate_report_to_database(mocker)
     )
@@ -99,14 +103,16 @@ def test_displays_markdown_within_expander_when_question_entered(
     setup_environment: SetupEnvironment,
 ) -> None:
     test_question = BaseRatePageUtils.valid_example_question
-    input_and_submit_base_rate_question(setup_environment.app_test, test_question)
+    input_and_submit_base_rate_question(
+        setup_environment.app_test, test_question
+    )
     assert_reports_on_page(setup_environment.app_test, 1, test_question)
     setup_environment.mocked_make_base_rate_report.assert_called_once()
     setup_environment.mocked_add_base_rate_report_to_database.assert_called_once()
 
 
 @pytest.mark.skip(
-    reason="After adding the fixture, the error mocking of this test is not working, but not important enought to fix for now"
+    reason="After adding the fixture, the error mocking of this test is not working, but not important enough to fix for now"
 )
 async def test_displays_error_when_responder_errors(
     setup_environment: SetupEnvironment,
@@ -115,7 +121,9 @@ async def test_displays_error_when_responder_errors(
     BaseRatePageUtils.mock_report_creation_error(
         setup_environment.mocked_make_base_rate_report
     )
-    input_and_submit_base_rate_question(setup_environment.app_test, test_question)
+    input_and_submit_base_rate_question(
+        setup_environment.app_test, test_question
+    )
 
     error_elements = setup_environment.app_test.error
     assert len(error_elements) == 1
@@ -139,28 +147,42 @@ async def test_two_reports_after_two_runs(
 ) -> None:
     test_question = BaseRatePageUtils.valid_example_question
 
-    input_and_submit_base_rate_question(setup_environment.app_test, test_question)
+    input_and_submit_base_rate_question(
+        setup_environment.app_test, test_question
+    )
     assert_reports_on_page(setup_environment.app_test, 1, test_question)
     assert setup_environment.mocked_make_base_rate_report.call_count == 1
-    assert setup_environment.mocked_add_base_rate_report_to_database.call_count == 1
+    assert (
+        setup_environment.mocked_add_base_rate_report_to_database.call_count
+        == 1
+    )
 
-    input_and_submit_base_rate_question(setup_environment.app_test, test_question)
+    input_and_submit_base_rate_question(
+        setup_environment.app_test, test_question
+    )
     assert_reports_on_page(setup_environment.app_test, 2, test_question)
     assert setup_environment.mocked_make_base_rate_report.call_count == 2
-    assert setup_environment.mocked_add_base_rate_report_to_database.call_count == 2
+    assert (
+        setup_environment.mocked_add_base_rate_report_to_database.call_count
+        == 2
+    )
 
 
 def test_all_markdown_is_clean_after_reports_displayed(
     setup_environment: SetupEnvironment,
 ) -> None:
     test_question = BaseRatePageUtils.valid_example_question
-    input_and_submit_base_rate_question(setup_environment.app_test, test_question)
+    input_and_submit_base_rate_question(
+        setup_environment.app_test, test_question
+    )
     all_markdown = setup_environment.app_test.markdown
     for markdown_element in all_markdown:
         assert ReportDisplayer.markdown_is_clean(markdown_element.value)
 
 
-def input_and_submit_base_rate_question(app_test: AppTest, question_text: str) -> None:
+def input_and_submit_base_rate_question(
+    app_test: AppTest, question_text: str
+) -> None:
     app_test.run()
     # Enter a question and submit the form
     question_input = app_test.text_area(BaseRatePage.QUESTION_TEXT_BOX)

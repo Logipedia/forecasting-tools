@@ -1,7 +1,9 @@
 from src.forecasting.forecast_reports.binary_report import BinaryReport
 from src.forecasting.forecast_reports.date_report import DateReport
 from src.forecasting.forecast_reports.forecast_report import ForecastReport
-from src.forecasting.forecast_reports.multiple_choice_report import MultipleChoiceReport
+from src.forecasting.forecast_reports.multiple_choice_report import (
+    MultipleChoiceReport,
+)
 from src.forecasting.forecast_reports.numeric_report import NumericReport
 from src.forecasting.metaculus_api import MetaculusApi
 from src.forecasting.metaculus_question import (
@@ -62,14 +64,19 @@ class ReportOrganizer:
         cls, question_type: type[MetaculusQuestion]
     ) -> MetaculusQuestion:
         assert issubclass(question_type, MetaculusQuestion)
-        question_id = cls.get_example_question_id_for_question_type(question_type)
+        question_id = cls.get_example_question_id_for_question_type(
+            question_type
+        )
         question = MetaculusApi.get_question_by_id(question_id)
         assert isinstance(question, question_type)
         return question
 
     @classmethod
     def get_all_report_types(cls) -> list[type[ForecastReport]]:
-        return [question_info["report_type"] for question_info in cls.__TYPE_MAPPING]
+        return [
+            question_info["report_type"]
+            for question_info in cls.__TYPE_MAPPING
+        ]
 
     @classmethod
     def get_all_question_types(cls) -> list[type[MetaculusQuestion]]:

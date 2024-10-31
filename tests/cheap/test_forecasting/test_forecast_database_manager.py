@@ -5,7 +5,9 @@ from src.forecasting.forecast_database_manager import (
     ForecastRunType,
 )
 from src.forecasting.forecast_reports.binary_report import BinaryReport
-from src.forecasting.sub_question_responders.base_rate_responder import BaseRateReport
+from src.forecasting.sub_question_responders.base_rate_responder import (
+    BaseRateReport,
+)
 from src.util.coda_utils import CodaRow
 
 
@@ -62,10 +64,10 @@ def get_forecast_example_reports() -> list[BinaryReport]:
 
 
 def get_base_rate_example_reports() -> list[BaseRateReport]:
-    base_rate_data_path = (
-        "tests/cheap/test_forecasting/forecasting_test_data/base_rate_reports.json"
-    )
-    base_rate_reports = BaseRateReport.convert_project_file_path_to_object_list(
-        base_rate_data_path
+    base_rate_data_path = "tests/cheap/test_forecasting/forecasting_test_data/base_rate_reports.json"
+    base_rate_reports = (
+        BaseRateReport.convert_project_file_path_to_object_list(
+            base_rate_data_path
+        )
     )
     return base_rate_reports

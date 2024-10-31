@@ -7,12 +7,16 @@ import pytest
 from src.forecasting.metaculus_api import MetaculusApi
 from src.forecasting.team_manager import TeamManager
 from src.util import file_manipulation
-from tests.cheap.test_forecasting.forecasting_test_manager import ForecastingTestManager
+from tests.cheap.test_forecasting.forecasting_test_manager import (
+    ForecastingTestManager,
+)
 
 
 async def test_collects_reports_on_open_questions(mocker: Mock) -> None:
     ForecastingTestManager.mock_forecaster_team_run_forecast(mocker)
-    tournament_id = ForecastingTestManager.TOURNAMENT_WITH_MIXTURE_OF_OPEN_AND_NOT_OPEN
+    tournament_id = (
+        ForecastingTestManager.TOURNAMENT_WITH_MIXTURE_OF_OPEN_AND_NOT_OPEN
+    )
     manager = TeamManager()
     reports = await manager.run_forecasts_on_all_open_questions(tournament_id)
     questions_that_should_be_being_forecast_on = (
@@ -33,7 +37,9 @@ async def test_file_is_made_for_benchmark(mocker: Mock) -> None:
     manager = TeamManager()
 
     file_path_to_save_reports = "logs/forecasts/benchmarks/"
-    absolute_path = file_manipulation.get_absolute_path(file_path_to_save_reports)
+    absolute_path = file_manipulation.get_absolute_path(
+        file_path_to_save_reports
+    )
 
     files_before = len(
         [
@@ -52,16 +58,26 @@ async def test_file_is_made_for_benchmark(mocker: Mock) -> None:
             if os.path.isfile(os.path.join(absolute_path, f))
         ]
     )
-    assert files_after > files_before, "No new benchmark report file was created"
+    assert (
+        files_after > files_before
+    ), "No new benchmark report file was created"
 
 
-async def test_each_benchmark_mode_calls_forecaster_more_time(mocker: Mock) -> None:
+async def test_each_benchmark_mode_calls_forecaster_more_time(
+    mocker: Mock,
+) -> None:
     if ForecastingTestManager.quarterly_cup_is_not_active():
         pytest.skip("Quarterly cup is not active")
 
     manager = TeamManager()
-    mock_run_forecast = ForecastingTestManager.mock_forecaster_team_run_forecast(mocker)
-    modes: list[Literal["shallow", "medium", "deep"]] = ["shallow", "medium", "deep"]
+    mock_run_forecast = (
+        ForecastingTestManager.mock_forecaster_team_run_forecast(mocker)
+    )
+    modes: list[Literal["shallow", "medium", "deep"]] = [
+        "shallow",
+        "medium",
+        "deep",
+    ]
     num_calls_for_modes = []
     for mode in modes:
         score = await manager.benchmark_forecast_team(mode)
@@ -71,4 +87,6 @@ async def test_each_benchmark_mode_calls_forecaster_more_time(mocker: Mock) -> N
         current_calls = mock_run_forecast.call_count - previous_calls
         num_calls_for_modes.append(current_calls)
 
-        assert current_calls > previous_calls, "No new forecast calls were made"
+        assert (
+            current_calls > previous_calls
+        ), "No new forecast calls were made"

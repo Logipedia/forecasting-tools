@@ -10,7 +10,9 @@ from src.ai_models.resource_managers.hard_limit_manager import (
     HardLimitExceededError,
     HardLimitManager,
 )
-from src.ai_models.resource_managers.monetary_cost_manager import MonetaryCostManager
+from src.ai_models.resource_managers.monetary_cost_manager import (
+    MonetaryCostManager,
+)
 from src.util import async_batching
 
 logger = logging.getLogger(__name__)
@@ -29,13 +31,17 @@ def test_error_raised_properly_with_after_cost_check(
 
     with hard_limit_subclass(max_cost):
         try:
-            hard_limit_subclass.increase_current_usage_in_parent_managers(cost_per_call)
+            hard_limit_subclass.increase_current_usage_in_parent_managers(
+                cost_per_call
+            )
             hard_limit_subclass.raise_error_if_limit_would_be_reached(0)
         except Exception:
             assert False, "Error raised before max cost is exceeded"
 
         with pytest.raises(HardLimitExceededError):
-            hard_limit_subclass.increase_current_usage_in_parent_managers(cost_per_call)
+            hard_limit_subclass.increase_current_usage_in_parent_managers(
+                cost_per_call
+            )
             hard_limit_subclass.raise_error_if_limit_would_be_reached(0)
 
 
@@ -48,13 +54,19 @@ def test_error_raised_properly_with_before_cost_check(
 
     with hard_limit_subclass(max_cost):
         try:
-            hard_limit_subclass.raise_error_if_limit_would_be_reached(cost_per_call)
-            hard_limit_subclass.increase_current_usage_in_parent_managers(cost_per_call)
+            hard_limit_subclass.raise_error_if_limit_would_be_reached(
+                cost_per_call
+            )
+            hard_limit_subclass.increase_current_usage_in_parent_managers(
+                cost_per_call
+            )
         except Exception:
             assert False, "Error raised before max cost is exceeded"
 
         with pytest.raises(HardLimitExceededError):
-            hard_limit_subclass.raise_error_if_limit_would_be_reached(cost_per_call)
+            hard_limit_subclass.raise_error_if_limit_would_be_reached(
+                cost_per_call
+            )
 
 
 @pytest.mark.parametrize("hard_limit_subclass", HARD_LIMIT_MANAGER_LIST)
@@ -66,9 +78,15 @@ def test_no_error_raised_when_only_adding_costs_without_a_cost_check(
 
     with hard_limit_subclass(max_cost):
         try:
-            hard_limit_subclass.increase_current_usage_in_parent_managers(cost_per_call)
-            hard_limit_subclass.increase_current_usage_in_parent_managers(cost_per_call)
-            hard_limit_subclass.increase_current_usage_in_parent_managers(cost_per_call)
+            hard_limit_subclass.increase_current_usage_in_parent_managers(
+                cost_per_call
+            )
+            hard_limit_subclass.increase_current_usage_in_parent_managers(
+                cost_per_call
+            )
+            hard_limit_subclass.increase_current_usage_in_parent_managers(
+                cost_per_call
+            )
         except Exception:
             assert False, "Error raised when only adding costs without a check"
 
@@ -83,8 +101,12 @@ def test_cost_incurred_in_nested_cost_managers(
 
     with hard_limit_subclass(max_cost) as cost_manager_1:
         with hard_limit_subclass(max_cost) as cost_manager_2:
-            hard_limit_subclass.increase_current_usage_in_parent_managers(cost_per_call)
-            hard_limit_subclass.increase_current_usage_in_parent_managers(cost_per_call)
+            hard_limit_subclass.increase_current_usage_in_parent_managers(
+                cost_per_call
+            )
+            hard_limit_subclass.increase_current_usage_in_parent_managers(
+                cost_per_call
+            )
 
             assert cost_manager_1.current_usage == expected_cost
             assert cost_manager_2.current_usage == expected_cost
@@ -98,10 +120,14 @@ def test_costs_dont_conflict_between_unested_cost_managers(
     cost_per_call = 75
 
     with hard_limit_subclass(max_cost):
-        hard_limit_subclass.increase_current_usage_in_parent_managers(cost_per_call)
+        hard_limit_subclass.increase_current_usage_in_parent_managers(
+            cost_per_call
+        )
 
     with hard_limit_subclass(max_cost):
-        hard_limit_subclass.increase_current_usage_in_parent_managers(cost_per_call)
+        hard_limit_subclass.increase_current_usage_in_parent_managers(
+            cost_per_call
+        )
 
 
 @pytest.mark.parametrize("hard_limit_subclass", HARD_LIMIT_MANAGER_LIST)
@@ -115,12 +141,16 @@ def test_error_thrown_in_nested_cost_managers_when_max_cost_would_be_exceeded(
     with hard_limit_subclass(unexceed_max_cost):
         with hard_limit_subclass(exceeded_max_cost):
             with pytest.raises(HardLimitExceededError):
-                hard_limit_subclass.raise_error_if_limit_would_be_reached(cost_incurred)
+                hard_limit_subclass.raise_error_if_limit_would_be_reached(
+                    cost_incurred
+                )
 
     with hard_limit_subclass(exceeded_max_cost):
         with hard_limit_subclass(unexceed_max_cost):
             with pytest.raises(HardLimitExceededError):
-                hard_limit_subclass.raise_error_if_limit_would_be_reached(cost_incurred)
+                hard_limit_subclass.raise_error_if_limit_would_be_reached(
+                    cost_incurred
+                )
 
 
 @pytest.mark.parametrize("hard_limit_subclass", HARD_LIMIT_MANAGER_LIST)
@@ -132,7 +162,9 @@ def test_error_raised_if_cost_is_negative_for_tracking(
 
     with hard_limit_subclass(max_cost):
         with pytest.raises(ValueError):
-            hard_limit_subclass.increase_current_usage_in_parent_managers(cost_per_call)
+            hard_limit_subclass.increase_current_usage_in_parent_managers(
+                cost_per_call
+            )
 
 
 @pytest.mark.parametrize("hard_limit_subclass", HARD_LIMIT_MANAGER_LIST)
@@ -144,7 +176,9 @@ def test_error_raised_if_cost_is_negative_for_checking(
 
     with hard_limit_subclass(max_cost):
         with pytest.raises(ValueError):
-            hard_limit_subclass.raise_error_if_limit_would_be_reached(cost_to_check)
+            hard_limit_subclass.raise_error_if_limit_would_be_reached(
+                cost_to_check
+            )
 
 
 @pytest.mark.parametrize("hard_limit_subclass", HARD_LIMIT_MANAGER_LIST)
@@ -156,7 +190,9 @@ def test_no_error_raise_if_cost_is_0_for_tracking(
 
     with hard_limit_subclass(max_cost) as cost_manager:
         try:
-            cost_manager.increase_current_usage_in_parent_managers(cost_per_call)
+            cost_manager.increase_current_usage_in_parent_managers(
+                cost_per_call
+            )
         except Exception:
             assert False, "Error raised on a cost of zero"
 
@@ -170,7 +206,9 @@ def test_no_error_raise_if_cost_is_0_for_checking(
 
     with hard_limit_subclass(max_cost):
         try:
-            hard_limit_subclass.raise_error_if_limit_would_be_reached(cost_to_check)
+            hard_limit_subclass.raise_error_if_limit_would_be_reached(
+                cost_to_check
+            )
         except Exception:
             assert False, "Error raised on a cost of zero"
 
@@ -181,7 +219,9 @@ def test_hard_limit_manager_works_with_async_tasks(
     hard_limit_subclass: type[HardLimitManager],
 ) -> None:
     async def charge_cost_function(cost_to_incur: float) -> None:
-        hard_limit_subclass.increase_current_usage_in_parent_managers(cost_to_incur)
+        hard_limit_subclass.increase_current_usage_in_parent_managers(
+            cost_to_incur
+        )
 
     run_async_tests(hard_limit_subclass, charge_cost_function)
 
@@ -207,7 +247,9 @@ def run_async_tests(
             return {
                 "level": self.level,
                 "cost": self.cost,
-                "previous_levels": [level.to_json() for level in self.previous_levels],
+                "previous_levels": [
+                    level.to_json() for level in self.previous_levels
+                ],
             }
 
     async def charge_cost() -> None:
@@ -260,7 +302,8 @@ def run_async_tests(
 
     for cost_with_level in level_1_costs:
         assert (
-            cost_with_level.cost == number_of_coroutines_at_each_level * cost_to_incur
+            cost_with_level.cost
+            == number_of_coroutines_at_each_level * cost_to_incur
         )
 
     for cost_with_level in level_2_costs:
@@ -281,8 +324,12 @@ def test_no_error_raised_when_hard_limit_is_zero(
 
     with hard_limit_subclass(max_cost) as cost_manager:
         try:
-            hard_limit_subclass.raise_error_if_limit_would_be_reached(cost_per_call)
-            hard_limit_subclass.increase_current_usage_in_parent_managers(cost_per_call)
+            hard_limit_subclass.raise_error_if_limit_would_be_reached(
+                cost_per_call
+            )
+            hard_limit_subclass.increase_current_usage_in_parent_managers(
+                cost_per_call
+            )
         except Exception:
             assert False, "Error raised when hard limit is zero"
 

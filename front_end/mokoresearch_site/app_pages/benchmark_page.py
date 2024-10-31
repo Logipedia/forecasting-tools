@@ -8,7 +8,9 @@ import streamlit as st
 from front_end.mokoresearch_site.helpers.app_page import AppPage
 from front_end.mokoresearch_site.helpers.custom_auth import CustomAuth
 from front_end.mokoresearch_site.helpers.general import footer, header
-from front_end.mokoresearch_site.helpers.report_displayer import ReportDisplayer
+from front_end.mokoresearch_site.helpers.report_displayer import (
+    ReportDisplayer,
+)
 from src.forecasting.forecast_reports.binary_report import BinaryReport
 
 
@@ -42,7 +44,9 @@ class BenchmarkPage(AppPage):
     @staticmethod
     def __get_benchmark_files() -> list[str]:
         benchmark_dir = "front_end/mokoresearch_site/benchmarks"
-        file_names = [f for f in os.listdir(benchmark_dir) if f.endswith(".json")]
+        file_names = [
+            f for f in os.listdir(benchmark_dir) if f.endswith(".json")
+        ]
         file_names.sort(reverse=True)
         return file_names
 
@@ -58,7 +62,10 @@ class BenchmarkPage(AppPage):
                 r
                 for r in reports
                 if r.community_prediction is not None
-                and (r.community_prediction > 0.9 or r.community_prediction < 0.1)
+                and (
+                    r.community_prediction > 0.9
+                    or r.community_prediction < 0.1
+                )
             ]
             uncertain_reports = [
                 r
@@ -68,17 +75,21 @@ class BenchmarkPage(AppPage):
             ]
             cls.__display_stats_for_report_type(reports, "All Questions")
             cls.__display_stats_for_report_type(
-                certain_reports, "Certain Questions: Community Prediction >90% or <10%"
+                certain_reports,
+                "Certain Questions: Community Prediction >90% or <10%",
             )
             cls.__display_stats_for_report_type(
-                uncertain_reports, "Uncertain Questions: Community Prediction 10%-90%"
+                uncertain_reports,
+                "Uncertain Questions: Community Prediction 10%-90%",
             )
 
     @classmethod
     def __display_stats_for_report_type(
         cls, reports: list[BinaryReport], title: str
     ) -> None:
-        deviation_score = BinaryReport.calculate_average_deviation_score(reports)
+        deviation_score = BinaryReport.calculate_average_deviation_score(
+            reports
+        )
         actual_deviation = math.sqrt(deviation_score)
         st.markdown(
             f"""
@@ -90,14 +101,19 @@ class BenchmarkPage(AppPage):
         )
 
     @classmethod
-    def __display_questions_and_forecasts(cls, reports: list[BinaryReport]) -> None:
+    def __display_questions_and_forecasts(
+        cls, reports: list[BinaryReport]
+    ) -> None:
         with st.expander("Questions and Forecasts", expanded=False):
             st.subheader("Question List")
             certain_reports = [
                 r
                 for r in reports
                 if r.community_prediction is not None
-                and (r.community_prediction > 0.9 or r.community_prediction < 0.1)
+                and (
+                    r.community_prediction > 0.9
+                    or r.community_prediction < 0.1
+                )
             ]
             uncertain_reports = [
                 r
@@ -107,10 +123,12 @@ class BenchmarkPage(AppPage):
             ]
 
             cls.__display_question_stats_in_list(
-                certain_reports, "Certain Questions (Community Prediction >90% or <10%)"
+                certain_reports,
+                "Certain Questions (Community Prediction >90% or <10%)",
             )
             cls.__display_question_stats_in_list(
-                uncertain_reports, "Uncertain Questions (Community Prediction 10%-90%)"
+                uncertain_reports,
+                "Uncertain Questions (Community Prediction 10%-90%)",
             )
 
     @classmethod
@@ -120,12 +138,16 @@ class BenchmarkPage(AppPage):
         st.subheader(title)
         sorted_reports = sorted(
             report_list,
-            key=lambda r: (r.deviation_score if r.deviation_score is not None else -1),
+            key=lambda r: (
+                r.deviation_score if r.deviation_score is not None else -1
+            ),
             reverse=True,
         )
         for report in sorted_reports:
             deviation = (
-                report.deviation_score if report.deviation_score is not None else -1
+                report.deviation_score
+                if report.deviation_score is not None
+                else -1
             )
             st.write(
                 f"- **Δ:** {deviation:.4f} | **🤖:** {report.prediction:.2%} | **👥:** {report.community_prediction:.2%} | **Question:** {report.question.question_text}"
@@ -142,7 +164,7 @@ class BenchmarkPage(AppPage):
 
             The simulation was run with 100,000 questions with random probabilities for a variety of bot skill levels.
             We assume that the community prediction is the same as true probability.
-            The bot's forecast was caculated using `bot_forecast = np.clip(np.random.normal(community_forecast, bot_skill), 0, 1)`.
+            The bot's forecast was calculated using `bot_forecast = np.clip(np.random.normal(community_forecast, bot_skill), 0, 1)`.
 
             Bot Skill 0.01 (Very Good):
             - Average Brier Score: 0.1704

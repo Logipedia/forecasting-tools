@@ -1,10 +1,9 @@
 import logging
-from typing import Any, Final
+from typing import Final
 
-from src.ai_models.ai_utils.ai_misc import (
-    clean_indents,  # Keep this import here for easier imports into other files so prompts can keep proper indentation levels in code # NOSONAR
+from src.ai_models.model_archetypes.openai_text_model import (
+    OpenAiTextToTextModel,
 )
-from src.ai_models.model_archetypes.openai_text_model import OpenAiTextToTextModel
 
 logger = logging.getLogger(__name__)
 

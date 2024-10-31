@@ -1,10 +1,14 @@
 import textwrap
 
+import pytest
+
 from src.forecasting.forecast_reports.binary_report import BinaryReport
 from src.forecasting.forecast_reports.report_section import ReportSection
-from tests.cheap.test_forecasting.forecasting_test_manager import ForecastingTestManager
+from tests.cheap.test_forecasting.forecasting_test_manager import (
+    ForecastingTestManager,
+)
 from tests.utilities_for_tests import jsonable_assertations
-import pytest
+
 
 def test_metaculus_report_is_jsonable() -> None:
     temp_writing_path = "temp/temp_metaculus_report.json"
@@ -99,7 +103,9 @@ def test_report_sections_are_parsed_correctly() -> None:
     assert "- Conclusion 2" in conclusion_section.section_content
 
     combined_content = combine_all_section_content(sections)
-    assert combined_content.replace("\n", "") == fake_explanation.replace("\n", "")
+    assert combined_content.replace("\n", "") == fake_explanation.replace(
+        "\n", ""
+    )
 
 
 def combine_all_section_content(sections: list[ReportSection]) -> str:
@@ -134,6 +140,7 @@ def test_research_section_is_correct() -> None:
 @pytest.mark.skip("Not implemented")
 def test_forecasts_rationale_section_is_correct() -> None:
     raise NotImplementedError
+
 
 @pytest.mark.skip("Not implemented")
 def test_each_report_type_is_jsonable() -> None:

@@ -1,6 +1,8 @@
 import logging
 
-from src.forecasting.sub_question_responders.question_responder import QuestionResponder
+from src.forecasting.sub_question_responders.question_responder import (
+    QuestionResponder,
+)
 
 logger = logging.getLogger(__name__)
 from src.forecasting.llms.smart_searcher import SmartSearcher, clean_indents

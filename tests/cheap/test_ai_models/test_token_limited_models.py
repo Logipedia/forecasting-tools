@@ -4,7 +4,9 @@ from unittest.mock import Mock
 import pytest
 
 from src.ai_models.basic_model_interfaces.ai_model import AiModel
-from src.ai_models.basic_model_interfaces.token_limited_model import TokenLimitedModel
+from src.ai_models.basic_model_interfaces.token_limited_model import (
+    TokenLimitedModel,
+)
 from tests.cheap.test_ai_models.ai_mock_manager import AiModelMockManager
 from tests.cheap.test_ai_models.models_to_test import ModelsToTest
 
@@ -34,8 +36,8 @@ def test_token_amount_past_burst_doesnt_happen_instantly(
     model = subclass()
     invoke_input = subclass._get_cheap_input_for_invoke()
     tokens_to_reach_burst = get_number_of_tokens_to_deplete_burst(subclass)
-    tokens_after_burst = get_number_of_tokens_that_takes_10s_to_run_given_model_rate(
-        subclass
+    tokens_after_burst = (
+        get_number_of_tokens_that_takes_10s_to_run_given_model_rate(subclass)
     )
     total_tokens = tokens_to_reach_burst + tokens_after_burst
     number_of_calls_to_make = mock_input_to_tokens_and_get_call_count(
@@ -53,7 +55,9 @@ def test_token_amount_past_burst_doesnt_happen_instantly(
         async_batching.run_coroutines(timed_coroutines)
 
 
-def get_number_of_tokens_to_deplete_burst(subclass: type[TokenLimitedModel]) -> int:
+def get_number_of_tokens_to_deplete_burst(
+    subclass: type[TokenLimitedModel],
+) -> int:
     tokens_to_reach_burst = subclass.TOKENS_PER_PERIOD_LIMIT
     return tokens_to_reach_burst
 
@@ -74,7 +78,9 @@ def get_number_of_tokens_that_takes_10s_to_run_given_model_rate(
 def mock_input_to_tokens_and_get_call_count(
     mocker: Mock, subclass: type[TokenLimitedModel], tokens: int
 ) -> int:
-    mock_input_to_token_return_value = int(subclass.TOKENS_PER_PERIOD_LIMIT / 1000)
+    mock_input_to_token_return_value = int(
+        subclass.TOKENS_PER_PERIOD_LIMIT / 1000
+    )
 
     AiModelMockManager.mock_input_to_tokens_with_value(
         mocker, subclass, mock_input_to_token_return_value

@@ -102,7 +102,7 @@ class OutputsText(AiModel, ABC):
             )
         except Exception as e:
             raise ValueError(
-                f"Error transorming response to type {normal_complex_or_pydantic_type}: {e}. Response was: {cleaned_response}"
+                f"Error transforming response to type {normal_complex_or_pydantic_type}: {e}. Response was: {cleaned_response}"
             )
         if not validate_complex_type(
             transformed_response, normal_complex_or_pydantic_type
@@ -128,14 +128,18 @@ class OutputsText(AiModel, ABC):
             is_list_of_pydantic_models = False
 
         try:
-            is_pydantic_model = issubclass(normal_complex_or_pydantic_type, BaseModel)
+            is_pydantic_model = issubclass(
+                normal_complex_or_pydantic_type, BaseModel
+            )
         except TypeError:
             is_pydantic_model = False
 
         if is_list_of_pydantic_models:
             pydantic_model_type: type[BaseModel] = inner_types[0]
             list_of_validated_objects: list[BaseModel] = []
-            list_of_dicts_from_response = cls.__extract_json_from_text(response)
+            list_of_dicts_from_response = cls.__extract_json_from_text(
+                response
+            )
             for item in list_of_dicts_from_response:
                 pydantic_object = pydantic_model_type.model_validate(item)
                 list_of_validated_objects.append(pydantic_object)
@@ -148,11 +152,15 @@ class OutputsText(AiModel, ABC):
             )
             final_response = response_as_model
         else:
-            final_response = cls.__turn_string_into_non_pydantic_python_data_structure(
-                response
+            final_response = (
+                cls.__turn_string_into_non_pydantic_python_data_structure(
+                    response
+                )
             )
 
-        assert validate_complex_type(final_response, normal_complex_or_pydantic_type)
+        assert validate_complex_type(
+            final_response, normal_complex_or_pydantic_type
+        )
         return final_response  # type: ignore <- validate_complex_type checks this, but mypy doesn't pick it up
 
     async def __invoke_and_unsafely_run_generated_code(
@@ -203,7 +211,9 @@ class OutputsText(AiModel, ABC):
                 response_loaded_as_string = ast.literal_eval(response)
             except Exception as e2:
                 try:
-                    response_loaded_as_string = cls.__extract_json_from_text(response)
+                    response_loaded_as_string = cls.__extract_json_from_text(
+                        response
+                    )
                 except Exception as e3:
                     raise ValueError(
                         f"Model did not return a parsable value. Error1: {e1}, Error2: {e2}, Error3: {e3}, response: {response}"
@@ -254,7 +264,9 @@ class OutputsText(AiModel, ABC):
         elif false_index > true_index:
             return False
         else:
-            raise ValueError(f"Model did not return a boolean. Output was: {response}")
+            raise ValueError(
+                f"Model did not return a boolean. Output was: {response}"
+            )
 
 
 _PYDANTIC_FORMAT_INSTRUCTIONS = """

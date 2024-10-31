@@ -2,7 +2,9 @@ import functools
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Coroutine, TypeVar
 
-from src.ai_models.resource_managers.monetary_cost_manager import MonetaryCostManager
+from src.ai_models.resource_managers.monetary_cost_manager import (
+    MonetaryCostManager,
+)
 
 T = TypeVar("T")
 
@@ -28,6 +30,9 @@ class IncursCost(ABC):
 
             direct_call_response = await func(self, *args, **kwargs)
 
-            await self._track_cost_in_manager_using_model_response(direct_call_response)
+            await self._track_cost_in_manager_using_model_response(
+                direct_call_response
+            )
             return direct_call_response
+
         return wrapper

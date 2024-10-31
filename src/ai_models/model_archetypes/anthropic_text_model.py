@@ -1,5 +1,4 @@
 import logging
-import os
 from abc import ABC
 
 from langchain_anthropic import ChatAnthropic
@@ -10,7 +9,9 @@ from langchain_community.callbacks.bedrock_anthropic_callback import (
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 
 from src.ai_models.ai_utils.response_types import TextTokenCostResponse
-from src.ai_models.model_archetypes.traditional_online_llm import TraditionalOnlineLlm
+from src.ai_models.model_archetypes.traditional_online_llm import (
+    TraditionalOnlineLlm,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +20,9 @@ class AnthropicTextToTextModel(TraditionalOnlineLlm, ABC):
 
     async def invoke(self, prompt: str) -> str:
         response: TextTokenCostResponse = (
-            await self._invoke_with_request_cost_time_and_token_limits_and_retry(prompt)
+            await self._invoke_with_request_cost_time_and_token_limits_and_retry(
+                prompt
+            )
         )
         return response.data
 
@@ -27,12 +30,14 @@ class AnthropicTextToTextModel(TraditionalOnlineLlm, ABC):
         self, prompt: str
     ) -> TextTokenCostResponse:
         self._everything_special_to_call_before_direct_call()
-        response: TextTokenCostResponse = await self._call_online_model_using_api(
-            prompt
+        response: TextTokenCostResponse = (
+            await self._call_online_model_using_api(prompt)
         )
         return response
 
-    async def _call_online_model_using_api(self, prompt: str) -> TextTokenCostResponse:
+    async def _call_online_model_using_api(
+        self, prompt: str
+    ) -> TextTokenCostResponse:
         anthropic_llm = ChatAnthropic(
             model_name=self.MODEL_NAME,
             temperature=self.temperature,
@@ -44,11 +49,11 @@ class AnthropicTextToTextModel(TraditionalOnlineLlm, ABC):
         answer_message = await anthropic_llm.ainvoke(messages)
         answer = answer_message.content
 
-        response_metatdata = answer_message.response_metadata
-        prompt_tokens = response_metatdata["usage"]["input_tokens"] #type: ignore
-        completion_tokens = response_metatdata["usage"]["output_tokens"] #type: ignore
+        response_metadata = answer_message.response_metadata
+        prompt_tokens = response_metadata["usage"]["input_tokens"]  # type: ignore
+        completion_tokens = response_metadata["usage"]["output_tokens"]  # type: ignore
         total_tokens = prompt_tokens + completion_tokens
-        cost = self.caculate_cost_from_tokens(
+        cost = self.calculate_cost_from_tokens(
             prompt_tkns=prompt_tokens, completion_tkns=completion_tokens
         )
 
@@ -66,7 +71,9 @@ class AnthropicTextToTextModel(TraditionalOnlineLlm, ABC):
             cost=cost,
         )
 
-    def _turn_model_input_into_messages(self, prompt: str) -> list[BaseMessage]:
+    def _turn_model_input_into_messages(
+        self, prompt: str
+    ) -> list[BaseMessage]:
         if self.system_prompt is None:
             return [HumanMessage(prompt)]
         else:
@@ -92,7 +99,7 @@ class AnthropicTextToTextModel(TraditionalOnlineLlm, ABC):
         completion_tokens = anthropic_llm.get_num_tokens(probable_output)
         adjustment = 3  # Through manual experimentation, it was found that the number of tokens returned by the API is 3 off for the completion response
         completion_tokens += adjustment
-        total_cost = model.caculate_cost_from_tokens(
+        total_cost = model.calculate_cost_from_tokens(
             prompt_tkns=prompt_tokens, completion_tkns=completion_tokens
         )
         total_tokens = prompt_tokens + completion_tokens
@@ -129,12 +136,14 @@ class AnthropicTextToTextModel(TraditionalOnlineLlm, ABC):
         tokens += adjustment
         return tokens
 
-    def caculate_cost_from_tokens(
+    def calculate_cost_from_tokens(
         self, prompt_tkns: int, completion_tkns: int
     ) -> float:
         possible_detailed_model_names = MODEL_COST_PER_1K_INPUT_TOKENS.keys()
         detailed_model_name = [
-            name for name in possible_detailed_model_names if self.MODEL_NAME in name
+            name
+            for name in possible_detailed_model_names
+            if self.MODEL_NAME in name
         ][0]
         cost = _get_anthropic_claude_token_cost(
             prompt_tkns, completion_tkns, detailed_model_name

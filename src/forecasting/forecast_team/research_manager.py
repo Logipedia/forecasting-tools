@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import logging
 
-from src.forecasting.llms.configured_llms import BasicCompetitionLlm, clean_indents
+from src.forecasting.llms.configured_llms import (
+    BasicCompetitionLlm,
+    clean_indents,
+)
 from src.forecasting.metaculus_question import MetaculusQuestion
 from src.forecasting.sub_question_responders.base_rate_responder import (
     BaseRateReport,
@@ -11,8 +14,12 @@ from src.forecasting.sub_question_responders.base_rate_responder import (
 from src.forecasting.sub_question_responders.general_search_responder import (
     GeneralSearchResponder,
 )
-from src.forecasting.sub_question_responders.question_responder import QuestionResponder
-from src.forecasting.sub_question_responders.question_router import QuestionRouter
+from src.forecasting.sub_question_responders.question_responder import (
+    QuestionResponder,
+)
+from src.forecasting.sub_question_responders.question_router import (
+    QuestionRouter,
+)
 from src.util import async_batching
 
 logger = logging.getLogger(__name__)
@@ -65,10 +72,16 @@ class ResearchManager:
         combined_markdown = background_markdown + "\n\n" + base_rate_markdown
         return combined_markdown
 
-    async def generate_background_markdown(self, num_background_questions: int) -> str:
-        questions = await self.brainstorm_background_questions(num_background_questions)
-        answers = await self.answer_question_list(questions, GeneralSearchResponder)
-        logger.info(f"Generated background markdown.")
+    async def generate_background_markdown(
+        self, num_background_questions: int
+    ) -> str:
+        questions = await self.brainstorm_background_questions(
+            num_background_questions
+        )
+        answers = await self.answer_question_list(
+            questions, GeneralSearchResponder
+        )
+        logger.info("Generated background markdown.")
         return await self.__create_question_answer_markdown_section(
             questions, answers, question_prepend="Q"
         )
@@ -82,8 +95,10 @@ class ResearchManager:
         questions = await self.brainstorm_base_rate_questions(
             num_base_rate_questions, additional_context
         )
-        deep_questions, shallow_questions = await self.pick_best_base_rate_questions(
-            num_base_rate_questions_with_deep_research, questions
+        deep_questions, shallow_questions = (
+            await self.pick_best_base_rate_questions(
+                num_base_rate_questions_with_deep_research, questions
+            )
         )
         deep_answers = await self.answer_question_list(
             deep_questions, BaseRateResponder
@@ -96,7 +111,7 @@ class ResearchManager:
         markdown = await self.__create_question_answer_markdown_section(
             combined_questions, combined_answers, question_prepend="B"
         )
-        logger.info(f"Generated base rate markdown.")
+        logger.info("Generated base rate markdown.")
         return markdown
 
     async def pick_best_base_rate_questions(
@@ -119,7 +134,9 @@ class ResearchManager:
     async def brainstorm_background_questions(
         self, num_background_questions: int
     ) -> list[str]:
-        logger.info(f"Running forecasts on question `{self.question.question_text}`")
+        logger.info(
+            f"Running forecasts on question `{self.question.question_text}`"
+        )
         prompt = clean_indents(
             f"""
             # Instructions
@@ -151,7 +168,7 @@ class ResearchManager:
             "What are developments in the space industry in 2023 especially around rocket launches?",
             "Is there anyone not wanting SpaceX to launch a rocket in 2023?",
             "What reasons might there be for SpaceX not launching a rocket in 2023?",
-            "What reasons might there be for SpaceX succesfully launching a rocket in 2023?",
+            "What reasons might there be for SpaceX successfully launching a rocket in 2023?",
             "What will the weather be like in 2023 for SpaceX rocket launches? Is there planned to be bad weather on planned launch dates?"
             "What is the max number of rockets SpaceX has launched in a year?"
             "What is the average number of rockets SpaceX has launched in a year?"
@@ -262,14 +279,17 @@ class ResearchManager:
         )
 
         model = BasicCompetitionLlm(temperature=0.8)
-        base_rate_questions: list[str] = await model.invoke_and_return_verified_type(
-            prompt, list[str]
+        base_rate_questions: list[str] = (
+            await model.invoke_and_return_verified_type(prompt, list[str])
         )
 
-        logger.info(f"Brainstormed {len(base_rate_questions)} questions for baserate")
+        logger.info(
+            f"Brainstormed {len(base_rate_questions)} questions for baserate"
+        )
         question_text_prepend = self.__get_question_context_prepend()
         full_questions_to_get_context = [
-            f"{question_text_prepend}{question}" for question in base_rate_questions
+            f"{question_text_prepend}{question}"
+            for question in base_rate_questions
         ]
         return full_questions_to_get_context
 
@@ -281,7 +301,9 @@ class ResearchManager:
         question_router = QuestionRouter()
         if responder_type is None:
             answering_question_coroutines = [
-                question_router.answer_question_with_markdown_using_routing(question)
+                question_router.answer_question_with_markdown_using_routing(
+                    question
+                )
                 for question in questions
             ]
         else:
@@ -294,18 +316,22 @@ class ResearchManager:
                 answering_question_coroutines
             )
         )
-        unverified_answers: list[str | Exception] = async_batching.run_coroutines(
-            exception_handled_coroutines
+        unverified_answers: list[str | Exception] = (
+            async_batching.run_coroutines(exception_handled_coroutines)
         )
         verified_answers = []
         for question, answer in zip(questions, unverified_answers):
             if isinstance(answer, Exception):
-                logger.warning(f"Error in answering question `{question}`: {answer}")
+                logger.warning(
+                    f"Error in answering question `{question}`: {answer}"
+                )
                 verified_answer = "Error in generating answer"
             elif isinstance(answer, str):
                 verified_answer = answer
             else:
-                raise ValueError(f"answer is not a string or exception: {type(answer)}")
+                raise ValueError(
+                    f"answer is not a string or exception: {type(answer)}"
+                )
             verified_answers.append(verified_answer)
 
         logger.info(
@@ -318,7 +344,9 @@ class ResearchManager:
         num_base_rate_questions_with_deep_research: int,
         base_rate_questions: list[str],
     ) -> list[str]:
-        number_of_questions_to_pick = num_base_rate_questions_with_deep_research
+        number_of_questions_to_pick = (
+            num_base_rate_questions_with_deep_research
+        )
         prompt = clean_indents(
             f"""
             You are a superforecaster forecasting on Metaculus.
@@ -351,16 +379,14 @@ class ResearchManager:
             """
         )
         model = BasicCompetitionLlm(temperature=0)
-        picked_questions: list[str] = await model.invoke_and_return_verified_type(
-            prompt, list[str]
+        picked_questions: list[str] = (
+            await model.invoke_and_return_verified_type(prompt, list[str])
         )
         assert len(picked_questions) == number_of_questions_to_pick
         return picked_questions
 
     def __get_question_context_prepend(self) -> str:
-        return (
-            f"In the context of the larger question '{self.question.question_text}', "
-        )
+        return f"In the context of the larger question '{self.question.question_text}', "
 
     async def __create_question_answer_markdown_section(
         self,
@@ -373,10 +399,14 @@ class ResearchManager:
             question.replace(context_prepend, "")
             for question in questions_to_get_context
         ]
-        question_answer_pairs = list(zip(questions_without_context_prepended, answers))
+        question_answer_pairs = list(
+            zip(questions_without_context_prepended, answers)
+        )
         questions_with_answer_as_markdown = [
             f"## {question_prepend}{i + 1}: {pair[0]}\n  Answer:\n {pair[1]}\n\n"
             for i, pair in enumerate(question_answer_pairs)
         ]
-        combined_question_answer_markdown = "\n".join(questions_with_answer_as_markdown)
+        combined_question_answer_markdown = "\n".join(
+            questions_with_answer_as_markdown
+        )
         return combined_question_answer_markdown

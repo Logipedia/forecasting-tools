@@ -18,5 +18,7 @@ def footer():
     st.write(
         "Join the [Forecasting Meetup Discord](https://discord.gg/Dtq4JNdXnw) to practice forecasting with real people weekly."
     )
-    st.write("Queries made to the website are saved to a database and may be reviewed to help improve the tool")
+    st.write(
+        "Queries made to the website are saved to a database and may be reviewed to help improve the tool"
+    )
     st.write("Developed by [Ben Wilson](https://mokoresearch.com/).")

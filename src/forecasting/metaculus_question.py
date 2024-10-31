@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 import logging
+import textwrap
 from datetime import datetime
 from enum import Enum
-from typing import Literal
 
 from pydantic import BaseModel, Field
 
 from src.util.jsonable import Jsonable
-import textwrap
+
 logger = logging.getLogger(__name__)
 
 
@@ -59,10 +59,14 @@ class MetaculusQuestion(BaseModel, Jsonable):
             num_predictions=api_json["forecasts_count"],
             close_time=cls._parse_api_date(api_json["scheduled_close_time"]),
             actual_resolution_time=(
-                scheduled_resolution_time if resolution_time_is_in_past else None
+                scheduled_resolution_time
+                if resolution_time_is_in_past
+                else None
             ),  # TODO: Is the scheduled resolution time actually ever the 'actual' resolution time?
             scheduled_resolution_time=(
-                scheduled_resolution_time if not resolution_time_is_in_past else None
+                scheduled_resolution_time
+                if not resolution_time_is_in_past
+                else None
             ),
             api_json=api_json,
         )
@@ -117,7 +121,9 @@ class BinaryQuestion(MetaculusQuestion):
         try:
             q2_center_community_prediction = api_json["question"]["aggregations"]["recency_weighted"]["latest"]["centers"]  # type: ignore
             assert len(q2_center_community_prediction) == 1
-            community_prediction_at_access_time = q2_center_community_prediction[0]
+            community_prediction_at_access_time = (
+                q2_center_community_prediction[0]
+            )
         except (KeyError, TypeError):
             community_prediction_at_access_time = None
         return BinaryQuestion(

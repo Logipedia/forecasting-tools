@@ -22,7 +22,9 @@ class ImageReader:
         return base64_image
 
     @staticmethod
-    async def replace_html_images_with_paragraph_descriptions(html: str) -> str:
+    async def replace_html_images_with_paragraph_descriptions(
+        html: str,
+    ) -> str:
         soup = BeautifulSoup(html, "html.parser")
         image_tags = soup.find_all("img")
         coroutines = [
@@ -61,7 +63,9 @@ class ImageReader:
             new_paragraph = soup.new_tag("p")
             new_paragraph.string = description_with_tags
         except Exception as e:
-            logger.warning(f"Failed to create paragraph tag from image tag. Error: {e}")
+            logger.warning(
+                f"Failed to create paragraph tag from image tag. Error: {e}"
+            )
             new_paragraph = soup.new_tag("p")
             new_paragraph.string = f"{ImageReader.IMAGE_DESCRIPTION_START_TAG}ERROR: Failed to create description from image{ImageReader.IMAGE_DESCRIPTION_END_TAG}"
         return new_paragraph

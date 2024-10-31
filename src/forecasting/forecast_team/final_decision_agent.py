@@ -2,13 +2,18 @@ import logging
 from typing import Any
 
 from src.ai_models.ai_utils.ai_misc import strip_code_block_markdown
-from src.ai_models.resource_managers.monetary_cost_manager import MonetaryCostManager
+from src.ai_models.resource_managers.monetary_cost_manager import (
+    MonetaryCostManager,
+)
 from src.forecasting.forecast_reports.forecast_report import (
     ForecastReport,
     ReasonedPrediction,
 )
 from src.forecasting.forecast_reports.report_organizer import ReportOrganizer
-from src.forecasting.llms.configured_llms import BasicCompetitionLlm, clean_indents
+from src.forecasting.llms.configured_llms import (
+    BasicCompetitionLlm,
+    clean_indents,
+)
 from src.forecasting.metaculus_question import MetaculusQuestion
 from src.util import async_batching
 
@@ -24,7 +29,9 @@ class FinalDecisionAgent:
         number_of_predictions_to_run: int,
         cost_manager: MonetaryCostManager,
     ) -> None:
-        assert number_of_predictions_to_run > 0, "Must run at least one prediction"
+        assert (
+            number_of_predictions_to_run > 0
+        ), "Must run at least one prediction"
         assert research_as_markdown, "Research must be provided"
         self.research_as_markdown = research_as_markdown
         self.question = question
@@ -37,7 +44,9 @@ class FinalDecisionAgent:
 
     async def run_decision_agent(self) -> ForecastReport:
         try:
-            research_summary = await self.__get_research_summary_and_populate_if_empty()
+            research_summary = (
+                await self.__get_research_summary_and_populate_if_empty()
+            )
         except Exception as e:
             logger.error(f"Error in making research summary: {e}")
             research_summary = "Error in making research summary"
@@ -52,10 +61,15 @@ class FinalDecisionAgent:
             )
         )
         if len(reasoned_predictions) == 0:
-            raise ValueError(f"All forecasts errored")
-        logger.info(f"{len(reasoned_predictions)} predictions successfully ran")
+            raise ValueError("All forecasts errored")
+        logger.info(
+            f"{len(reasoned_predictions)} predictions successfully ran"
+        )
         aggregated_prediction = await self.report_type.aggregate_predictions(
-            [prediction.prediction_value for prediction in reasoned_predictions]
+            [
+                prediction.prediction_value
+                for prediction in reasoned_predictions
+            ]
         )
         explanation = await self.__create_unified_explanation(
             reasoned_predictions, aggregated_prediction
@@ -66,7 +80,7 @@ class FinalDecisionAgent:
             prediction=aggregated_prediction,
             price_estimate=self.cost_manager.current_usage,
         )
-        logger.info(f"Compiled final report")
+        logger.info("Compiled final report")
         return report
 
     async def __get_research_summary_and_populate_if_empty(self) -> str:
@@ -82,7 +96,7 @@ class FinalDecisionAgent:
             # Instructions
             Please make a markdown report with three sections:
             1. Research Overview: Give 2 paragraphs summarazing the the research done. Surface things people would want to know for a forecast.
-            2. Possible Base Rates: Make one bullet point for each unique possible base rate. Prioritize numbers, and do some caculations to find historical rates if possible (e.g. if you find there are 3 successful X out of 10 X total, then state your calculation and say 3 succesful X out of 10 X total is 30% success rate).
+            2. Possible Base Rates: Make one bullet point for each unique possible base rate. Prioritize numbers, and do some calculations to find historical rates if possible (e.g. if you find there are 3 successful X out of 10 X total, then state your calculation and say 3 successful X out of 10 X total is 30% success rate).
             3. Pros Section: Make one bullet point for each unique pro. These should be inside view adjustments that would move your forecast up.
             4. Cons Section: Make one bullet point for each unique con. These should be outside view adjustments that would move your forecast down.
 

@@ -12,7 +12,6 @@ from src.forecasting.forecast_reports.forecast_report import (
 )
 from src.forecasting.llms.configured_llms import (
     AdvancedCompetitionLlm,
-    BasicCompetitionLlm,
     clean_indents,
 )
 from src.forecasting.metaculus_api import MetaculusApi
@@ -35,7 +34,9 @@ class BinaryReport(ForecastReport):
         MetaculusApi.post_binary_question_prediction(
             self.question.question_id, self.prediction
         )
-        MetaculusApi.post_question_comment(self.question.question_id, self.explanation)
+        MetaculusApi.post_question_comment(
+            self.question.question_id, self.explanation
+        )
 
     @classmethod
     async def aggregate_predictions(cls, predictions: list[float]) -> float:
@@ -81,7 +82,9 @@ class BinaryReport(ForecastReport):
         question: BinaryQuestion,
         research: str,
     ) -> ReasonedPrediction[float]:
-        assert isinstance(question, BinaryQuestion), "Question must be a BinaryQuestion"
+        assert isinstance(
+            question, BinaryQuestion
+        ), "Question must be a BinaryQuestion"
         prompt = clean_indents(
             f"""
             You are a professional forecaster interviewing for a job.
@@ -121,19 +124,27 @@ class BinaryReport(ForecastReport):
             gpt_forecast, max_prediction=95, min_prediction=1
         )
         reasoning = gpt_forecast + clamped_message
-        return ReasonedPrediction(prediction_value=prediction, reasoning=reasoning)
+        return ReasonedPrediction(
+            prediction_value=prediction, reasoning=reasoning
+        )
 
     @classmethod
     def __extract_prediction_from_response(
         cls, forecast_text: str, max_prediction: int, min_prediction: int
     ) -> tuple[float, str]:
-        assert 1 <= max_prediction <= 99, "Max prediction must be between 1 and 99"
-        assert 1 <= min_prediction <= 99, "Min prediction must be between 1 and 99"
+        assert (
+            1 <= max_prediction <= 99
+        ), "Max prediction must be between 1 and 99"
+        assert (
+            1 <= min_prediction <= 99
+        ), "Min prediction must be between 1 and 99"
         matches = re.findall(r"(\d+)%", forecast_text)
         if matches:
             # Return the last number found before a '%'
             original_number = int(matches[-1])
-            clamped_number = min(max_prediction, max(min_prediction, original_number))
+            clamped_number = min(
+                max_prediction, max(min_prediction, original_number)
+            )
             clamped_message = ""
             if clamped_number != original_number:
                 clamped_message = f"\n\nNote: The original forecast of {original_number}% was clamped to {clamped_number}%."

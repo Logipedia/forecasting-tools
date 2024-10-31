@@ -5,7 +5,9 @@ from unittest.mock import Mock
 import pytest
 
 from src.ai_models.basic_model_interfaces.ai_model import AiModel
-from src.ai_models.basic_model_interfaces.time_limited_model import TimeLimitedModel
+from src.ai_models.basic_model_interfaces.time_limited_model import (
+    TimeLimitedModel,
+)
 from tests.cheap.test_ai_models.ai_mock_manager import AiModelMockManager
 from tests.cheap.test_ai_models.models_to_test import ModelsToTest
 
@@ -18,13 +20,17 @@ TIME_LIMITED_ERROR_MESSAGE = "Model must be TimeLimited"
     "This test takes too long to run between threads for some reason (it passes but doesn't check for timeout within 10 sec). Not important enough to fix right now"
 )
 @pytest.mark.parametrize("subclass", ModelsToTest.TIME_LIMITED_LIST)
-def test_ai_model_successfully_times_out(mocker: Mock, subclass: type[AiModel]) -> None:
+def test_ai_model_successfully_times_out(
+    mocker: Mock, subclass: type[AiModel]
+) -> None:
     if not issubclass(subclass, TimeLimitedModel):
         raise ValueError(TIME_LIMITED_ERROR_MESSAGE)
 
     subclass.TIMEOUT_TIME = 10
 
-    AiModelMockManager.mock_ai_model_direct_call_with_long_wait(mocker, subclass)
+    AiModelMockManager.mock_ai_model_direct_call_with_long_wait(
+        mocker, subclass
+    )
     model = subclass()
     model_input = model._get_cheap_input_for_invoke()
 

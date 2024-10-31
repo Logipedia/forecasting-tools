@@ -12,8 +12,12 @@ from src.ai_models.basic_model_interfaces.request_limited_model import (
     RequestLimitedModel,
 )
 from src.ai_models.basic_model_interfaces.retryable_model import RetryableModel
-from src.ai_models.basic_model_interfaces.time_limited_model import TimeLimitedModel
-from src.ai_models.resource_managers.monetary_cost_manager import MonetaryCostManager
+from src.ai_models.basic_model_interfaces.time_limited_model import (
+    TimeLimitedModel,
+)
+from src.ai_models.resource_managers.monetary_cost_manager import (
+    MonetaryCostManager,
+)
 from src.util.jsonable import Jsonable
 
 logger = logging.getLogger(__name__)
@@ -73,7 +77,9 @@ class SearchInput(BaseModel, Jsonable):
     )
 
 
-class ExaSearcher(RequestLimitedModel, RetryableModel, TimeLimitedModel, IncursCost):
+class ExaSearcher(
+    RequestLimitedModel, RetryableModel, TimeLimitedModel, IncursCost
+):
     REQUESTS_PER_PERIOD_LIMIT = (
         5  # For rate limits see https://docs.exa.ai/reference/rate-limits
     )
@@ -107,13 +113,17 @@ class ExaSearcher(RequestLimitedModel, RetryableModel, TimeLimitedModel, IncursC
         sources = await self.invoke(search_query_or_strategy)
         all_highlights = []
         for source in sources:
-            for highlight, score in zip(source.highlights, source.highlight_scores):
+            for highlight, score in zip(
+                source.highlights, source.highlight_scores
+            ):
                 all_highlights.append(
                     ExaHighlightQuote(
                         highlight_text=highlight, score=score, source=source
                     )
                 )
-        sorted_highlights = sorted(all_highlights, key=lambda x: x.score, reverse=True)
+        sorted_highlights = sorted(
+            all_highlights, key=lambda x: x.score, reverse=True
+        )
         return sorted_highlights
 
     async def invoke(
@@ -125,7 +135,9 @@ class ExaSearcher(RequestLimitedModel, RetryableModel, TimeLimitedModel, IncursC
             )
         else:
             search_strategy = search_query_or_strategy
-        return await self.__retryable_timed_cost_request_limited_invoke(search_strategy)
+        return await self.__retryable_timed_cost_request_limited_invoke(
+            search_strategy
+        )
 
     @RetryableModel._retry_according_to_model_allowed_tries
     @RequestLimitedModel._wait_till_request_capacity_available
@@ -134,7 +146,9 @@ class ExaSearcher(RequestLimitedModel, RetryableModel, TimeLimitedModel, IncursC
     async def __retryable_timed_cost_request_limited_invoke(
         self, search_query_or_strategy: SearchInput
     ) -> list[ExaSource]:
-        response = await self._mockable_direct_call_to_model(search_query_or_strategy)
+        response = await self._mockable_direct_call_to_model(
+            search_query_or_strategy
+        )
         return response
 
     async def _mockable_direct_call_to_model(
@@ -147,7 +161,9 @@ class ExaSearcher(RequestLimitedModel, RetryableModel, TimeLimitedModel, IncursC
         self._log_results(exa_sources)
         return exa_sources
 
-    def _prepare_request_data(self, search: SearchInput) -> tuple[str, dict, dict]:
+    def _prepare_request_data(
+        self, search: SearchInput
+    ) -> tuple[str, dict, dict]:
         api_key = self._get_api_key()
         url = "https://api.exa.ai/search"
         headers = {
@@ -165,7 +181,9 @@ class ExaSearcher(RequestLimitedModel, RetryableModel, TimeLimitedModel, IncursC
             "excludeDomains": search.exclude_domains,
             "livecrawl": "always",
             "contents": {
-                "text": {"includeHtmlTags": True} if self.include_text else False,
+                "text": (
+                    {"includeHtmlTags": True} if self.include_text else False
+                ),
                 "highlights": (
                     {
                         "query": (
@@ -183,7 +201,9 @@ class ExaSearcher(RequestLimitedModel, RetryableModel, TimeLimitedModel, IncursC
         }
 
         if search.start_published_date:
-            payload["startPublishedDate"] = search.start_published_date.isoformat()
+            payload["startPublishedDate"] = (
+                search.start_published_date.isoformat()
+            )
         if search.end_published_date:
             payload["endPublishedDate"] = search.end_published_date.isoformat()
         if search.include_text:
@@ -193,8 +213,7 @@ class ExaSearcher(RequestLimitedModel, RetryableModel, TimeLimitedModel, IncursC
 
         return url, headers, payload
 
-
-    @classmethod    
+    @classmethod
     def __get_default_search_strategy(cls, search_query: str) -> SearchInput:
         return SearchInput(
             web_search_query=search_query,
@@ -214,9 +233,13 @@ class ExaSearcher(RequestLimitedModel, RetryableModel, TimeLimitedModel, IncursC
         ), "EXA_API_KEY is not set in the environment variables"
         return api_key
 
-    async def _make_api_request(self, url: str, headers: dict, payload: dict) -> dict:
+    async def _make_api_request(
+        self, url: str, headers: dict, payload: dict
+    ) -> dict:
         async with aiohttp.ClientSession() as session:
-            async with session.post(url, json=payload, headers=headers) as response:
+            async with session.post(
+                url, json=payload, headers=headers
+            ) as response:
                 response.raise_for_status()
                 result: dict = await response.json()
                 return result
@@ -260,10 +283,14 @@ class ExaSearcher(RequestLimitedModel, RetryableModel, TimeLimitedModel, IncursC
 
     ##################################### Cost Calculation #####################################
 
-    def _caculate_cost_for_request(self, results: list[ExaSource]) -> float:
+    def _calculate_cost_for_request(self, results: list[ExaSource]) -> float:
         cost = self.COST_PER_REQUEST
         cost += self.COST_PER_TEXT * len(results) if self.include_text else 0
-        cost += self.COST_PER_HIGHLIGHT * len(results) if self.include_highlights else 0
+        cost += (
+            self.COST_PER_HIGHLIGHT * len(results)
+            if self.include_highlights
+            else 0
+        )
         return cost
 
     async def _track_cost_in_manager_using_model_response(
@@ -273,7 +300,7 @@ class ExaSearcher(RequestLimitedModel, RetryableModel, TimeLimitedModel, IncursC
         assert isinstance(
             response_from_direct_call, list
         ), f"response_from_direct_call is not a list, it is a {type(response_from_direct_call)}"
-        cost = self._caculate_cost_for_request(response_from_direct_call)
+        cost = self._calculate_cost_for_request(response_from_direct_call)
         MonetaryCostManager.increase_current_usage_in_parent_managers(cost)
 
     ################################### Mocking/Test Functions ###################################

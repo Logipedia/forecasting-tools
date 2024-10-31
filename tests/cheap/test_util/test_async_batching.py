@@ -7,7 +7,9 @@ from typing import Coroutine
 import pytest
 
 from src.util import async_batching
-from tests.utilities_for_tests.coroutine_testing import find_stats_of_coroutine_run
+from tests.utilities_for_tests.coroutine_testing import (
+    find_stats_of_coroutine_run,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +35,9 @@ def create_irregular_time_coroutines(
 ) -> list[Coroutine]:
     coroutines = []
     input_list = [i for i in range(number_of_coroutines_to_make)]
-    possible_times_to_wait = [i for i in range(1, max_time_wait_function_can_take + 1)]
+    possible_times_to_wait = [
+        i for i in range(1, max_time_wait_function_can_take + 1)
+    ]
 
     # Assign times from bottom then top and in toward the middle
     for i, input in enumerate(input_list):
@@ -77,11 +81,15 @@ def test_run_coroutine_list_returns_correct_output_in_right_order() -> None:
         ), f"Output was not correct at index {i}. Expected {expected_output_at_index}, got {actual_output_at_index}"
 
 
-@pytest.mark.skip(reason="This test works by itself, but interferes with other tests")
+@pytest.mark.skip(
+    reason="This test works by itself, but interferes with other tests"
+)
 def test_run_coroutine_list_runs_expected_duration() -> None:
     number_of_couroutines_to_make = 5000
     time_to_wait = 1
-    coroutines = create_set_time_coroutines(number_of_couroutines_to_make, time_to_wait)
+    coroutines = create_set_time_coroutines(
+        number_of_couroutines_to_make, time_to_wait
+    )
 
     start_time = time.time()
     results = async_batching.run_coroutines(coroutines)
@@ -123,7 +131,7 @@ def create_rate_limited_coroutines(
     return rate_limited_coroutines
 
 
-def test_rate_limit_wrapper_acheives_average_rate_limit() -> None:
+def test_rate_limit_wrapper_achieves_average_rate_limit() -> None:
     num_coroutines_to_run = 1000
     calls_per_period = 100
     time_period = 1
@@ -205,12 +213,16 @@ def test_failed_coroutine_returns_exception_as_result() -> None:
 
     coroutines = [failing_coroutine() for _ in range(5)]
     exception_handled_coroutines = (
-        async_batching.wrap_coroutines_to_return_not_raise_exceptions(coroutines)
+        async_batching.wrap_coroutines_to_return_not_raise_exceptions(
+            coroutines
+        )
     )
     results = async_batching.run_coroutines(exception_handled_coroutines)
 
     for result in results:
-        assert isinstance(result, Exception), f"Expected an exception but got {result}"
+        assert isinstance(
+            result, Exception
+        ), f"Expected an exception but got {result}"
 
 
 def test_run_couroutines_with_action_called_on_exception() -> None:
@@ -297,7 +309,9 @@ def test__run_coroutines_with_action_called_on_exception__handles_no_matching_in
     ]
 
     results, inputs = (
-        async_batching.run_coroutines_while_removing_and_logging_exceptions(coroutines)
+        async_batching.run_coroutines_while_removing_and_logging_exceptions(
+            coroutines
+        )
     )
 
     assert (

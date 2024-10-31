@@ -2,14 +2,18 @@ import logging
 import os
 from abc import ABC
 
-from langchain_community.callbacks.openai_info import get_openai_token_cost_for_model
+from langchain_community.callbacks.openai_info import (
+    get_openai_token_cost_for_model,
+)
 from openai import AsyncOpenAI
+from openai._types import NOT_GIVEN, NotGiven
 from openai.types.chat import ChatCompletionMessageParam
-from openai._types import NotGiven, NOT_GIVEN
 
 from src.ai_models.ai_utils.openai_utils import OpenAiUtils
 from src.ai_models.ai_utils.response_types import TextTokenCostResponse
-from src.ai_models.model_archetypes.traditional_online_llm import TraditionalOnlineLlm
+from src.ai_models.model_archetypes.traditional_online_llm import (
+    TraditionalOnlineLlm,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +26,9 @@ class OpenAiTextToTextModel(TraditionalOnlineLlm, ABC):
 
     async def invoke(self, prompt: str) -> str:
         response: TextTokenCostResponse = (
-            await self._invoke_with_request_cost_time_and_token_limits_and_retry(prompt)
+            await self._invoke_with_request_cost_time_and_token_limits_and_retry(
+                prompt
+            )
         )
         return response.data
 
@@ -31,8 +37,8 @@ class OpenAiTextToTextModel(TraditionalOnlineLlm, ABC):
     ) -> TextTokenCostResponse:
         self._everything_special_to_call_before_direct_call()
         messages = self._turn_model_input_into_messages(prompt)
-        response: TextTokenCostResponse = await self._call_online_model_using_api(
-            messages, self.temperature
+        response: TextTokenCostResponse = (
+            await self._call_online_model_using_api(messages, self.temperature)
         )
         return response
 
@@ -40,9 +46,11 @@ class OpenAiTextToTextModel(TraditionalOnlineLlm, ABC):
         self, prompt: str
     ) -> list[ChatCompletionMessageParam]:
         if self.system_prompt is None:
-            return OpenAiUtils.put_single_user_message_in_list_using_prompt(prompt)
+            return OpenAiUtils.put_single_user_message_in_list_using_prompt(
+                prompt
+            )
         else:
-            return OpenAiUtils.create_sytem_and_user_message_from_prompt(
+            return OpenAiUtils.create_system_and_user_message_from_prompt(
                 prompt, self.system_prompt
             )
 
@@ -73,7 +81,7 @@ class OpenAiTextToTextModel(TraditionalOnlineLlm, ABC):
         completion_tokens = usage_stats.completion_tokens
         total_tokens = usage_stats.total_tokens
 
-        cost = self.caculate_cost_from_tokens(
+        cost = self.calculate_cost_from_tokens(
             prompt_tkns=prompt_tokens, completion_tkns=completion_tokens
         )
 
@@ -101,7 +109,7 @@ class OpenAiTextToTextModel(TraditionalOnlineLlm, ABC):
             probable_output, cls.MODEL_NAME
         )
 
-        total_cost = model.caculate_cost_from_tokens(
+        total_cost = model.calculate_cost_from_tokens(
             prompt_tkns=prompt_tokens, completion_tkns=completion_tokens
         )
         total_tokens = prompt_tokens + completion_tokens
@@ -125,7 +133,7 @@ class OpenAiTextToTextModel(TraditionalOnlineLlm, ABC):
         tokens = OpenAiUtils.messages_to_tokens(messages, self.MODEL_NAME)
         return tokens
 
-    def caculate_cost_from_tokens(
+    def calculate_cost_from_tokens(
         self, prompt_tkns: int, completion_tkns: int
     ) -> float:
         prompt_cost = get_openai_token_cost_for_model(

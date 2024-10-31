@@ -1,12 +1,10 @@
 import logging
 import os
-import sys
 import re
-from enum import Enum
+import sys
 
 import dotenv
 import streamlit as st
-from pydantic import BaseModel
 
 dotenv.load_dotenv()
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -15,12 +13,21 @@ sys.path.append(top_level_dir)
 
 from front_end.mokoresearch_site.helpers.app_page import AppPage
 from front_end.mokoresearch_site.helpers.general import footer, header
-from src.ai_models.resource_managers.monetary_cost_manager import MonetaryCostManager
+from src.ai_models.resource_managers.monetary_cost_manager import (
+    MonetaryCostManager,
+)
+from src.forecasting.forecast_database_manager import (
+    ForecastDatabaseManager,
+    ForecastRunType,
+)
 from src.forecasting.metaculus_api import MetaculusApi, MetaculusQuestion
-from src.forecasting.sub_question_responders.key_factors_searcher import KeyFactorsSearcher, KeyFigure, KeyFactorType
-from src.forecasting.forecast_database_manager import ForecastDatabaseManager, ForecastRunType
+from src.forecasting.sub_question_responders.key_factors_searcher import (
+    KeyFactorsSearcher,
+    KeyFigure,
+)
 
 logger = logging.getLogger(__name__)
+
 
 class KeyFactorsPage(AppPage):
     FILE_PATH_IN_FRONT_END_FOLDER: str = "pages/key_factors_page.py"
@@ -46,14 +53,18 @@ class KeyFactorsPage(AppPage):
     @classmethod
     def __display_metaculus_url_input(cls) -> str:
         st.write("Enter a Metaculus question URL to analyze its key factors.")
-        return st.text_input("Metaculus Question URL", key=cls.METACULUS_URL_INPUT)
+        return st.text_input(
+            "Metaculus Question URL", key=cls.METACULUS_URL_INPUT
+        )
 
     @classmethod
     def __extract_question_id(cls, url: str) -> int:
-        match = re.search(r'/questions/(\d+)/', url)
+        match = re.search(r"/questions/(\d+)/", url)
         if match:
             return int(match.group(1))
-        raise ValueError("Invalid Metaculus question URL. Please ensure it's in the format: https://metaculus.com/questions/[ID]/[question-title]/")
+        raise ValueError(
+            "Invalid Metaculus question URL. Please ensure it's in the format: https://metaculus.com/questions/[ID]/[question-title]/"
+        )
 
     @classmethod
     async def fetch_and_analyze_question(cls, metaculus_url: str) -> None:
@@ -62,10 +73,14 @@ class KeyFactorsPage(AppPage):
             metaculus_question = MetaculusApi.get_question_by_id(question_id)
             await cls.analyze_question(metaculus_question)
         except Exception as e:
-            st.error(f"An error occurred while fetching the question: {e.__class__.__name__}: {e}")
+            st.error(
+                f"An error occurred while fetching the question: {e.__class__.__name__}: {e}"
+            )
 
     @classmethod
-    async def analyze_question(cls, metaculus_question: MetaculusQuestion) -> None:
+    async def analyze_question(
+        cls, metaculus_question: MetaculusQuestion
+    ) -> None:
         st.markdown(f"## Question: {metaculus_question.question_text}")
         with st.spinner("Analyzing key factors..."):
             try:
@@ -79,7 +94,9 @@ class KeyFactorsPage(AppPage):
                     )
 
                     cost = cost_manager.current_usage
-                    st.success(f"Key factors analysis completed successfully! Cost: ${cost:.2f}")
+                    st.success(
+                        f"Key factors analysis completed successfully! Cost: ${cost:.2f}"
+                    )
                     markdown = cls.make_key_factor_markdown(key_factors)
                     st.markdown(markdown)
 
@@ -99,15 +116,20 @@ class KeyFactorsPage(AppPage):
 
     @classmethod
     def make_key_factor_markdown(cls, key_factors: list[KeyFigure]) -> str:
-        sorted_factors = sorted(key_factors, key=lambda x: x.score or 0, reverse=True)
+        sorted_factors = sorted(
+            key_factors, key=lambda x: x.score or 0, reverse=True
+        )
         markdown = ""
 
-        st.subheader(f"Key Factors")
+        st.subheader("Key Factors")
         for factor in sorted_factors:
-            score_display = f"[Score: {factor.score}]" if factor.score is not None else ""
+            score_display = (
+                f"[Score: {factor.score}]" if factor.score is not None else ""
+            )
             factor_type = f"[{factor.factor_type.value.capitalize()}]"
             markdown += f"- {factor.text} {factor.citation} {score_display} {factor_type}\n"
         return markdown
+
 
 if __name__ == "__main__":
     KeyFactorsPage.main()
