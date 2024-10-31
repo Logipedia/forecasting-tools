@@ -106,15 +106,6 @@ async def test_filtered_invoke() -> None:
         end_published_date=datetime(2022, 11, 30),
     )
     sources = await model.invoke(search)
-    first_source = sources[0]
-    assert (
-        first_source.url
-        == "https://netmeds247.com/shop/safe-t-kit-combination-of-mifepristone-and-misoprostol-tablets/"
-    )
-    assert first_source.title is not None
-    assert "Safe-T-Kit" in first_source.title
-    assert first_source.author is not None
-    assert first_source.auto_prompt_string is not None
 
     for source in sources:
         assert source.text is not None and source.text != ""

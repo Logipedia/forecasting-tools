@@ -110,8 +110,10 @@ class BinaryReport(ForecastReport):
             Before answering you write:
             (a) The time left until the outcome to the question is known.
             (b) What the outcome would be if nothing changed.
-            (c) What you would forecast if there was only a quarter of the time left.
-            (d) What you would forecast if there was 4x the time left.
+            (c) The most important factors that will influence a successful/unsuccessful resolution.
+            (d) What you would forecast if you were to only use historical precedent (i.e. how often this happens in the past) without any current information.
+            (e) What you would forecast if there was only a quarter of the time left.
+            (f) What you would forecast if there was 4x the time left.
 
             You write your rationale and then the last thing you write is your final answer as: "Probability: ZZ%", 0-100
             """

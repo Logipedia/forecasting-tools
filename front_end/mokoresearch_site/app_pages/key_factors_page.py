@@ -22,8 +22,8 @@ from src.forecasting.forecast_database_manager import (
 )
 from src.forecasting.metaculus_api import MetaculusApi, MetaculusQuestion
 from src.forecasting.sub_question_responders.key_factors_searcher import (
+    ScoredKeyFactor,
     KeyFactorsSearcher,
-    KeyFigure,
 )
 
 logger = logging.getLogger(__name__)
@@ -115,19 +115,10 @@ class KeyFactorsPage(AppPage):
                 st.error(f"An error occurred: {str(e)}")
 
     @classmethod
-    def make_key_factor_markdown(cls, key_factors: list[KeyFigure]) -> str:
-        sorted_factors = sorted(
-            key_factors, key=lambda x: x.score or 0, reverse=True
-        )
-        markdown = ""
-
+    def make_key_factor_markdown(cls, key_factors: list[ScoredKeyFactor]) -> str:
+        sorted_factors = sorted(key_factors, key=lambda x: x.score, reverse=True)
         st.subheader("Key Factors")
-        for factor in sorted_factors:
-            score_display = (
-                f"[Score: {factor.score}]" if factor.score is not None else ""
-            )
-            factor_type = f"[{factor.factor_type.value.capitalize()}]"
-            markdown += f"- {factor.text} {factor.citation} {score_display} {factor_type}\n"
+        markdown = ScoredKeyFactor.turn_key_factors_into_markdown_list(sorted_factors)
         return markdown
 
 

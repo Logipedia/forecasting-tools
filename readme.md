@@ -25,7 +25,7 @@ First download and setup Docker Engine using the instructions at the link below 
  * Windows: [windows-install](https://docs.docker.com/desktop/install/windows-install/)
  * Mac: [mac-install](mac-install)
  * Linux: [install](https://docs.docker.com/engine/install/)
-    * Note: DO NOT install Docker Desktop for Linux, rather, select your Linux distribution on the left sidebar and follow the distribution specific instructions for Docker engine. Docker Desktop runs with a different environment in Linux. (NOTE: This restriction might not apply anymore, but we haven't tested it)
+    * Note: DO NOT install Docker Desktop for Linux, rather, select your Linux distribution on the left sidebar and follow the distribution specific instructions for Docker engine. Docker Desktop runs with a different environment in Linux. (TODO: Check if this restriction still applies)
     * Remember to follow the post-installation steps for Linux: [linux-postinstall](https://docs.docker.com/engine/install/linux-postinstall/)
 
 

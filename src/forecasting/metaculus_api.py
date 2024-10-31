@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import random
+import re
 from datetime import datetime, timedelta
 from typing import Any, Sequence, TypeVar
 
@@ -26,7 +27,7 @@ Q = TypeVar("Q", bound=MetaculusQuestion)
 
 class MetaculusApi:
     """
-    Documentation: https://www.metaculus.com/api/
+    Documentation for the API can be found at https://www.metaculus.com/api/
     """
 
     AI_WARMUP_TOURNAMENT_ID = 3294
@@ -42,9 +43,7 @@ class MetaculusApi:
     MAX_QUESTIONS_FROM_QUESTION_API = 100
 
     @classmethod
-    def post_question_comment(
-        cls, question_id: int, comment_text: str
-    ) -> None:
+    def post_question_comment(cls, question_id: int, comment_text: str) -> None:
         response = requests.post(
             f"{cls.API_BASE_URL}/comments/",
             json={
@@ -73,6 +72,15 @@ class MetaculusApi:
         )
         logger.info(f"Posted prediction on question {question_id}")
         raise_for_status_with_additional_info(response)
+
+    @classmethod
+    def get_question_by_url(cls, question_url: str) -> MetaculusQuestion:
+        # URL looks like https://www.metaculus.com/questions/28841/will-eric-adams-be-the-nyc-mayor-on-january-1-2025/
+        match = re.search(r"/questions/(\d+)", question_url)
+        if not match:
+            raise ValueError(f"Could not find question ID in URL: {question_url}")
+        question_id = int(match.group(1))
+        return cls.get_question_by_id(question_id)
 
     @classmethod
     def get_question_by_id(cls, question_id: int) -> MetaculusQuestion:
@@ -104,7 +112,6 @@ class MetaculusApi:
             "order_by": "-activity",
             "project": tournament_id,
             "type": "forecast",
-            "include_description": "true",
         }
         if filter_by_open:
             url_qparams["status"] = "open"
@@ -169,18 +176,14 @@ class MetaculusApi:
             "type": "forecast",
             "forecast_type": "binary",
             "status": "open",
-            "close_time__lt": three_months_from_now,
             "number_of_forecasters__gte": 40,
-            "resolve_time__lt": three_months_from_now,
-            "include_description": "true",
+            "scheduled_resolve_time__lt": three_months_from_now,
             "order_by": "publish_time",
             "offset": offset,
             "limit": number_of_questions,
         }
         questions = cls.__get_questions_from_api(params)
-        checked_questions = typeguard.check_type(
-            questions, list[BinaryQuestion]
-        )
+        checked_questions = typeguard.check_type(questions, list[BinaryQuestion])
         return checked_questions
 
     @classmethod
@@ -192,13 +195,10 @@ class MetaculusApi:
             filter_by_open=True,
         )
         binary_questions = [
-            question
-            for question in questions
-            if isinstance(question, BinaryQuestion)
+            question for question in questions if isinstance(question, BinaryQuestion)
         ]
         assert all(
-            isinstance(question, BinaryQuestion)
-            for question in binary_questions
+            isinstance(question, BinaryQuestion) for question in binary_questions
         )
         return binary_questions  # type: ignore
 
@@ -215,15 +215,11 @@ class MetaculusApi:
         response = requests.get(url, params=params, **cls.AUTH_HEADERS)  # type: ignore
         raise_for_status_with_additional_info(response)
         data = json.loads(response.content)
-        questions = [
-            cls.__metaculus_api_json_to_question(q) for q in data["results"]
-        ]
+        questions = [cls.__metaculus_api_json_to_question(q) for q in data["results"]]
         return questions
 
     @classmethod
-    def __metaculus_api_json_to_question(
-        cls, api_json: dict
-    ) -> MetaculusQuestion:
+    def __metaculus_api_json_to_question(cls, api_json: dict) -> MetaculusQuestion:
         question_type = api_json["question"]["type"]  # type: ignore
         if question_type == "binary":
             return BinaryQuestion.from_metaculus_api_json(api_json)
