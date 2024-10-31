@@ -3,16 +3,15 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-import re
 
 from pydantic import BaseModel, field_validator
 
 from src.ai_models.ai_utils.ai_misc import clean_indents
 from src.forecasting.llms.configured_llms import BaseRateProjectLlm
-from src.util.misc import is_markdown_citation, extract_url_from_markdown_link
 from src.forecasting.llms.smart_searcher import SmartSearcher
 from src.forecasting.sub_question_responders.deduplicator import Deduplicator
 from src.util import async_batching
+from src.util.misc import extract_url_from_markdown_link, is_markdown_citation
 
 logger = logging.getLogger(__name__)
 

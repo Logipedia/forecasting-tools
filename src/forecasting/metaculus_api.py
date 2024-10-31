@@ -43,7 +43,9 @@ class MetaculusApi:
     MAX_QUESTIONS_FROM_QUESTION_API = 100
 
     @classmethod
-    def post_question_comment(cls, question_id: int, comment_text: str) -> None:
+    def post_question_comment(
+        cls, question_id: int, comment_text: str
+    ) -> None:
         response = requests.post(
             f"{cls.API_BASE_URL}/comments/",
             json={
@@ -78,7 +80,9 @@ class MetaculusApi:
         # URL looks like https://www.metaculus.com/questions/28841/will-eric-adams-be-the-nyc-mayor-on-january-1-2025/
         match = re.search(r"/questions/(\d+)", question_url)
         if not match:
-            raise ValueError(f"Could not find question ID in URL: {question_url}")
+            raise ValueError(
+                f"Could not find question ID in URL: {question_url}"
+            )
         question_id = int(match.group(1))
         return cls.get_question_by_id(question_id)
 
@@ -183,7 +187,9 @@ class MetaculusApi:
             "limit": number_of_questions,
         }
         questions = cls.__get_questions_from_api(params)
-        checked_questions = typeguard.check_type(questions, list[BinaryQuestion])
+        checked_questions = typeguard.check_type(
+            questions, list[BinaryQuestion]
+        )
         return checked_questions
 
     @classmethod
@@ -195,10 +201,13 @@ class MetaculusApi:
             filter_by_open=True,
         )
         binary_questions = [
-            question for question in questions if isinstance(question, BinaryQuestion)
+            question
+            for question in questions
+            if isinstance(question, BinaryQuestion)
         ]
         assert all(
-            isinstance(question, BinaryQuestion) for question in binary_questions
+            isinstance(question, BinaryQuestion)
+            for question in binary_questions
         )
         return binary_questions  # type: ignore
 
@@ -215,11 +224,15 @@ class MetaculusApi:
         response = requests.get(url, params=params, **cls.AUTH_HEADERS)  # type: ignore
         raise_for_status_with_additional_info(response)
         data = json.loads(response.content)
-        questions = [cls.__metaculus_api_json_to_question(q) for q in data["results"]]
+        questions = [
+            cls.__metaculus_api_json_to_question(q) for q in data["results"]
+        ]
         return questions
 
     @classmethod
-    def __metaculus_api_json_to_question(cls, api_json: dict) -> MetaculusQuestion:
+    def __metaculus_api_json_to_question(
+        cls, api_json: dict
+    ) -> MetaculusQuestion:
         question_type = api_json["question"]["type"]  # type: ignore
         if question_type == "binary":
             return BinaryQuestion.from_metaculus_api_json(api_json)

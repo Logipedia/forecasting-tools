@@ -72,7 +72,6 @@ def test_score_card_calculated_score_with_outdated() -> None:
     assert score_card.calculated_score == expected_score
 
 
-
 def test_key_factor_validation() -> None:
     valid_citation = "[1](http://example.com)"
     KeyFactor(

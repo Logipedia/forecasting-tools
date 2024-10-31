@@ -2,8 +2,6 @@ import os
 import re
 from unittest.mock import mock_open, patch
 
-import pandas as pd
-
 from src.util import file_manipulation
 
 
@@ -49,8 +47,8 @@ def test_create_or_append_to_file(mock_makedirs, mock_open_file):
         )
 
 
-@patch('builtins.open', new_callable=mock_open)
-@patch('os.makedirs')
+@patch("builtins.open", new_callable=mock_open)
+@patch("os.makedirs")
 def test_log_to_file(mock_makedirs, mock_open_file):
     test_file = TestFileManipulationData.FILE_PATH
     with patch.dict(

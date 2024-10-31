@@ -61,7 +61,9 @@ class KeyFactorsSearcher:
 
     @classmethod
     async def __find_background_key_factors(
-        cls, num_background_questions: int, metaculus_question: MetaculusQuestion
+        cls,
+        num_background_questions: int,
+        metaculus_question: MetaculusQuestion,
     ) -> list[KeyFactor]:
         research_manager = ResearchManager(metaculus_question)
         background_questions = (
@@ -76,11 +78,15 @@ class KeyFactorsSearcher:
 
     @classmethod
     async def __find_base_rate_key_factors(
-        cls, num_base_rate_questions: int, metaculus_question: MetaculusQuestion
+        cls,
+        num_base_rate_questions: int,
+        metaculus_question: MetaculusQuestion,
     ) -> list[KeyFactor]:
         research_manager = ResearchManager(metaculus_question)
-        base_rate_questions = await research_manager.brainstorm_base_rate_questions(
-            num_base_rate_questions
+        base_rate_questions = (
+            await research_manager.brainstorm_base_rate_questions(
+                num_base_rate_questions
+            )
         )
         base_rate_key_factors = await cls.__find_key_factors_for_questions(
             base_rate_questions
@@ -92,7 +98,8 @@ class KeyFactorsSearcher:
         cls, questions: list[str]
     ) -> list[KeyFactor]:
         key_factor_tasks = [
-            cls.__find_key_factors_for_question(question) for question in questions
+            cls.__find_key_factors_for_question(question)
+            for question in questions
         ]
         key_factors, _ = (
             async_batching.run_coroutines_while_removing_and_logging_exceptions(
@@ -102,7 +109,9 @@ class KeyFactorsSearcher:
         flattened_key_factors = [
             factor for sublist in key_factors for factor in sublist
         ]
-        logger.info(f"Found {len(flattened_key_factors)} key factors. Now scoring them.")
+        logger.info(
+            f"Found {len(flattened_key_factors)} key factors. Now scoring them."
+        )
         return flattened_key_factors
 
     @classmethod
@@ -169,7 +178,9 @@ class KeyFactorsSearcher:
 
     @classmethod
     async def __score_key_factor_list(
-        cls, metaculus_question: MetaculusQuestion, key_factors: list[KeyFactor]
+        cls,
+        metaculus_question: MetaculusQuestion,
+        key_factors: list[KeyFactor],
     ) -> list[ScoredKeyFactor]:
         scoring_coroutines = [
             cls.__score_key_factor(metaculus_question.question_text, factor)
@@ -186,10 +197,8 @@ class KeyFactorsSearcher:
     async def __score_key_factor(
         cls, question: str, key_factor: KeyFactor
     ) -> ScoredKeyFactor:
-        pydantic_prompt = (
-            BaseRateProjectLlm.get_schema_format_instructions_for_pydantic_type(
-                ScoreCard
-            )
+        pydantic_prompt = BaseRateProjectLlm.get_schema_format_instructions_for_pydantic_type(
+            ScoreCard
         )
         prompt = clean_indents(
             f"""
@@ -219,7 +228,9 @@ class KeyFactorsSearcher:
         )
 
         model = BaseRateProjectLlm(temperature=0)
-        score_card = await model.invoke_and_return_verified_type(prompt, ScoreCard)
+        score_card = await model.invoke_and_return_verified_type(
+            prompt, ScoreCard
+        )
         logger.info(
             f"Score: {score_card.calculated_score} for key factor: {key_factor.text}: {score_card}"
         )
@@ -236,7 +247,9 @@ class KeyFactorsSearcher:
         key_factors_to_compare: list[ScoredKeyFactor],
         num_factors_to_return: int,
     ) -> list[ScoredKeyFactor]:
-        assert len(key_factors_to_compare) < 25, "Too many key factors to compare"
+        assert (
+            len(key_factors_to_compare) < 25
+        ), "Too many key factors to compare"
         prompt = clean_indents(
             f"""
             You are a superforecaster analyzing key factors for the following question in triple backticks:
@@ -303,7 +316,9 @@ class ScoredKeyFactor(KeyFactor):
     def turn_key_factors_into_markdown_list(
         cls, key_factors: list[ScoredKeyFactor]
     ) -> str:
-        return "\n".join([f"- {factor.display_text}" for factor in key_factors])
+        return "\n".join(
+            [f"- {factor.display_text}" for factor in key_factors]
+        )
 
 
 class KeyFactorType(str, Enum):
@@ -352,7 +367,8 @@ class ScoreCard(BaseModel):
     )
     is_outdated: bool = Field(..., description="Is this key factor outdated?")
     includes_number: bool = Field(
-        ..., description="Does this key factor mention a number other than a date?"
+        ...,
+        description="Does this key factor mention a number other than a date?",
     )
     includes_date: bool = Field(
         ...,
@@ -373,7 +389,9 @@ class ScoreCard(BaseModel):
         final_score += 1 * self.recency.grade_as_number
         final_score += 1 * self.relevance.grade_as_number
         final_score += 1 * self.specificness.grade_as_number
-        final_score += 2 * self.predictive_power_and_applicability.grade_as_number
+        final_score += (
+            2 * self.predictive_power_and_applicability.grade_as_number
+        )
         final_score += 1 * self.reputable_source.grade_as_number
         final_score += 2 * self.overall_quality.grade_as_number
         final_score += 5 if self.includes_number else 0

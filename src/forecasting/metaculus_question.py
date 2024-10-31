@@ -33,7 +33,7 @@ class MetaculusQuestion(BaseModel, Jsonable):
     scheduled_resolution_time: datetime | None = None
     api_json: dict = Field(
         description="The API JSON response used to create the question",
-        default_factory=dict
+        default_factory=dict,
     )
 
     @classmethod

@@ -89,7 +89,6 @@ def create_or_append_to_file(file_path_in_package: str, text: str) -> None:
         file.write(text)
 
 
-
 @skip_if_file_writing_not_allowed
 def log_to_file(
     file_path_in_package: str, text: str, type: str = "DEBUG"

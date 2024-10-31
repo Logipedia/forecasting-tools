@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import asyncio
+import os
+import sys
 import time
 
 import dotenv
-import os
-import sys
 
 # Dynamically determine the absolute path to the top-level directory
 current_dir = os.path.dirname(os.path.abspath(__file__))

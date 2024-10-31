@@ -2,7 +2,9 @@ import logging
 
 import pytest
 
-from src.ai_models.resource_managers.monetary_cost_manager import MonetaryCostManager
+from src.ai_models.resource_managers.monetary_cost_manager import (
+    MonetaryCostManager,
+)
 from src.forecasting.metaculus_api import MetaculusApi
 from src.forecasting.sub_question_responders.key_factors_searcher import (
     KeyFactorsSearcher,
@@ -33,10 +35,12 @@ async def test_find_key_factors_end_to_end(question_url: str) -> None:
             num_key_factors_to_return=num_factors_to_return,
             num_questions_to_research_with=num_questions_to_research_with,
         )
-        key_factors_markdown = ScoredKeyFactor.turn_key_factors_into_markdown_list(
-            key_factors
+        key_factors_markdown = (
+            ScoredKeyFactor.turn_key_factors_into_markdown_list(key_factors)
         )
-        logger.info(f"\nCost: {cost_manager.current_usage}\n{key_factors_markdown}")
+        logger.info(
+            f"\nCost: {cost_manager.current_usage}\n{key_factors_markdown}"
+        )
 
     assert len(key_factors) == num_factors_to_return
     assert all(isinstance(factor, ScoredKeyFactor) for factor in key_factors)
