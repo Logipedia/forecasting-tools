@@ -3,14 +3,12 @@ import random
 import re
 from datetime import datetime
 
+from src.ai_models.ai_utils.ai_misc import clean_indents
 from src.forecasting.forecast_reports.forecast_report import (
     ForecastReport,
     ReasonedPrediction,
 )
-from src.forecasting.llms.configured_llms import (
-    BasicCompetitionLlm,
-    clean_indents,
-)
+from src.forecasting.llms.configured_llms import BasicCompetitionLlm
 from src.forecasting.metaculus_question import NumericQuestion
 
 logger = logging.getLogger(__name__)

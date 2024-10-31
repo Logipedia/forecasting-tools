@@ -1,7 +1,10 @@
 import logging
 from typing import Any
 
-from src.ai_models.ai_utils.ai_misc import strip_code_block_markdown
+from src.ai_models.ai_utils.ai_misc import (
+    clean_indents,
+    strip_code_block_markdown,
+)
 from src.ai_models.resource_managers.monetary_cost_manager import (
     MonetaryCostManager,
 )
@@ -10,10 +13,7 @@ from src.forecasting.forecast_reports.forecast_report import (
     ReasonedPrediction,
 )
 from src.forecasting.forecast_reports.report_organizer import ReportOrganizer
-from src.forecasting.llms.configured_llms import (
-    BasicCompetitionLlm,
-    clean_indents,
-)
+from src.forecasting.llms.configured_llms import BasicCompetitionLlm
 from src.forecasting.metaculus_question import MetaculusQuestion
 from src.util import async_batching
 

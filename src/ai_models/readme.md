@@ -5,7 +5,8 @@ This readme was last updated on Aug 15, 2024
 # Example Usage
 Below is some example code illustrating the main functionality of this module
 ```python
-from src.ai_models.gpt4o import Gpt4o, clean_indents
+from src.ai_models.gpt4o import Gpt4o
+from src.ai_models.ai_utils.ai_misc import clean_indents
 from src.ai_models.resource_managers.monetary_cost_manager import MonetaryCostManager
 
 import asyncio

@@ -4,6 +4,7 @@ import re
 import urllib.parse
 from datetime import datetime
 
+from src.ai_models.ai_utils.ai_misc import clean_indents
 from src.ai_models.basic_model_interfaces.ai_model import AiModel
 from src.ai_models.basic_model_interfaces.outputs_text import OutputsText
 from src.ai_models.exa_searcher import (
@@ -11,10 +12,7 @@ from src.ai_models.exa_searcher import (
     ExaSearcher,
     SearchInput,
 )
-from src.forecasting.llms.configured_llms import (
-    BaseRateProjectLlm,
-    clean_indents,
-)
+from src.forecasting.llms.configured_llms import BaseRateProjectLlm
 
 logger = logging.getLogger(__name__)
 

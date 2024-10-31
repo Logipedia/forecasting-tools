@@ -3,7 +3,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from src.ai_models.gpt4o import Gpt4o, clean_indents
+from src.ai_models.ai_utils.ai_misc import clean_indents
+from src.ai_models.gpt4o import Gpt4o
 from src.forecasting.sub_question_responders.base_rate_responder import (
     BaseRateResponder,
 )

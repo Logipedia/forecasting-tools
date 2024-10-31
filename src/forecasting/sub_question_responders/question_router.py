@@ -1,9 +1,7 @@
 import logging
 
-from src.forecasting.llms.configured_llms import (
-    BasicCompetitionLlm,
-    clean_indents,
-)
+from src.ai_models.ai_utils.ai_misc import clean_indents
+from src.forecasting.llms.configured_llms import BasicCompetitionLlm
 from src.forecasting.sub_question_responders.base_rate_responder import (
     BaseRateResponder,
 )

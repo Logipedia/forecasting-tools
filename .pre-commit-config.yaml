@@ -41,4 +41,5 @@ repos:
     hooks:
     -   id: typos
         args: ["--force-exclude"]
+# --force-exclude makes it such that typos are not automatically fixed
 ################################################################################

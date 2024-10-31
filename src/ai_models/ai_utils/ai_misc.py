@@ -86,6 +86,10 @@ def validate_complex_type(value: T, expected_type: type[T]) -> TypeGuard[T]:
 
 
 def clean_indents(text: str) -> str:
+    """
+    Cleans indents from the text, optimized for prompts
+    Note, this is not the same as textwrap.dedent (see the test for this function for examples)
+    """
     lines = text.split("\n")
     try:
         indent_level_of_first_line = find_indent_level_of_string(lines[0])

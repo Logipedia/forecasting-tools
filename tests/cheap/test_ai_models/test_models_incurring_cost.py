@@ -9,8 +9,10 @@ from src.ai_models.ai_utils.response_types import TextTokenCostResponse
 from src.ai_models.basic_model_interfaces.ai_model import AiModel
 from src.ai_models.basic_model_interfaces.incurs_cost import IncursCost
 from src.ai_models.basic_model_interfaces.retryable_model import RetryableModel
-from src.ai_models.resource_managers.monetary_cost_manager import (
+from src.ai_models.resource_managers.hard_limit_manager import (
     HardLimitExceededError,
+)
+from src.ai_models.resource_managers.monetary_cost_manager import (
     MonetaryCostManager,
 )
 from src.util import async_batching

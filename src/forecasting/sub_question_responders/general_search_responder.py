@@ -5,7 +5,8 @@ from src.forecasting.sub_question_responders.question_responder import (
 )
 
 logger = logging.getLogger(__name__)
-from src.forecasting.llms.smart_searcher import SmartSearcher, clean_indents
+from src.ai_models.ai_utils.ai_misc import clean_indents
+from src.forecasting.llms.smart_searcher import SmartSearcher
 
 
 class GeneralSearchResponder(QuestionResponder):

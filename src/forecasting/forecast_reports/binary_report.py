@@ -6,14 +6,12 @@ from datetime import datetime
 
 from pydantic import AliasChoices, Field, field_validator
 
+from src.ai_models.ai_utils.ai_misc import clean_indents
 from src.forecasting.forecast_reports.forecast_report import (
     ForecastReport,
     ReasonedPrediction,
 )
-from src.forecasting.llms.configured_llms import (
-    AdvancedCompetitionLlm,
-    clean_indents,
-)
+from src.forecasting.llms.configured_llms import AdvancedCompetitionLlm
 from src.forecasting.metaculus_api import MetaculusApi
 from src.forecasting.metaculus_question import BinaryQuestion
 

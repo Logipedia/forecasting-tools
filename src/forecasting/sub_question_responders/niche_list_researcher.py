@@ -7,10 +7,8 @@ import re
 
 from pydantic import BaseModel, field_validator
 
-from src.forecasting.llms.configured_llms import (
-    BaseRateProjectLlm,
-    clean_indents,
-)
+from src.ai_models.ai_utils.ai_misc import clean_indents
+from src.forecasting.llms.configured_llms import BaseRateProjectLlm
 from src.forecasting.llms.smart_searcher import SmartSearcher
 from src.forecasting.sub_question_responders.deduplicator import Deduplicator
 from src.util import async_batching

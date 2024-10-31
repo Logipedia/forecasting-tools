@@ -9,10 +9,8 @@ import requests
 from openai import OpenAI
 from sklearn.metrics.pairwise import cosine_similarity
 
-from src.forecasting.llms.configured_llms import (
-    BaseRateProjectLlm,
-    clean_indents,
-)
+from src.ai_models.ai_utils.ai_misc import clean_indents
+from src.forecasting.llms.configured_llms import BaseRateProjectLlm
 from src.forecasting.llms.smart_searcher import SmartSearcher
 from src.util.misc import raise_for_status_with_additional_info
 

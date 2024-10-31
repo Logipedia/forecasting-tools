@@ -2,7 +2,7 @@ import logging
 
 import pytest
 
-from tests.utilities_for_tests.proportion_Calculator import (
+from tests.utilities_for_tests.proportion_calculator import (
     ProportionStatCalculator,
 )
 
