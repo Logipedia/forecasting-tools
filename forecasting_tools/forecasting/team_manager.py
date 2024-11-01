@@ -3,14 +3,22 @@ import logging
 from datetime import datetime
 from typing import Literal, Sequence
 
+import typeguard
+
 from forecasting_tools.forecasting.forecast_reports.binary_report import (
     BinaryReport,
+)
+from forecasting_tools.forecasting.forecast_reports.forecast_report import (
+    ForecastReport,
 )
 from forecasting_tools.forecasting.forecast_team.forecast_team import (
     ForecastTeam,
 )
 from forecasting_tools.forecasting.metaculus_api import MetaculusApi
-from forecasting_tools.forecasting.metaculus_question import BinaryQuestion
+from forecasting_tools.forecasting.metaculus_question import (
+    BinaryQuestion,
+    MetaculusQuestion,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -23,14 +31,14 @@ class TeamManager:
 
     async def run_and_publish_forecasts_on_all_open_questions(
         self, tournament_id: int
-    ) -> list[BinaryReport]:
+    ) -> list[ForecastReport]:
         reports = await self.run_forecasts_on_all_open_questions(tournament_id)
         await self.publish_forecasts(reports)
         return reports
 
     async def run_forecasts_on_all_open_questions(
         self, tournament_id: int
-    ) -> list[BinaryReport]:
+    ) -> list[ForecastReport]:
         questions = MetaculusApi.get_all_questions_from_tournament(
             tournament_id, filter_by_open=True
         )
@@ -38,18 +46,20 @@ class TeamManager:
         return reports
 
     async def __run_forecast_on_questions(
-        self, questions: Sequence[BinaryQuestion]
-    ) -> list[BinaryReport]:
-        reports: list[BinaryReport] = []
+        self, questions: Sequence[MetaculusQuestion]
+    ) -> list[ForecastReport]:
+        reports: list[ForecastReport] = []
         for question in questions:
             report = await ForecastTeam(question).run_forecast()
             reports.append(report)
             await asyncio.sleep(self.time_to_wait_between_questions)
         return reports
 
-    async def publish_forecasts(self, reports: Sequence[BinaryReport]) -> None:
+    async def publish_forecasts(
+        self, reports: Sequence[ForecastReport]
+    ) -> None:
         for report in reports:
-            report.publish_report_to_metaculus()
+            await report.publish_report_to_metaculus()
 
     async def benchmark_forecast_team(
         self, evaluation_depth: Literal["shallow", "medium", "deep"]
@@ -87,9 +97,11 @@ class TeamManager:
             num_questions_to_benchmark_on
         )
         assert len(questions) == num_questions_to_benchmark_on
+        typeguard.check_type(questions, list[BinaryQuestion])
         reports = await self.__run_forecast_on_questions(questions)
-        average_deviation_score = (
-            BinaryReport.calculate_average_deviation_score(reports)
+        typeguard.check_type(reports, list[BinaryReport])
+        average_deviation_score = BinaryReport.calculate_average_deviation_score(
+            reports  # type: ignore
         )
         rounded_score = round(average_deviation_score, 4)
         file_path_to_save_reports = f"logs/forecasts/benchmarks/benchmark_reports__score_{rounded_score}__{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.json"

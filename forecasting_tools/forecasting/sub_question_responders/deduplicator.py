@@ -10,9 +10,7 @@ from openai import OpenAI
 from sklearn.metrics.pairwise import cosine_similarity
 
 from forecasting_tools.ai_models.ai_utils.ai_misc import clean_indents
-from forecasting_tools.forecasting.llms.configured_llms import (
-    BaseRateProjectLlm,
-)
+from forecasting_tools.forecasting.llms.configured_llms import BasicLlm
 from forecasting_tools.forecasting.llms.smart_searcher import SmartSearcher
 from forecasting_tools.util.misc import raise_for_status_with_additional_info
 
@@ -100,7 +98,7 @@ class Deduplicator:
             """
         )
 
-        model = BaseRateProjectLlm(temperature=0)
+        model = BasicLlm(temperature=0)
         deduplicated_items = await model.invoke_and_return_verified_type(
             deduplication_prompt, list[str]
         )
@@ -172,7 +170,7 @@ class Deduplicator:
                 temperature=0, num_searches_to_run=2, num_sites_per_search=5
             )
         else:
-            model = BaseRateProjectLlm(temperature=0)
+            model = BasicLlm(temperature=0)
 
         is_duplicate = await model.invoke_and_check_for_boolean_keyword(
             deduplication_prompt,

@@ -11,9 +11,7 @@ from forecasting_tools.forecasting.forecast_reports.forecast_report import (
     ForecastReport,
     ReasonedPrediction,
 )
-from forecasting_tools.forecasting.llms.configured_llms import (
-    AdvancedCompetitionLlm,
-)
+from forecasting_tools.forecasting.llms.configured_llms import AdvancedLlm
 from forecasting_tools.forecasting.metaculus_api import MetaculusApi
 from forecasting_tools.forecasting.metaculus_question import BinaryQuestion
 
@@ -120,7 +118,7 @@ class BinaryReport(ForecastReport):
             You write your rationale and then the last thing you write is your final answer as: "Probability: ZZ%", 0-100
             """
         )
-        final_prediction_model = AdvancedCompetitionLlm()
+        final_prediction_model = AdvancedLlm()
         gpt_forecast = await final_prediction_model.invoke(prompt)
         prediction, clamped_message = cls.__extract_prediction_from_response(
             gpt_forecast, max_prediction=95, min_prediction=1

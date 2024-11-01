@@ -63,9 +63,7 @@ class HomePage(AppPage):
         footer()
 
 
-if __name__ == "__main__":
-    dotenv.load_dotenv()
-    CustomLogger.setup_logging()
+def run_forecasting_streamlit_app() -> None:
     all_pages = [HomePage] + HomePage.NON_HOME_PAGES
     navigation = st.navigation(
         [page.convert_to_streamlit_page() for page in all_pages]
@@ -74,3 +72,9 @@ if __name__ == "__main__":
         page_title="Moko Research", page_icon=":material/explore:"
     )
     navigation.run()
+
+
+if __name__ == "__main__":
+    dotenv.load_dotenv()
+    CustomLogger.setup_logging()
+    run_forecasting_streamlit_app()

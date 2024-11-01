@@ -1,9 +1,7 @@
 import logging
 
 from forecasting_tools.ai_models.ai_utils.ai_misc import clean_indents
-from forecasting_tools.forecasting.llms.configured_llms import (
-    BasicCompetitionLlm,
-)
+from forecasting_tools.forecasting.llms.configured_llms import BasicLlm
 from forecasting_tools.forecasting.sub_question_responders.base_rate_responder import (
     BaseRateResponder,
 )
@@ -51,7 +49,7 @@ class QuestionRouter:
             Remember to give the research strategy name exactly as written, and put it in all caps
             """
         )
-        model = BasicCompetitionLlm(temperature=0)
+        model = BasicLlm(temperature=0)
         response = await model.invoke(q1_routing_prompt)
         response_to_be_logged = response.replace("\n", "|")
         logger.info(f"Response to routing prompt: {response_to_be_logged}")

@@ -8,9 +8,7 @@ from forecasting_tools.forecasting.forecast_reports.forecast_report import (
     ForecastReport,
     ReasonedPrediction,
 )
-from forecasting_tools.forecasting.llms.configured_llms import (
-    BasicCompetitionLlm,
-)
+from forecasting_tools.forecasting.llms.configured_llms import BasicLlm
 from forecasting_tools.forecasting.metaculus_question import NumericQuestion
 
 logger = logging.getLogger(__name__)
@@ -76,7 +74,7 @@ class NumericReport(ForecastReport):
             Remember that its very easy to be overconfident. 10% should feel like "this couldn't possibly get below this number!", and probability of 90% should feel like "There is not chance this will get anywhere above this number!"
             """
         )
-        final_prediction_model = BasicCompetitionLlm(temperature=0.7)
+        final_prediction_model = BasicLlm(temperature=0.7)
         gpt_forecast = await final_prediction_model.invoke(prompt)
         prediction = cls.__extract_prediction_from_response(gpt_forecast)
         return ReasonedPrediction(

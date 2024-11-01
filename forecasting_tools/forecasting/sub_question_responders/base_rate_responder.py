@@ -11,9 +11,7 @@ from forecasting_tools.ai_models.ai_utils.ai_misc import clean_indents
 from forecasting_tools.ai_models.resource_managers.monetary_cost_manager import (
     MonetaryCostManager,
 )
-from forecasting_tools.forecasting.llms.configured_llms import (
-    BaseRateProjectLlm,
-)
+from forecasting_tools.forecasting.llms.configured_llms import BasicLlm
 from forecasting_tools.forecasting.sub_question_responders.estimator import (
     Estimator,
 )
@@ -179,7 +177,7 @@ class BaseRateResponder(QuestionResponder):
             """
         )
 
-        model = BaseRateProjectLlm(temperature=0)
+        model = BasicLlm(temperature=0)
         response = await model.invoke_and_return_verified_type(prompt, dict)
 
         start_date = datetime.strptime(response["start_date"], "%Y-%m-%d")
@@ -229,7 +227,7 @@ class BaseRateResponder(QuestionResponder):
     ) -> ReferenceClass:
         assert self.__start_date
         assert self.__end_date
-        model = BaseRateProjectLlm(temperature=0)
+        model = BasicLlm(temperature=0)
         reference_class = await model.invoke_and_return_verified_type(
             prompt, dict
         )
@@ -334,7 +332,7 @@ class BaseRateResponder(QuestionResponder):
             }}
             """
         )
-        model = BaseRateProjectLlm(temperature=0)
+        model = BasicLlm(temperature=0)
         response = await model.invoke_and_return_verified_type(
             choosing_event_or_days_prompt, dict
         )
@@ -443,7 +441,7 @@ class BaseRateResponder(QuestionResponder):
 
             """
         )
-        model = BaseRateProjectLlm(temperature=0)
+        model = BasicLlm(temperature=0)
         response = await model.invoke_and_return_verified_type(prompt, dict)
 
         logger.debug(

@@ -22,6 +22,9 @@ def get_absolute_path(path_in_package: str = "") -> str:
         file_path = package_path + "/" + updated_path_in_package
     else:
         one_level_up_path = os.path.dirname(package_path)
+        assert os.path.exists(
+            os.path.join(one_level_up_path, "pyproject.toml")
+        ), "pyproject.toml not found in parent directory"
         file_path = one_level_up_path + "/" + path_in_package
 
     return file_path
@@ -31,11 +34,12 @@ def _get_package_name() -> str:
     current_path = Path(__file__)
     while current_path != current_path.parent:
         current_path = current_path.parent
-        if (current_path / "pyproject.toml").exists() or (
-            current_path / "setup.py"
+        parent_path = current_path.parent
+        if (parent_path / "pyproject.toml").exists() or (
+            parent_path / "setup.py"
         ).exists():
             return current_path.name
-    return "forecasting_tools"  # fallback to default
+    raise RuntimeError("Package name not found")
 
 
 def _get_absolute_path_of_directory(name_of_directory: str) -> str:

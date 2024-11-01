@@ -7,9 +7,7 @@ import logging
 from pydantic import BaseModel, field_validator
 
 from forecasting_tools.ai_models.ai_utils.ai_misc import clean_indents
-from forecasting_tools.forecasting.llms.configured_llms import (
-    BaseRateProjectLlm,
-)
+from forecasting_tools.forecasting.llms.configured_llms import BasicLlm
 from forecasting_tools.forecasting.llms.smart_searcher import SmartSearcher
 from forecasting_tools.forecasting.sub_question_responders.deduplicator import (
     Deduplicator,
@@ -175,7 +173,7 @@ class NicheListResearcher:
         return [result for result in fact_checked_list if result.is_valid]
 
     async def __check_list_is_short_enough(self) -> None:
-        model = BaseRateProjectLlm(temperature=0)
+        model = BasicLlm(temperature=0)
         prompt = clean_indents(
             f"""
             If you were to make a full list of all '{self.type_of_thing_to_generate}' how long do you think that list would be?
@@ -231,7 +229,7 @@ class NicheListResearcher:
             Make sure your citations have quotes around them.
             """
         )
-        smart_model = BaseRateProjectLlm(temperature=0.8)
+        smart_model = BasicLlm(temperature=0.8)
         internet_model = SmartSearcher(
             temperature=1,
             use_brackets_around_citations=False,
@@ -349,7 +347,7 @@ class NicheListResearcher:
             """
         )
 
-        model = BaseRateProjectLlm(temperature=0.2)
+        model = BasicLlm(temperature=0.2)
         criteria_list = await model.invoke_and_return_verified_type(
             prompt, list[Criteria]
         )

@@ -15,9 +15,7 @@ from forecasting_tools.forecasting.forecast_reports.forecast_report import (
 from forecasting_tools.forecasting.forecast_reports.report_organizer import (
     ReportOrganizer,
 )
-from forecasting_tools.forecasting.llms.configured_llms import (
-    BasicCompetitionLlm,
-)
+from forecasting_tools.forecasting.llms.configured_llms import BasicLlm
 from forecasting_tools.forecasting.metaculus_question import MetaculusQuestion
 from forecasting_tools.util import async_batching
 
@@ -149,7 +147,7 @@ class FinalDecisionAgent:
             Now please summarize the research report above using the markdown template given to you. Just fill in the template and give the markdown report, do not include any other text. Your summary will be published as is.
             """
         )
-        model = BasicCompetitionLlm(temperature=0)
+        model = BasicLlm(temperature=0)
         summary_markdown = await model.invoke(prompt)
         cleaned_summary_markdown = strip_code_block_markdown(summary_markdown)
         self.__research_summary = cleaned_summary_markdown

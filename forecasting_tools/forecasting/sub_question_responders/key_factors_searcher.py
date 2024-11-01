@@ -11,8 +11,8 @@ from forecasting_tools.forecasting.forecast_team.research_manager import (
     ResearchManager,
 )
 from forecasting_tools.forecasting.llms.configured_llms import (
-    AdvancedCompetitionLlm,
-    BaseRateProjectLlm,
+    AdvancedLlm,
+    BasicLlm,
 )
 from forecasting_tools.forecasting.llms.smart_searcher import SmartSearcher
 from forecasting_tools.forecasting.metaculus_api import MetaculusQuestion
@@ -204,8 +204,10 @@ class KeyFactorsSearcher:
     async def __score_key_factor(
         cls, question: str, key_factor: KeyFactor
     ) -> ScoredKeyFactor:
-        pydantic_prompt = BaseRateProjectLlm.get_schema_format_instructions_for_pydantic_type(
-            ScoreCard
+        pydantic_prompt = (
+            BasicLlm.get_schema_format_instructions_for_pydantic_type(
+                ScoreCard
+            )
         )
         prompt = clean_indents(
             f"""
@@ -234,7 +236,7 @@ class KeyFactorsSearcher:
             """
         )
 
-        model = BaseRateProjectLlm(temperature=0)
+        model = BasicLlm(temperature=0)
         score_card = await model.invoke_and_return_verified_type(
             prompt, ScoreCard
         )
@@ -279,7 +281,7 @@ class KeyFactorsSearcher:
             """
         )
 
-        model = AdvancedCompetitionLlm()
+        model = AdvancedLlm()
         selected_indices = await model.invoke_and_return_verified_type(
             prompt, list[int]
         )

@@ -3,9 +3,7 @@ from __future__ import annotations
 import logging
 
 from forecasting_tools.ai_models.ai_utils.ai_misc import clean_indents
-from forecasting_tools.forecasting.llms.configured_llms import (
-    BasicCompetitionLlm,
-)
+from forecasting_tools.forecasting.llms.configured_llms import BasicLlm
 from forecasting_tools.forecasting.metaculus_question import MetaculusQuestion
 from forecasting_tools.forecasting.sub_question_responders.base_rate_responder import (
     BaseRateReport,
@@ -181,7 +179,7 @@ class ResearchManager:
             Please come up with {num_background_questions} questions.
             """
         )
-        model = BasicCompetitionLlm(temperature=0.8)
+        model = BasicLlm(temperature=0.8)
         questions_to_get_context: list[str] = (
             await model.invoke_and_return_verified_type(prompt, list[str])
         )
@@ -278,7 +276,7 @@ class ResearchManager:
             """
         )
 
-        model = BasicCompetitionLlm(temperature=0.8)
+        model = BasicLlm(temperature=0.8)
         base_rate_questions: list[str] = (
             await model.invoke_and_return_verified_type(prompt, list[str])
         )
@@ -378,7 +376,7 @@ class ResearchManager:
             {base_rate_questions}
             """
         )
-        model = BasicCompetitionLlm(temperature=0)
+        model = BasicLlm(temperature=0)
         picked_questions: list[str] = (
             await model.invoke_and_return_verified_type(prompt, list[str])
         )

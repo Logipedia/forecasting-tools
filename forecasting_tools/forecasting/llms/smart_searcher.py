@@ -14,9 +14,7 @@ from forecasting_tools.ai_models.exa_searcher import (
     ExaSearcher,
     SearchInput,
 )
-from forecasting_tools.forecasting.llms.configured_llms import (
-    BaseRateProjectLlm,
-)
+from forecasting_tools.forecasting.llms.configured_llms import BasicLlm
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +44,7 @@ class SmartSearcher(OutputsText, AiModel):
             include_highlights=True,
             num_results=num_sites_per_search,
         )
-        self.llm = BaseRateProjectLlm(temperature=temperature)
+        self.llm = BasicLlm(temperature=temperature)
         self.include_works_cited_list = include_works_cited_list
         self.use_citation_brackets = use_brackets_around_citations
 

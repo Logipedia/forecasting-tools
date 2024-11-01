@@ -1,11 +1,23 @@
 ### These commands are run after the docker image for the dev container is built ###
 
 # Install pipx (https://pipx.pypa.io/stable/installation/)
-sudo apt update
-sudo apt install pipx
+sudo apt update -y
+sudo apt install -y pipx
 
 # Install poetry using pipx (https://python-poetry.org/docs/#installation)
 pipx install poetry
 
-poetry install
-pre-commit install
+# Configure poetry to create virtualenvs in project directory
+poetry config virtualenvs.in-project true
+
+# Install python dependencies
+poetry install --no-interaction
+
+# Install pre-commit hooks
+poetry run pre-commit install
+
+# Activate virtual environment
+source ../.venv/bin/activate
+
+# Show which Python interpreter is being used
+which python
