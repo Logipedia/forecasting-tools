@@ -11,15 +11,19 @@ from forecasting_tools.ai_models.exa_searcher import ExaSearcher
 from forecasting_tools.ai_models.gpto1 import GptO1
 from forecasting_tools.ai_models.metaculus4o import Gpt4oMetaculusProxy
 from forecasting_tools.ai_models.perplexity import Perplexity
-from tests.cheap.test_ai_models.ai_mock_manager import AiModelMockManager
-from tests.cheap.test_ai_models.models_to_test import ModelsToTest
+from tests.no_cost_expect_all_to_succeed.test_ai_models.ai_mock_manager import (
+    AiModelMockManager,
+)
+from tests.no_cost_expect_all_to_succeed.test_ai_models.models_to_test import (
+    ModelsToTest,
+)
 from tests.utilities_for_tests import coroutine_testing
 
 logger = logging.getLogger(__name__)
 
 
 @pytest.mark.parametrize("subclass", ModelsToTest.BASIC_MODEL_LIST)
-def test_response_from_a_direct_call_is_same_ask_mock_value(
+async def test_response_from_a_direct_call_is_same_ask_mock_value(
     subclass: type[AiModel],
 ) -> None:
     if issubclass(subclass, Perplexity):
@@ -42,7 +46,7 @@ def test_response_from_a_direct_call_is_same_ask_mock_value(
 
     model = subclass()
     model_input = model._get_cheap_input_for_invoke()
-    response = asyncio.run(model._mockable_direct_call_to_model(model_input))
+    response = await model._mockable_direct_call_to_model(model_input)
     assert response is not None, "Response is None"
 
     mock_value = (
@@ -156,18 +160,6 @@ def test_call_limit_error_raised_so_tests_cant_accidentally_create_insane_costs(
 
 
 @pytest.mark.parametrize("subclass", ModelsToTest.BASIC_MODEL_LIST)
-def test_langchain_traces_deactivated_if_in_testing_mode(
-    mocker: Mock, subclass: type[AiModel]
-) -> None:
-    model = subclass()
-    model._deactivate_langchain_traces_if_in_testing_mode()
-    langchain_api_key = os.environ.get("LANGCHAIN_API_KEY")
-    tracing_v2 = os.environ.get("LANGCHAIN_TRACING_V2")
-    assert langchain_api_key is None, "Langchain traces were not deactivated"
-    assert tracing_v2 is None, "Langchain traces were not deactivated"
-
-
-@pytest.mark.parametrize("subclass", ModelsToTest.BASIC_MODEL_LIST)
 async def test_special_functions_called_with_direct_call(
     mocker: Mock, subclass: type[AiModel]
 ) -> None:
@@ -175,21 +167,10 @@ async def test_special_functions_called_with_direct_call(
     mock_limiting_function = AiModelMockManager.mock_function_that_throws_error_if_test_limit_reached(
         mocker
     )
-    mock_langchain_deactivating_function = (
-        AiModelMockManager.mock_function_that_deactivates_langchain_tracing(
-            mocker
-        )
-    )
     await model._mockable_direct_call_to_model(
         model._get_cheap_input_for_invoke()
     )
     limit_function_num_calls = mock_limiting_function.call_count
-    langchain_function_num_calls = (
-        mock_langchain_deactivating_function.call_count
-    )
     assert (
         limit_function_num_calls == 1
     ), f"Model function was not called n=1 times. It was called {limit_function_num_calls} times"
-    assert (
-        langchain_function_num_calls == 1
-    ), f"Langchain function was not called n=1 times. It was called {langchain_function_num_calls} times"

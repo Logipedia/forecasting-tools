@@ -49,7 +49,6 @@ class AiModel(ABC):
         It is a place to put any logic that should be run before the direct call.
         """
         self._increment_calls_then_error_if_testing_call_limit_reached()
-        self._deactivate_langchain_traces_if_in_testing_mode()
 
     def _increment_calls_then_error_if_testing_call_limit_reached(
         self, max_calls: int = 30
@@ -63,10 +62,3 @@ class AiModel(ABC):
             raise RuntimeError(
                 f"model called more than {max_calls} times during testing"
             )
-
-    def _deactivate_langchain_traces_if_in_testing_mode(self) -> None:
-        if "PYTEST_CURRENT_TEST" in os.environ:
-            if "LANGCHAIN_API_KEY" in os.environ:
-                del os.environ["LANGCHAIN_API_KEY"]
-            if "LANGCHAIN_TRACING_V2" in os.environ:
-                del os.environ["LANGCHAIN_TRACING_V2"]

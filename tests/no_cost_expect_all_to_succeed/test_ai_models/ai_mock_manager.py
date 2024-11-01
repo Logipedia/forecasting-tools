@@ -146,13 +146,6 @@ class AiModelMockManager:
         return mock_function
 
     @staticmethod
-    def mock_function_that_deactivates_langchain_tracing(mocker: Mock) -> Mock:
-        mock_function = mocker.patch(
-            f"{AiModel._deactivate_langchain_traces_if_in_testing_mode.__module__}.{AiModel._deactivate_langchain_traces_if_in_testing_mode.__qualname__}"
-        )
-        return mock_function
-
-    @staticmethod
     def reinitialize_limiters(
         subclass: type[RequestLimitedModel | TokenLimitedModel],
     ) -> None:

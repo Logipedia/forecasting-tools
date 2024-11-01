@@ -22,8 +22,12 @@ from forecasting_tools.ai_models.resource_managers.monetary_cost_manager import 
     MonetaryCostManager,
 )
 from forecasting_tools.util import async_batching
-from tests.cheap.test_ai_models.ai_mock_manager import AiModelMockManager
-from tests.cheap.test_ai_models.models_to_test import ModelsToTest
+from tests.no_cost_expect_all_to_succeed.test_ai_models.ai_mock_manager import (
+    AiModelMockManager,
+)
+from tests.no_cost_expect_all_to_succeed.test_ai_models.models_to_test import (
+    ModelsToTest,
+)
 
 logger = logging.getLogger(__name__)
 

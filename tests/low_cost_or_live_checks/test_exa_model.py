@@ -9,7 +9,9 @@ from forecasting_tools.ai_models.exa_searcher import (
     ExaSource,
     SearchInput,
 )
-from tests.cheap.test_ai_models.ai_mock_manager import AiModelMockManager
+from tests.no_cost_expect_all_to_succeed.test_ai_models.ai_mock_manager import (
+    AiModelMockManager,
+)
 
 
 async def test_invoke_for_highlights_in_relevance_order(mocker: Mock) -> None:

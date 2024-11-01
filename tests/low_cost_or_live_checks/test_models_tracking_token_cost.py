@@ -16,7 +16,9 @@ from forecasting_tools.ai_models.gpto1 import GptO1
 from forecasting_tools.ai_models.model_archetypes.traditional_online_llm import (
     TraditionalOnlineLlm,
 )
-from tests.cheap.test_ai_models.models_to_test import ModelsToTest
+from tests.no_cost_expect_all_to_succeed.test_ai_models.models_to_test import (
+    ModelsToTest,
+)
 
 
 @pytest.mark.parametrize("subclass", ModelsToTest.TOKENS_INCUR_COST_LIST)

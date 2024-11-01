@@ -7,8 +7,12 @@ from forecasting_tools.ai_models.basic_model_interfaces.ai_model import AiModel
 from forecasting_tools.ai_models.basic_model_interfaces.token_limited_model import (
     TokenLimitedModel,
 )
-from tests.cheap.test_ai_models.ai_mock_manager import AiModelMockManager
-from tests.cheap.test_ai_models.models_to_test import ModelsToTest
+from tests.no_cost_expect_all_to_succeed.test_ai_models.ai_mock_manager import (
+    AiModelMockManager,
+)
+from tests.no_cost_expect_all_to_succeed.test_ai_models.models_to_test import (
+    ModelsToTest,
+)
 
 logger = logging.getLogger(__name__)
 import asyncio

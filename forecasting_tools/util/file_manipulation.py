@@ -6,26 +6,32 @@ from pathlib import Path
 from typing import Callable
 
 
-def get_absolute_path(path_in_package: str = "") -> str:
+def get_absolute_path(path_in_package: str) -> str:
     """
     This function returns the absolute path of a file in the package
     If there is no parameter given, it will just give the absolute path of the package
     @param path_in_package: The path of the file in the package starting just after the package name (e.g. "data/claims.csv")
     """
-    path_in_package = path_in_package.strip("/")
+    # If it's already an absolute path, return it as is
+    if os.path.isabs(path_in_package):
+        return path_in_package
+
+    path_in_package = os.path.normpath(path_in_package.strip("/"))
 
     package_name = _get_package_name()
     package_path = _get_absolute_path_of_directory(package_name)
 
     if path_in_package.startswith(package_name):
-        updated_path_in_package = path_in_package.strip(package_name)
-        file_path = package_path + "/" + updated_path_in_package
+        updated_path_in_package = path_in_package.removeprefix(
+            package_name
+        ).strip("/")
+        file_path = os.path.join(package_path, updated_path_in_package)
     else:
         one_level_up_path = os.path.dirname(package_path)
         assert os.path.exists(
             os.path.join(one_level_up_path, "pyproject.toml")
         ), "pyproject.toml not found in parent directory"
-        file_path = one_level_up_path + "/" + path_in_package
+        file_path = os.path.join(one_level_up_path, path_in_package)
 
     return file_path
 

@@ -89,14 +89,14 @@ class BinaryReport(ForecastReport):
             Your interview question is:
             {question.question_text}
 
-            Background:
-            {question.background_info if question.background_info else ""}
+            Background information:
+            {question.background_info if question.background_info else "No background information provided."}
 
+            Resolution criteria:
+            {question.resolution_criteria if question.resolution_criteria else "No resolution criteria provided."}
 
-            {question.resolution_criteria if question.resolution_criteria else ""}
-
-
-            {question.fine_print if question.fine_print else ""}
+            Fine print:
+            {question.fine_print if question.fine_print else "No fine print provided."}
 
 
             Your research assistant says:

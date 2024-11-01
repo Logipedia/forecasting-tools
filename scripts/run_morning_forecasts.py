@@ -17,6 +17,9 @@ from forecasting_tools.forecasting.forecast_database_manager import (
     ForecastDatabaseManager,
     ForecastRunType,
 )
+from forecasting_tools.forecasting.forecast_reports.binary_report import (
+    BinaryReport,
+)
 from forecasting_tools.forecasting.metaculus_api import MetaculusApi
 from forecasting_tools.forecasting.team_manager import TeamManager
 from forecasting_tools.util.custom_logger import CustomLogger
@@ -39,6 +42,7 @@ def run_morning_forecasts() -> None:
             )
         )
     for report in reports:
+        assert isinstance(report, BinaryReport)
         ForecastDatabaseManager.add_forecast_report_to_database(
             report, ForecastRunType.REGULAR_FORECAST
         )

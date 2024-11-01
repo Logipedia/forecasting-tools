@@ -98,11 +98,13 @@ def find__with_open__usage(
     return violations
 
 
-def test_no_with_open_usage() -> None:
+def test_no__with_open__usage() -> None:
     file_manipulation_name = file_manipulation.__name__.split(".")[-1] + ".py"
     excluded_files: list[str] = [file_manipulation_name]
 
-    directory_to_check = file_manipulation.get_absolute_path("src")
+    directory_to_check = file_manipulation.get_absolute_path(
+        "forecasting_tools"
+    )
     violations = find__with_open__usage(directory_to_check, excluded_files)
     assert (
         not violations

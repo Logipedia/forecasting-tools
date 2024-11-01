@@ -11,7 +11,9 @@ from forecasting_tools.ai_models.ai_utils.openai_utils import VisionMessageData
 from forecasting_tools.ai_models.ai_utils.response_types import (
     TextTokenCostResponse,
 )
-from tests.cheap.test_ai_models.ai_mock_manager import AiModelMockManager
+from tests.no_cost_expect_all_to_succeed.test_ai_models.ai_mock_manager import (
+    AiModelMockManager,
+)
 
 
 class OpenAiVisionToTextModel(OpenAiTextToTextModel, ABC):

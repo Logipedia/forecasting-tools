@@ -18,7 +18,7 @@ async def test_ask_question_basic() -> None:
     )
     question = "What is the recent news on SpaceX?"
     report = await searcher.invoke(question)
-    logger.info(report)
+    logger.info(f"Report:\n{report}")
 
     assert report, "Result should not be empty"
     assert isinstance(report, str), "Result should be a string"

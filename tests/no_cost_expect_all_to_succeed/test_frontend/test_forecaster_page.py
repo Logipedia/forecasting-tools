@@ -11,10 +11,12 @@ from forecasting_tools.front_end.app_pages.forecaster_page import (
 from forecasting_tools.front_end.helpers.report_displayer import (
     ReportDisplayer,
 )
-from tests.cheap.test_forecasting.forecasting_test_manager import (
+from tests.no_cost_expect_all_to_succeed.test_forecasting.forecasting_test_manager import (
     ForecastingTestManager,
 )
-from tests.cheap.test_frontend.front_end_test_utils import FrontEndTestUtils
+from tests.no_cost_expect_all_to_succeed.test_frontend.front_end_test_utils import (
+    FrontEndTestUtils,
+)
 
 logger = logging.getLogger(__name__)
 

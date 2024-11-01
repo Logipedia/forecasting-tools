@@ -15,7 +15,7 @@ from forecasting_tools.forecasting.metaculus_question import (
     NumericQuestion,
     QuestionState,
 )
-from tests.cheap.test_forecasting.forecasting_test_manager import (
+from tests.no_cost_expect_all_to_succeed.test_forecasting.forecasting_test_manager import (
     ForecastingTestManager,
 )
 

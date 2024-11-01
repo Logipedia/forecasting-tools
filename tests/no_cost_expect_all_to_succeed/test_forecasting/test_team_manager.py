@@ -7,7 +7,7 @@ import pytest
 from forecasting_tools.forecasting.metaculus_api import MetaculusApi
 from forecasting_tools.forecasting.team_manager import TeamManager
 from forecasting_tools.util import file_manipulation
-from tests.cheap.test_forecasting.forecasting_test_manager import (
+from tests.no_cost_expect_all_to_succeed.test_forecasting.forecasting_test_manager import (
     ForecastingTestManager,
 )
 

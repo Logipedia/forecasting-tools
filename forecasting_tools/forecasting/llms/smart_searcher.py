@@ -111,7 +111,7 @@ class SmartSearcher(OutputsText, AiModel):
     async def __search_for_quotes(
         self, search_inputs: list[SearchInput]
     ) -> list[ExaHighlightQuote]:
-        all_results: list[list[ExaHighlightQuote]] = await asyncio.gather(
+        all_quotes: list[list[ExaHighlightQuote]] = await asyncio.gather(
             *[
                 self.exa_searcher.invoke_for_highlights_in_relevance_order(
                     search
@@ -119,23 +119,26 @@ class SmartSearcher(OutputsText, AiModel):
                 for search in search_inputs
             ]
         )
-        flattened_results = [
-            result for sublist in all_results for result in sublist
+        flattened_quotes = [
+            quote for sublist in all_quotes for quote in sublist
         ]
-        unique_highlights: dict[str, ExaHighlightQuote] = {}
-        for result in flattened_results:
-            if result.highlight_text not in unique_highlights:
-                unique_highlights[result.highlight_text] = result
-        deduplicated_results = sorted(
-            unique_highlights.values(), key=lambda x: x.score, reverse=True
+        unique_quotes: dict[str, ExaHighlightQuote] = {}
+        for quote in flattened_quotes:
+            if quote.highlight_text not in unique_quotes:
+                unique_quotes[quote.highlight_text] = quote
+        deduplicated_quotes = sorted(
+            unique_quotes.values(), key=lambda x: x.score, reverse=True
         )
-        assert (
-            len(deduplicated_results) > self.num_quotes_to_evaluate_from_search
-        ), f"Not enough search results found. Found {len(deduplicated_results)} results, but need at least {self.num_quotes_to_evaluate_from_search}"
-        most_relevant_results = deduplicated_results[
+        if len(deduplicated_quotes) == 0:
+            raise RuntimeError("No quotes found")
+        if len(deduplicated_quotes) < self.num_quotes_to_evaluate_from_search:
+            logger.warning(
+                f"Couldn't find the number of quotes asked for. Found {len(deduplicated_quotes)} quotes, but need {self.num_quotes_to_evaluate_from_search} quotes"
+            )
+        most_relevant_quotes = deduplicated_quotes[
             : self.num_quotes_to_evaluate_from_search
         ]
-        return most_relevant_results
+        return most_relevant_quotes
 
     async def __compile_report(
         self,

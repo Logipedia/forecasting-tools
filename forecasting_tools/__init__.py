@@ -28,4 +28,6 @@ from forecasting_tools.forecasting.sub_question_responders.niche_list_researcher
 from forecasting_tools.forecasting.team_manager import (
     TeamManager as TeamManager,
 )
-from forecasting_tools.front_end.Home import HomePage as HomePage
+from forecasting_tools.front_end.Home import (
+    run_forecasting_streamlit_app as run_forecasting_streamlit_app,
+)
