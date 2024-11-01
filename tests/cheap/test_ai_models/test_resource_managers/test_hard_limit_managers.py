@@ -6,14 +6,14 @@ from typing import Any, Callable, Coroutine
 
 import pytest
 
-from src.ai_models.resource_managers.hard_limit_manager import (
+from forecasting_tools.ai_models.resource_managers.hard_limit_manager import (
     HardLimitExceededError,
     HardLimitManager,
 )
-from src.ai_models.resource_managers.monetary_cost_manager import (
+from forecasting_tools.ai_models.resource_managers.monetary_cost_manager import (
     MonetaryCostManager,
 )
-from src.util import async_batching
+from forecasting_tools.util import async_batching
 
 logger = logging.getLogger(__name__)
 import sys

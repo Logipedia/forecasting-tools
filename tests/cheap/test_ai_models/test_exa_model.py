@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from src.ai_models.exa_searcher import (
+from forecasting_tools.ai_models.exa_searcher import (
     ExaHighlightQuote,
     ExaSearcher,
     ExaSource,

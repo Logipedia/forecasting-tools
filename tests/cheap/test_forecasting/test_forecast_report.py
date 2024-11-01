@@ -2,8 +2,12 @@ import textwrap
 
 import pytest
 
-from src.forecasting.forecast_reports.binary_report import BinaryReport
-from src.forecasting.forecast_reports.report_section import ReportSection
+from forecasting_tools.forecasting.forecast_reports.binary_report import (
+    BinaryReport,
+)
+from forecasting_tools.forecasting.forecast_reports.report_section import (
+    ReportSection,
+)
 from tests.cheap.test_forecasting.forecasting_test_manager import (
     ForecastingTestManager,
 )

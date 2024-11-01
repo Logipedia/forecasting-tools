@@ -4,13 +4,13 @@ from unittest.mock import Mock
 import pytest
 from streamlit.testing.v1 import AppTest
 
-from front_end.mokoresearch_site.app_pages.forecaster_page import (
+from forecasting_tools.forecasting.metaculus_question import BinaryQuestion
+from forecasting_tools.front_end.app_pages.forecaster_page import (
     ForecasterPage,
 )
-from front_end.mokoresearch_site.helpers.report_displayer import (
+from forecasting_tools.front_end.helpers.report_displayer import (
     ReportDisplayer,
 )
-from src.forecasting.metaculus_question import BinaryQuestion
 from tests.cheap.test_forecasting.forecasting_test_manager import (
     ForecastingTestManager,
 )

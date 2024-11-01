@@ -1,7 +1,7 @@
 import logging
 
-from front_end.mokoresearch_site.helpers.app_page import AppPage
-from front_end.mokoresearch_site.Home import HomePage
+from forecasting_tools.front_end.helpers.app_page import AppPage
+from forecasting_tools.front_end.Home import HomePage
 from tests.cheap.test_frontend.front_end_test_utils import FrontEndTestUtils
 
 logger = logging.getLogger(__name__)

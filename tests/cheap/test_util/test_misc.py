@@ -1,7 +1,7 @@
 import pytest
 import requests
 
-from src.util.misc import raise_for_status_with_additional_info
+from forecasting_tools.util.misc import raise_for_status_with_additional_info
 
 
 def test_raise_for_status_raises_error_properly() -> None:

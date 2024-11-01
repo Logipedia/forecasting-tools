@@ -12,16 +12,16 @@ logger = logging.getLogger(__name__)
 import time
 from enum import Enum
 
-from src.ai_models.basic_model_interfaces.request_limited_model import (
+from forecasting_tools.ai_models.basic_model_interfaces.request_limited_model import (
     RequestLimitedModel,
 )
-from src.ai_models.basic_model_interfaces.token_limited_model import (
+from forecasting_tools.ai_models.basic_model_interfaces.token_limited_model import (
     TokenLimitedModel,
 )
-from src.ai_models.basic_model_interfaces.tokens_are_calculatable import (
+from forecasting_tools.ai_models.basic_model_interfaces.tokens_are_calculatable import (
     TokensAreCalculatable,
 )
-from src.util import async_batching
+from forecasting_tools.util import async_batching
 from tests.utilities_for_tests import coroutine_testing
 
 REQUEST_LIMITED_ERROR_MESSAGE = "Model must be RequestLimited"

@@ -4,15 +4,15 @@ import asyncio
 
 import dotenv
 
-from src.forecasting.forecast_database_manager import (
+from forecasting_tools.forecasting.forecast_database_manager import (
     ForecastDatabaseManager,
     ForecastRunType,
 )
-from src.forecasting.sub_question_responders.base_rate_responder import (
+from forecasting_tools.forecasting.sub_question_responders.base_rate_responder import (
     BaseRateReport,
     BaseRateResponder,
 )
-from src.util.custom_logger import CustomLogger
+from forecasting_tools.util.custom_logger import CustomLogger
 
 
 def run_base_rate() -> None:

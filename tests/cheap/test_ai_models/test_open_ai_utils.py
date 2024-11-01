@@ -1,4 +1,4 @@
-from src.ai_models.ai_utils.openai_utils import OpenAiUtils
+from forecasting_tools.ai_models.ai_utils.openai_utils import OpenAiUtils
 from tests.cheap.test_ai_models.ai_mock_manager import AiModelMockManager
 
 

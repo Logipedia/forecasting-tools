@@ -3,8 +3,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from src.ai_models.basic_model_interfaces.ai_model import AiModel
-from src.ai_models.basic_model_interfaces.token_limited_model import (
+from forecasting_tools.ai_models.basic_model_interfaces.ai_model import AiModel
+from forecasting_tools.ai_models.basic_model_interfaces.token_limited_model import (
     TokenLimitedModel,
 )
 from tests.cheap.test_ai_models.ai_mock_manager import AiModelMockManager
@@ -13,7 +13,7 @@ from tests.cheap.test_ai_models.models_to_test import ModelsToTest
 logger = logging.getLogger(__name__)
 import asyncio
 
-from src.util import async_batching
+from forecasting_tools.util import async_batching
 
 TOKEN_LIMITED_ERROR_MESSAGE = "Model must be TokenLimited"
 MOCK_INPUT_TO_TOKEN_RETURN_VALUE = 5000

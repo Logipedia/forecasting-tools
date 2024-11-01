@@ -5,12 +5,12 @@ from unittest.mock import Mock
 
 import pytest
 
-from src.ai_models.basic_model_interfaces.ai_model import AiModel
-from src.ai_models.claude35sonnet import Claude35Sonnet
-from src.ai_models.exa_searcher import ExaSearcher
-from src.ai_models.gpto1 import GptO1
-from src.ai_models.metaculus4o import Gpt4oMetaculusProxy
-from src.ai_models.perplexity import Perplexity
+from forecasting_tools.ai_models.basic_model_interfaces.ai_model import AiModel
+from forecasting_tools.ai_models.claude35sonnet import Claude35Sonnet
+from forecasting_tools.ai_models.exa_searcher import ExaSearcher
+from forecasting_tools.ai_models.gpto1 import GptO1
+from forecasting_tools.ai_models.metaculus4o import Gpt4oMetaculusProxy
+from forecasting_tools.ai_models.perplexity import Perplexity
 from tests.cheap.test_ai_models.ai_mock_manager import AiModelMockManager
 from tests.cheap.test_ai_models.models_to_test import ModelsToTest
 from tests.utilities_for_tests import coroutine_testing

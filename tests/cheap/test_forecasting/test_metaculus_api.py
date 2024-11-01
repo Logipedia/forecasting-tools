@@ -3,9 +3,11 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from src.forecasting.forecast_reports.report_organizer import ReportOrganizer
-from src.forecasting.metaculus_api import MetaculusApi
-from src.forecasting.metaculus_question import (
+from forecasting_tools.forecasting.forecast_reports.report_organizer import (
+    ReportOrganizer,
+)
+from forecasting_tools.forecasting.metaculus_api import MetaculusApi
+from forecasting_tools.forecasting.metaculus_question import (
     BinaryQuestion,
     DateQuestion,
     MetaculusQuestion,

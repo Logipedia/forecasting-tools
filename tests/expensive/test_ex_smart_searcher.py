@@ -1,6 +1,6 @@
 import logging
 
-from src.forecasting.llms.smart_searcher import SmartSearcher
+from forecasting_tools.forecasting.llms.smart_searcher import SmartSearcher
 from tests.utilities_for_tests.coroutine_testing import (
     assert_coroutines_run_under_x_times_duration_of_benchmark,
 )

@@ -3,7 +3,7 @@ import re
 
 import pytest
 
-from src.forecasting.llms.smart_searcher import SmartSearcher
+from forecasting_tools.forecasting.llms.smart_searcher import SmartSearcher
 
 logger = logging.getLogger(__name__)
 

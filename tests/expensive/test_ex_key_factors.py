@@ -2,11 +2,11 @@ import logging
 
 import pytest
 
-from src.ai_models.resource_managers.monetary_cost_manager import (
+from forecasting_tools.ai_models.resource_managers.monetary_cost_manager import (
     MonetaryCostManager,
 )
-from src.forecasting.metaculus_api import MetaculusApi
-from src.forecasting.sub_question_responders.key_factors_searcher import (
+from forecasting_tools.forecasting.metaculus_api import MetaculusApi
+from forecasting_tools.forecasting.sub_question_responders.key_factors_searcher import (
     KeyFactorsSearcher,
     ScoredKeyFactor,
 )

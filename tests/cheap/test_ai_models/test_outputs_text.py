@@ -6,11 +6,15 @@ from unittest.mock import Mock
 import pytest
 from pydantic import BaseModel
 
-from src.ai_models.ai_utils.ai_misc import validate_complex_type
-from src.ai_models.ai_utils.response_types import TextTokenCostResponse
-from src.ai_models.basic_model_interfaces.ai_model import AiModel
-from src.ai_models.basic_model_interfaces.outputs_text import OutputsText
-from src.ai_models.gpt4o import Gpt4o
+from forecasting_tools.ai_models.ai_utils.ai_misc import validate_complex_type
+from forecasting_tools.ai_models.ai_utils.response_types import (
+    TextTokenCostResponse,
+)
+from forecasting_tools.ai_models.basic_model_interfaces.ai_model import AiModel
+from forecasting_tools.ai_models.basic_model_interfaces.outputs_text import (
+    OutputsText,
+)
+from forecasting_tools.ai_models.gpt4o import Gpt4o
 from tests.cheap.test_ai_models.ai_mock_manager import AiModelMockManager
 from tests.cheap.test_ai_models.models_to_test import ModelsToTest
 

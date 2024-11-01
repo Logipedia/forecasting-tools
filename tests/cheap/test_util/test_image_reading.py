@@ -1,6 +1,6 @@
 import asyncio
 
-from src.util.image_reading import ImageReader
+from forecasting_tools.util.image_reading import ImageReader
 
 
 class TestImageElement:

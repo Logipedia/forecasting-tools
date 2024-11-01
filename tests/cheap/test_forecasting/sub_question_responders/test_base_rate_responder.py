@@ -1,6 +1,6 @@
 import pytest
 
-from src.forecasting.sub_question_responders.base_rate_responder import (
+from forecasting_tools.forecasting.sub_question_responders.base_rate_responder import (
     BaseRateResponder,
 )
 

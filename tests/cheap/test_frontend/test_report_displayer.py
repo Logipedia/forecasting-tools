@@ -1,6 +1,6 @@
 import pytest
 
-from front_end.mokoresearch_site.helpers.report_displayer import (
+from forecasting_tools.front_end.helpers.report_displayer import (
     ReportDisplayer,
 )
 

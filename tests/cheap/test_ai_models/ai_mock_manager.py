@@ -2,18 +2,18 @@ import asyncio
 import logging
 from unittest.mock import Mock
 
-from src.ai_models.ai_utils.openai_utils import VisionMessageData
-from src.ai_models.basic_model_interfaces.ai_model import AiModel
-from src.ai_models.basic_model_interfaces.request_limited_model import (
+from forecasting_tools.ai_models.ai_utils.openai_utils import VisionMessageData
+from forecasting_tools.ai_models.basic_model_interfaces.ai_model import AiModel
+from forecasting_tools.ai_models.basic_model_interfaces.request_limited_model import (
     RequestLimitedModel,
 )
-from src.ai_models.basic_model_interfaces.time_limited_model import (
+from forecasting_tools.ai_models.basic_model_interfaces.time_limited_model import (
     TimeLimitedModel,
 )
-from src.ai_models.basic_model_interfaces.token_limited_model import (
+from forecasting_tools.ai_models.basic_model_interfaces.token_limited_model import (
     TokenLimitedModel,
 )
-from src.ai_models.basic_model_interfaces.tokens_are_calculatable import (
+from forecasting_tools.ai_models.basic_model_interfaces.tokens_are_calculatable import (
     TokensAreCalculatable,
 )
 

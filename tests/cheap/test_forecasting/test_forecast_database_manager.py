@@ -1,14 +1,16 @@
 import asyncio
 
-from src.forecasting.forecast_database_manager import (
+from forecasting_tools.forecasting.forecast_database_manager import (
     ForecastDatabaseManager,
     ForecastRunType,
 )
-from src.forecasting.forecast_reports.binary_report import BinaryReport
-from src.forecasting.sub_question_responders.base_rate_responder import (
+from forecasting_tools.forecasting.forecast_reports.binary_report import (
+    BinaryReport,
+)
+from forecasting_tools.forecasting.sub_question_responders.base_rate_responder import (
     BaseRateReport,
 )
-from src.util.coda_utils import CodaRow
+from forecasting_tools.util.coda_utils import CodaRow
 
 
 def test_forecast_report_turns_into_coda_row() -> None:

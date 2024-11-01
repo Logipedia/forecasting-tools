@@ -4,8 +4,10 @@ from unittest.mock import Mock
 
 import pytest
 
-from src.ai_models.basic_model_interfaces.ai_model import AiModel
-from src.ai_models.basic_model_interfaces.retryable_model import RetryableModel
+from forecasting_tools.ai_models.basic_model_interfaces.ai_model import AiModel
+from forecasting_tools.ai_models.basic_model_interfaces.retryable_model import (
+    RetryableModel,
+)
 from tests.cheap.test_ai_models.ai_mock_manager import AiModelMockManager
 from tests.cheap.test_ai_models.models_to_test import ModelsToTest
 

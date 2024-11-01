@@ -4,16 +4,18 @@ from unittest.mock import AsyncMock, Mock
 import pytest
 from streamlit.testing.v1 import AppTest
 
-from front_end.mokoresearch_site.app_pages.base_rate_page import BaseRatePage
-from front_end.mokoresearch_site.helpers.report_displayer import (
-    ReportDisplayer,
+from forecasting_tools.forecasting.forecast_database_manager import (
+    ForecastDatabaseManager,
 )
-from src.forecasting.forecast_database_manager import ForecastDatabaseManager
-from src.forecasting.sub_question_responders.base_rate_responder import (
+from forecasting_tools.forecasting.sub_question_responders.base_rate_responder import (
     BaseRateReport,
     BaseRateResponder,
     DenominatorOption,
     ReferenceClassWithCount,
+)
+from forecasting_tools.front_end.app_pages.base_rate_page import BaseRatePage
+from forecasting_tools.front_end.helpers.report_displayer import (
+    ReportDisplayer,
 )
 from tests.cheap.test_frontend.front_end_test_utils import FrontEndTestUtils
 

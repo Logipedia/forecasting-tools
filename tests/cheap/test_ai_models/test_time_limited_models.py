@@ -4,8 +4,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from src.ai_models.basic_model_interfaces.ai_model import AiModel
-from src.ai_models.basic_model_interfaces.time_limited_model import (
+from forecasting_tools.ai_models.basic_model_interfaces.ai_model import AiModel
+from forecasting_tools.ai_models.basic_model_interfaces.time_limited_model import (
     TimeLimitedModel,
 )
 from tests.cheap.test_ai_models.ai_mock_manager import AiModelMockManager

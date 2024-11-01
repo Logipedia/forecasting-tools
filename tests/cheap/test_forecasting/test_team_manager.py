@@ -4,9 +4,9 @@ from unittest.mock import Mock
 
 import pytest
 
-from src.forecasting.metaculus_api import MetaculusApi
-from src.forecasting.team_manager import TeamManager
-from src.util import file_manipulation
+from forecasting_tools.forecasting.metaculus_api import MetaculusApi
+from forecasting_tools.forecasting.team_manager import TeamManager
+from forecasting_tools.util import file_manipulation
 from tests.cheap.test_forecasting.forecasting_test_manager import (
     ForecastingTestManager,
 )

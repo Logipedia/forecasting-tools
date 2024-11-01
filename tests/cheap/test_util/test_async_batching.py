@@ -6,7 +6,7 @@ from typing import Coroutine
 
 import pytest
 
-from src.util import async_batching
+from forecasting_tools.util import async_batching
 from tests.utilities_for_tests.coroutine_testing import (
     find_stats_of_coroutine_run,
 )

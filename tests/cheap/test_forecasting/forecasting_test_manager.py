@@ -3,11 +3,17 @@ from datetime import datetime
 from typing import TypeVar
 from unittest.mock import Mock
 
-from src.forecasting.forecast_database_manager import ForecastDatabaseManager
-from src.forecasting.forecast_reports.binary_report import BinaryReport
-from src.forecasting.forecast_team.forecast_team import ForecastTeam
-from src.forecasting.metaculus_api import MetaculusApi
-from src.forecasting.metaculus_question import (
+from forecasting_tools.forecasting.forecast_database_manager import (
+    ForecastDatabaseManager,
+)
+from forecasting_tools.forecasting.forecast_reports.binary_report import (
+    BinaryReport,
+)
+from forecasting_tools.forecasting.forecast_team.forecast_team import (
+    ForecastTeam,
+)
+from forecasting_tools.forecasting.metaculus_api import MetaculusApi
+from forecasting_tools.forecasting.metaculus_question import (
     BinaryQuestion,
     MetaculusQuestion,
 )

@@ -2,7 +2,9 @@ import logging
 
 import pytest
 
-from src.forecasting.sub_question_responders.deduplicator import Deduplicator
+from forecasting_tools.forecasting.sub_question_responders.deduplicator import (
+    Deduplicator,
+)
 
 logger = logging.getLogger(__name__)
 

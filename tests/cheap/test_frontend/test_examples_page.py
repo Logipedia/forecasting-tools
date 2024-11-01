@@ -1,7 +1,7 @@
-from front_end.mokoresearch_site.app_pages.example_forecasts import (
+from forecasting_tools.front_end.app_pages.example_forecasts import (
     ExampleForecastsPage,
 )
-from front_end.mokoresearch_site.helpers.report_displayer import (
+from forecasting_tools.front_end.helpers.report_displayer import (
     ReportDisplayer,
 )
 from tests.cheap.test_frontend.front_end_test_utils import FrontEndTestUtils

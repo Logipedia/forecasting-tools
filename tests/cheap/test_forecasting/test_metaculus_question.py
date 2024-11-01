@@ -1,4 +1,4 @@
-from src.forecasting.metaculus_question import BinaryQuestion
+from forecasting_tools.forecasting.metaculus_question import BinaryQuestion
 from tests.utilities_for_tests import jsonable_assertations
 
 

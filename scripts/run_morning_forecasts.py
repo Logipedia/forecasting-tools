@@ -13,13 +13,13 @@ top_level_dir = os.path.abspath(os.path.join(current_dir, "../"))
 sys.path.append(top_level_dir)
 dotenv.load_dotenv()
 
-from src.forecasting.forecast_database_manager import (
+from forecasting_tools.forecasting.forecast_database_manager import (
     ForecastDatabaseManager,
     ForecastRunType,
 )
-from src.forecasting.metaculus_api import MetaculusApi
-from src.forecasting.team_manager import TeamManager
-from src.util.custom_logger import CustomLogger
+from forecasting_tools.forecasting.metaculus_api import MetaculusApi
+from forecasting_tools.forecasting.team_manager import TeamManager
+from forecasting_tools.util.custom_logger import CustomLogger
 
 
 def run_morning_forecasts() -> None:

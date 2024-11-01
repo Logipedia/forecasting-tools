@@ -3,18 +3,18 @@ from unittest.mock import Mock
 
 import pytest
 
-from src.ai_models.ai_utils.ai_misc import clean_indents
-from src.ai_models.gpt4o import Gpt4o
-from src.forecasting.sub_question_responders.base_rate_responder import (
+from forecasting_tools.ai_models.ai_utils.ai_misc import clean_indents
+from forecasting_tools.ai_models.gpt4o import Gpt4o
+from forecasting_tools.forecasting.sub_question_responders.base_rate_responder import (
     BaseRateResponder,
 )
-from src.forecasting.sub_question_responders.general_search_responder import (
+from forecasting_tools.forecasting.sub_question_responders.general_search_responder import (
     GeneralSearchResponder,
 )
-from src.forecasting.sub_question_responders.question_responder import (
+from forecasting_tools.forecasting.sub_question_responders.question_responder import (
     QuestionResponder,
 )
-from src.forecasting.sub_question_responders.question_router import (
+from forecasting_tools.forecasting.sub_question_responders.question_router import (
     QuestionRouter,
 )
 

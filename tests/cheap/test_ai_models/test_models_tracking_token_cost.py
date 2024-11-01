@@ -2,16 +2,18 @@ import asyncio
 
 import pytest
 
-from src.ai_models.ai_utils.response_types import TextTokenCostResponse
-from src.ai_models.basic_model_interfaces.ai_model import AiModel
-from src.ai_models.basic_model_interfaces.priced_per_request import (
+from forecasting_tools.ai_models.ai_utils.response_types import (
+    TextTokenCostResponse,
+)
+from forecasting_tools.ai_models.basic_model_interfaces.ai_model import AiModel
+from forecasting_tools.ai_models.basic_model_interfaces.priced_per_request import (
     PricedPerRequest,
 )
-from src.ai_models.basic_model_interfaces.tokens_incur_cost import (
+from forecasting_tools.ai_models.basic_model_interfaces.tokens_incur_cost import (
     TokensIncurCost,
 )
-from src.ai_models.gpto1 import GptO1
-from src.ai_models.model_archetypes.traditional_online_llm import (
+from forecasting_tools.ai_models.gpto1 import GptO1
+from forecasting_tools.ai_models.model_archetypes.traditional_online_llm import (
     TraditionalOnlineLlm,
 )
 from tests.cheap.test_ai_models.models_to_test import ModelsToTest

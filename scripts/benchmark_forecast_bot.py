@@ -5,11 +5,11 @@ import logging
 
 import dotenv
 
-from src.ai_models.resource_managers.monetary_cost_manager import (
+from forecasting_tools.ai_models.resource_managers.monetary_cost_manager import (
     MonetaryCostManager,
 )
-from src.forecasting.team_manager import TeamManager
-from src.util.custom_logger import CustomLogger
+from forecasting_tools.forecasting.team_manager import TeamManager
+from forecasting_tools.util.custom_logger import CustomLogger
 
 # # Dynamically determine the absolute path to the top-level directory
 # current_dir = os.path.dirname(os.path.abspath(__file__))

@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from src.util.jsonable import Jsonable
+from forecasting_tools.util.jsonable import Jsonable
 
 
 def assert_reading_and_printing_from_file_works(

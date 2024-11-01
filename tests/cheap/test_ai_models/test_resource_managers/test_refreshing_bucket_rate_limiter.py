@@ -5,11 +5,11 @@ import time
 
 import pytest
 
-import src.util.async_batching as async_batching
-from src.ai_models.resource_managers.refreshing_bucket_rate_limiter import (
+from forecasting_tools.ai_models.resource_managers.refreshing_bucket_rate_limiter import (
     LimitReachedResponse,
     RefreshingBucketRateLimiter,
 )
+from forecasting_tools.util import async_batching
 from tests.utilities_for_tests import coroutine_testing
 
 logger = logging.getLogger(__name__)

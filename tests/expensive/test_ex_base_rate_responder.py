@@ -1,7 +1,7 @@
 import asyncio
 from datetime import datetime
 
-from src.forecasting.sub_question_responders.base_rate_responder import (
+from forecasting_tools.forecasting.sub_question_responders.base_rate_responder import (
     BaseRateReport,
     BaseRateResponder,
     DenominatorOption,

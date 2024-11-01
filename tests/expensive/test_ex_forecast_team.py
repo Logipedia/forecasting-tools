@@ -2,12 +2,16 @@ import logging
 
 import pytest
 
-from src.ai_models.resource_managers.monetary_cost_manager import (
+from forecasting_tools.ai_models.resource_managers.monetary_cost_manager import (
     MonetaryCostManager,
 )
-from src.forecasting.forecast_reports.report_organizer import ReportOrganizer
-from src.forecasting.forecast_team.forecast_team import ForecastTeam
-from src.forecasting.metaculus_question import MetaculusQuestion
+from forecasting_tools.forecasting.forecast_reports.report_organizer import (
+    ReportOrganizer,
+)
+from forecasting_tools.forecasting.forecast_team.forecast_team import (
+    ForecastTeam,
+)
+from forecasting_tools.forecasting.metaculus_question import MetaculusQuestion
 
 logger = logging.getLogger(__name__)
 

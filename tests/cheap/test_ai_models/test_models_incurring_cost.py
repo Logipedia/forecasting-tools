@@ -5,17 +5,23 @@ from unittest.mock import Mock
 
 import pytest
 
-from src.ai_models.ai_utils.response_types import TextTokenCostResponse
-from src.ai_models.basic_model_interfaces.ai_model import AiModel
-from src.ai_models.basic_model_interfaces.incurs_cost import IncursCost
-from src.ai_models.basic_model_interfaces.retryable_model import RetryableModel
-from src.ai_models.resource_managers.hard_limit_manager import (
+from forecasting_tools.ai_models.ai_utils.response_types import (
+    TextTokenCostResponse,
+)
+from forecasting_tools.ai_models.basic_model_interfaces.ai_model import AiModel
+from forecasting_tools.ai_models.basic_model_interfaces.incurs_cost import (
+    IncursCost,
+)
+from forecasting_tools.ai_models.basic_model_interfaces.retryable_model import (
+    RetryableModel,
+)
+from forecasting_tools.ai_models.resource_managers.hard_limit_manager import (
     HardLimitExceededError,
 )
-from src.ai_models.resource_managers.monetary_cost_manager import (
+from forecasting_tools.ai_models.resource_managers.monetary_cost_manager import (
     MonetaryCostManager,
 )
-from src.util import async_batching
+from forecasting_tools.util import async_batching
 from tests.cheap.test_ai_models.ai_mock_manager import AiModelMockManager
 from tests.cheap.test_ai_models.models_to_test import ModelsToTest
 
