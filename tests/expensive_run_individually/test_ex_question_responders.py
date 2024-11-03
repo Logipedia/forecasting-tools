@@ -5,11 +5,11 @@ import pytest
 
 from forecasting_tools.ai_models.ai_utils.ai_misc import clean_indents
 from forecasting_tools.ai_models.gpt4o import Gpt4o
-from forecasting_tools.forecasting.sub_question_responders.base_rate_responder import (
-    BaseRateResponder,
+from forecasting_tools.forecasting.sub_question_responders.base_rate_researcher import (
+    BaseRateResearcher,
 )
-from forecasting_tools.forecasting.sub_question_responders.general_search_responder import (
-    GeneralSearchResponder,
+from forecasting_tools.forecasting.sub_question_responders.general_researcher import (
+    GeneralResearcher,
 )
 from forecasting_tools.forecasting.sub_question_responders.question_responder import (
     QuestionResponder,
@@ -42,10 +42,10 @@ def mock_question_responder__answer_with_markdown__with_error(
 
 RESPONDERS_WITH_TEST_QUESTIONS = [
     (
-        BaseRateResponder,
+        BaseRateResearcher,
         "What are the chances per year that a person will win the lottery given they buy a ticket every week?",
     ),
-    (GeneralSearchResponder, "Who is Abraham Lincoln?"),
+    (GeneralResearcher, "Who is Abraham Lincoln?"),
 ]
 
 #################################### TESTS ####################################

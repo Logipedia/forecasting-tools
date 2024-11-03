@@ -4,11 +4,9 @@ import streamlit as st
 from forecasting_tools.forecasting.forecast_reports.binary_report import (
     BinaryReport,
 )
-from forecasting_tools.front_end.helpers.app_page import AppPage
-from forecasting_tools.front_end.helpers.general import footer, header
-from forecasting_tools.front_end.helpers.report_displayer import (
-    ReportDisplayer,
-)
+from front_end.helpers.app_page import AppPage
+from front_end.helpers.general import footer, header
+from front_end.helpers.report_displayer import ReportDisplayer
 
 
 class ExampleForecastsPage(AppPage):

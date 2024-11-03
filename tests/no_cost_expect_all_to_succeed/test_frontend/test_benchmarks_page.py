@@ -1,9 +1,7 @@
 import pytest
 
-from forecasting_tools.front_end.app_pages.benchmark_page import BenchmarkPage
-from forecasting_tools.front_end.helpers.report_displayer import (
-    ReportDisplayer,
-)
+from front_end.app_pages.benchmark_page import BenchmarkPage
+from front_end.helpers.report_displayer import ReportDisplayer
 from tests.no_cost_expect_all_to_succeed.test_frontend.front_end_test_utils import (
     FrontEndTestUtils,
 )

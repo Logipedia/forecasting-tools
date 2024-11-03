@@ -7,16 +7,14 @@ from streamlit.testing.v1 import AppTest
 from forecasting_tools.forecasting.forecast_database_manager import (
     ForecastDatabaseManager,
 )
-from forecasting_tools.forecasting.sub_question_responders.base_rate_responder import (
+from forecasting_tools.forecasting.sub_question_responders.base_rate_researcher import (
     BaseRateReport,
-    BaseRateResponder,
+    BaseRateResearcher,
     DenominatorOption,
     ReferenceClassWithCount,
 )
-from forecasting_tools.front_end.app_pages.base_rate_page import BaseRatePage
-from forecasting_tools.front_end.helpers.report_displayer import (
-    ReportDisplayer,
-)
+from front_end.app_pages.base_rate_page import BaseRatePage
+from front_end.helpers.report_displayer import ReportDisplayer
 from tests.no_cost_expect_all_to_succeed.test_frontend.front_end_test_utils import (
     FrontEndTestUtils,
 )
@@ -24,7 +22,7 @@ from tests.no_cost_expect_all_to_succeed.test_frontend.front_end_test_utils impo
 
 class BaseRatePageUtils:
     valid_example_question = "How often has SpaceX launched rockets over the last 5 years? Using their launches per year, what is the chance they will launch a rocket by Dec 30 2025?"
-    report_creation_function_name = f"{BaseRateResponder.__module__}.{BaseRateResponder.__name__}.{BaseRateResponder.make_base_rate_report.__name__}"
+    report_creation_function_name = f"{BaseRateResearcher.__module__}.{BaseRateResearcher.__name__}.{BaseRateResearcher.make_base_rate_report.__name__}"
     test_error_message = "Arbitrary Test error"
 
     @classmethod

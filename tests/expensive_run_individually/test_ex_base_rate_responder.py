@@ -1,9 +1,9 @@
 import asyncio
 from datetime import datetime
 
-from forecasting_tools.forecasting.sub_question_responders.base_rate_responder import (
+from forecasting_tools.forecasting.sub_question_responders.base_rate_researcher import (
     BaseRateReport,
-    BaseRateResponder,
+    BaseRateResearcher,
     DenominatorOption,
     ReferenceClassWithCount,
 )
@@ -19,7 +19,7 @@ from forecasting_tools.forecasting.sub_question_responders.base_rate_responder i
 
 def test_responder_gets_example_base_rate_right_for_per_day_question() -> None:
     question = "What are the chances per year that a US president will be assassinated?"
-    responder = BaseRateResponder(question)
+    responder = BaseRateResearcher(question)
     base_rate_report = asyncio.run(responder.make_base_rate_report())
     assert_base_rate_report_parts_exist(base_rate_report)
 
@@ -28,7 +28,7 @@ def test_responder_gets_example_base_rate_right_for_per_event_class_question() -
     None
 ):
     question = "How many US presidential elections have been won by Democrats?"
-    responder = BaseRateResponder(question)
+    responder = BaseRateResearcher(question)
     base_rate_report = asyncio.run(responder.make_base_rate_report())
     assert_base_rate_report_parts_exist(base_rate_report)
 

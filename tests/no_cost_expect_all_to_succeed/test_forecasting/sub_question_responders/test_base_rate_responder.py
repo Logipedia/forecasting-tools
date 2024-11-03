@@ -1,7 +1,7 @@
 import pytest
 
-from forecasting_tools.forecasting.sub_question_responders.base_rate_responder import (
-    BaseRateResponder,
+from forecasting_tools.forecasting.sub_question_responders.base_rate_researcher import (
+    BaseRateResearcher,
 )
 
 
@@ -15,7 +15,7 @@ from forecasting_tools.forecasting.sub_question_responders.base_rate_responder i
     ],
 )
 def test_responder_initializes_with_good_question(question: str) -> None:
-    BaseRateResponder(question)
+    BaseRateResearcher(question)
 
 
 @pytest.mark.parametrize(
@@ -27,4 +27,4 @@ def test_responder_initializes_with_good_question(question: str) -> None:
 )
 def test_responder_rejects_bad_question(question: str) -> None:
     with pytest.raises(ValueError):
-        BaseRateResponder(question)
+        BaseRateResearcher(question)

@@ -19,11 +19,9 @@ from forecasting_tools.forecasting.metaculus_question import (
     BinaryQuestion,
     QuestionState,
 )
-from forecasting_tools.front_end.helpers.app_page import AppPage
-from forecasting_tools.front_end.helpers.general import footer, header
-from forecasting_tools.front_end.helpers.report_displayer import (
-    ReportDisplayer,
-)
+from front_end.helpers.app_page import AppPage
+from front_end.helpers.general import footer, header
+from front_end.helpers.report_displayer import ReportDisplayer
 
 logger = logging.getLogger(__name__)
 

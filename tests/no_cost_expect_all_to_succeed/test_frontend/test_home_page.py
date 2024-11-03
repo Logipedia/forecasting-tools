@@ -1,7 +1,7 @@
 import logging
 
-from forecasting_tools.front_end.helpers.app_page import AppPage
-from forecasting_tools.front_end.Home import HomePage
+from front_end.helpers.app_page import AppPage
+from front_end.Home import HomePage
 from tests.no_cost_expect_all_to_succeed.test_frontend.front_end_test_utils import (
     FrontEndTestUtils,
 )

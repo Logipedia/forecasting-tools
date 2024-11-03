@@ -3,8 +3,8 @@ from typing import NamedTuple
 
 from forecasting_tools.ai_models.ai_utils.ai_misc import clean_indents
 from forecasting_tools.forecasting.llms.smart_searcher import SmartSearcher
-from forecasting_tools.forecasting.sub_question_responders.general_search_responder import (
-    GeneralSearchResponder,
+from forecasting_tools.forecasting.sub_question_responders.general_researcher import (
+    GeneralResearcher,
 )
 
 
@@ -29,7 +29,7 @@ class Estimator:
     async def estimate_size(self) -> EstimationResult:
         research_to_use: str | None = self.__previous_research
         if not self.__previous_research:
-            research_to_use = await GeneralSearchResponder(
+            research_to_use = await GeneralResearcher(
                 f"What is information that would be useful for estimating the following: {self.__type_of_thing_to_estimate}?"
             ).respond_with_markdown()
 

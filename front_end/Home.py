@@ -9,24 +9,18 @@ top_level_dir = os.path.abspath(os.path.join(current_dir, "../../"))
 sys.path.append(top_level_dir)
 
 
-from forecasting_tools.front_end.app_pages.base_rate_page import BaseRatePage
-from forecasting_tools.front_end.app_pages.benchmark_page import BenchmarkPage
-from forecasting_tools.front_end.app_pages.estimator_page import EstimatorPage
-from forecasting_tools.front_end.app_pages.example_forecasts import (
-    ExampleForecastsPage,
-)
-from forecasting_tools.front_end.app_pages.forecaster_page import (
-    ForecasterPage,
-)
-from forecasting_tools.front_end.app_pages.key_factors_page import (
-    KeyFactorsPage,
-)
-from forecasting_tools.front_end.app_pages.niche_list_researcher_page import (
+from forecasting_tools.util.custom_logger import CustomLogger
+from front_end.app_pages.base_rate_page import BaseRatePage
+from front_end.app_pages.benchmark_page import BenchmarkPage
+from front_end.app_pages.estimator_page import EstimatorPage
+from front_end.app_pages.example_forecasts import ExampleForecastsPage
+from front_end.app_pages.forecaster_page import ForecasterPage
+from front_end.app_pages.key_factors_page import KeyFactorsPage
+from front_end.app_pages.niche_list_researcher_page import (
     NicheListResearchPage,
 )
-from forecasting_tools.front_end.helpers.app_page import AppPage
-from forecasting_tools.front_end.helpers.general import footer, header
-from forecasting_tools.util.custom_logger import CustomLogger
+from front_end.helpers.app_page import AppPage
+from front_end.helpers.general import footer, header
 
 
 class HomePage(AppPage):

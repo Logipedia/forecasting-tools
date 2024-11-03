@@ -16,15 +16,13 @@ from forecasting_tools.forecasting.forecast_database_manager import (
     ForecastDatabaseManager,
     ForecastRunType,
 )
-from forecasting_tools.forecasting.sub_question_responders.base_rate_responder import (
+from forecasting_tools.forecasting.sub_question_responders.base_rate_researcher import (
     BaseRateReport,
-    BaseRateResponder,
+    BaseRateResearcher,
 )
-from forecasting_tools.front_end.helpers.app_page import AppPage
-from forecasting_tools.front_end.helpers.general import footer, header
-from forecasting_tools.front_end.helpers.report_displayer import (
-    ReportDisplayer,
-)
+from front_end.helpers.app_page import AppPage
+from front_end.helpers.general import footer, header
+from front_end.helpers.report_displayer import ReportDisplayer
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +84,7 @@ class BaseRatePage(AppPage):
     @classmethod
     async def __run_base_rate_analysis(cls, question_text: str) -> None:
         try:
-            report = await BaseRateResponder(
+            report = await BaseRateResearcher(
                 question_text
             ).make_base_rate_report()
             cls.__save_base_rate_report(report)

@@ -9,7 +9,7 @@ from forecasting_tools.ai_models.ai_utils.ai_misc import clean_indents
 from forecasting_tools.forecasting.llms.smart_searcher import SmartSearcher
 
 
-class GeneralSearchResponder(QuestionResponder):
+class GeneralResearcher(QuestionResponder):
     NAME = "General Search"
     DESCRIPTION_OF_WHEN_TO_USE = "Use this responder when the question doesn't match well with any of the other responders or you need simple online information"
 

@@ -13,8 +13,8 @@ from forecasting_tools.forecasting.forecast_database_manager import (
 from forecasting_tools.forecasting.sub_question_responders.estimator import (
     Estimator,
 )
-from forecasting_tools.front_end.helpers.app_page import AppPage
-from forecasting_tools.front_end.helpers.general import footer, header
+from front_end.helpers.app_page import AppPage
+from front_end.helpers.general import footer, header
 
 logger = logging.getLogger(__name__)
 

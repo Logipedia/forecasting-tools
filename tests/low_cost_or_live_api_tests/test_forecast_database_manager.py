@@ -7,7 +7,7 @@ from forecasting_tools.forecasting.forecast_database_manager import (
 from forecasting_tools.forecasting.forecast_reports.binary_report import (
     BinaryReport,
 )
-from forecasting_tools.forecasting.sub_question_responders.base_rate_responder import (
+from forecasting_tools.forecasting.sub_question_responders.base_rate_researcher import (
     BaseRateReport,
 )
 from forecasting_tools.util.coda_utils import CodaRow

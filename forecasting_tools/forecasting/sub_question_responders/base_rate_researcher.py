@@ -15,8 +15,8 @@ from forecasting_tools.forecasting.llms.configured_llms import BasicLlm
 from forecasting_tools.forecasting.sub_question_responders.estimator import (
     Estimator,
 )
-from forecasting_tools.forecasting.sub_question_responders.general_search_responder import (
-    GeneralSearchResponder,
+from forecasting_tools.forecasting.sub_question_responders.general_researcher import (
+    GeneralResearcher,
 )
 from forecasting_tools.forecasting.sub_question_responders.niche_list_researcher import (
     FactCheckedItem,
@@ -30,7 +30,7 @@ from forecasting_tools.util.jsonable import Jsonable
 logger = logging.getLogger(__name__)
 
 
-class BaseRateResponder(QuestionResponder):
+class BaseRateResearcher(QuestionResponder):
     """
     Takes a question like
     > "What are the chances per year of SpaceX launching a failed rocket?"
@@ -61,7 +61,7 @@ class BaseRateResponder(QuestionResponder):
                 f"Error while making base rate report for question: {self.question}. Doing general search instead. Error: {e}"
             )
             await asyncio.sleep(15)
-            back_up_report = await GeneralSearchResponder(
+            back_up_report = await GeneralResearcher(
                 self.question
             ).respond_with_markdown()
             back_up_report = f"Deep Base Rate research was attempted but failed. Here is a general search report instead:\n\n{back_up_report}"
@@ -191,7 +191,7 @@ class BaseRateResponder(QuestionResponder):
         )
 
     async def __populate_general_search_information(self) -> None:
-        general_search_information: str = await GeneralSearchResponder(
+        general_search_information: str = await GeneralResearcher(
             self.question
         ).respond_with_markdown()
         self.__general_search_information = general_search_information

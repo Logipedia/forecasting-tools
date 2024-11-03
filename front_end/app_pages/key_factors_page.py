@@ -22,12 +22,12 @@ from forecasting_tools.forecasting.metaculus_api import (
     MetaculusApi,
     MetaculusQuestion,
 )
-from forecasting_tools.forecasting.sub_question_responders.key_factors_searcher import (
-    KeyFactorsSearcher,
+from forecasting_tools.forecasting.sub_question_responders.key_factors_researcher import (
+    KeyFactorsResearcher,
     ScoredKeyFactor,
 )
-from forecasting_tools.front_end.helpers.app_page import AppPage
-from forecasting_tools.front_end.helpers.general import footer, header
+from front_end.helpers.app_page import AppPage
+from front_end.helpers.general import footer, header
 
 logger = logging.getLogger(__name__)
 
@@ -89,7 +89,7 @@ class KeyFactorsPage(AppPage):
                 with MonetaryCostManager() as cost_manager:
                     num_questions_to_research = 8
                     num_key_factors_to_return = 10
-                    key_factors = await KeyFactorsSearcher.find_key_factors(
+                    key_factors = await KeyFactorsResearcher.find_key_factors(
                         metaculus_question,
                         num_questions_to_research_with=num_questions_to_research,
                         num_key_factors_to_return=num_key_factors_to_return,

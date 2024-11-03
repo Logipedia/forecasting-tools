@@ -5,10 +5,8 @@ from streamlit.testing.v1 import AppTest
 from forecasting_tools.forecasting.forecast_reports.binary_report import (
     BinaryReport,
 )
-from forecasting_tools.front_end.helpers.report_displayer import (
-    ReportDisplayer,
-)
-from forecasting_tools.front_end.Home import AppPage
+from front_end.helpers.report_displayer import ReportDisplayer
+from front_end.Home import AppPage
 
 logger = logging.getLogger(__name__)
 

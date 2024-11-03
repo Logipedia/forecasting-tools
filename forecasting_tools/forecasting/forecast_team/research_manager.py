@@ -5,12 +5,12 @@ import logging
 from forecasting_tools.ai_models.ai_utils.ai_misc import clean_indents
 from forecasting_tools.forecasting.llms.configured_llms import BasicLlm
 from forecasting_tools.forecasting.metaculus_question import MetaculusQuestion
-from forecasting_tools.forecasting.sub_question_responders.base_rate_responder import (
+from forecasting_tools.forecasting.sub_question_responders.base_rate_researcher import (
     BaseRateReport,
-    BaseRateResponder,
+    BaseRateResearcher,
 )
-from forecasting_tools.forecasting.sub_question_responders.general_search_responder import (
-    GeneralSearchResponder,
+from forecasting_tools.forecasting.sub_question_responders.general_researcher import (
+    GeneralResearcher,
 )
 from forecasting_tools.forecasting.sub_question_responders.question_responder import (
     QuestionResponder,
@@ -43,7 +43,7 @@ class ResearchManager:
             number_of_base_rate_reports, background_markdown
         )
         base_rate_tasks = [
-            BaseRateResponder(question).make_base_rate_report()
+            BaseRateResearcher(question).make_base_rate_report()
             for question in base_rate_questions
         ]
         base_rate_reports, _ = (
@@ -76,9 +76,7 @@ class ResearchManager:
         questions = await self.brainstorm_background_questions(
             num_background_questions
         )
-        answers = await self.answer_question_list(
-            questions, GeneralSearchResponder
-        )
+        answers = await self.answer_question_list(questions, GeneralResearcher)
         logger.info("Generated background markdown.")
         return await self.__create_question_answer_markdown_section(
             questions, answers, question_prepend="Q"
@@ -99,10 +97,10 @@ class ResearchManager:
             )
         )
         deep_answers = await self.answer_question_list(
-            deep_questions, BaseRateResponder
+            deep_questions, BaseRateResearcher
         )
         shallow_answers = await self.answer_question_list(
-            shallow_questions, GeneralSearchResponder
+            shallow_questions, GeneralResearcher
         )
         combined_questions = deep_questions + shallow_questions
         combined_answers = deep_answers + shallow_answers

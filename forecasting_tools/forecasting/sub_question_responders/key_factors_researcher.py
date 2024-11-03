@@ -28,7 +28,7 @@ from forecasting_tools.util.misc import (
 logger = logging.getLogger(__name__)
 
 
-class KeyFactorsSearcher:
+class KeyFactorsResearcher:
 
     @classmethod
     async def find_key_factors(

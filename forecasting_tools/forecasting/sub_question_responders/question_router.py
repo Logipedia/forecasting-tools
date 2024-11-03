@@ -2,11 +2,11 @@ import logging
 
 from forecasting_tools.ai_models.ai_utils.ai_misc import clean_indents
 from forecasting_tools.forecasting.llms.configured_llms import BasicLlm
-from forecasting_tools.forecasting.sub_question_responders.base_rate_responder import (
-    BaseRateResponder,
+from forecasting_tools.forecasting.sub_question_responders.base_rate_researcher import (
+    BaseRateResearcher,
 )
-from forecasting_tools.forecasting.sub_question_responders.general_search_responder import (
-    GeneralSearchResponder,
+from forecasting_tools.forecasting.sub_question_responders.general_researcher import (
+    GeneralResearcher,
 )
 from forecasting_tools.forecasting.sub_question_responders.question_responder import (
     QuestionResponder,
@@ -17,8 +17,8 @@ logger = logging.getLogger(__name__)
 
 class QuestionRouter:
     AVAILABLE_REPONDERS: list[type[QuestionResponder]] = [
-        GeneralSearchResponder,
-        BaseRateResponder,
+        GeneralResearcher,
+        BaseRateResearcher,
     ]
 
     async def answer_question_with_markdown_using_routing(
@@ -54,7 +54,7 @@ class QuestionRouter:
         response_to_be_logged = response.replace("\n", "|")
         logger.info(f"Response to routing prompt: {response_to_be_logged}")
 
-        chosen_responder = GeneralSearchResponder
+        chosen_responder = GeneralResearcher
         default_strategy_chosen = True
         for responder in self.AVAILABLE_REPONDERS:
             if responder.NAME.upper() in response:
