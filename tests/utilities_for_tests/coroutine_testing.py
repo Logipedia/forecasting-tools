@@ -6,7 +6,7 @@ import time
 from datetime import datetime
 from typing import Any, Coroutine, Tuple
 
-from src.util import async_batching, file_manipulation
+from forecasting_tools.util import async_batching, file_manipulation
 
 logger = logging.getLogger(__name__)
 
