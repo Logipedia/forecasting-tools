@@ -1,26 +1,38 @@
+![PyPI version](https://badge.fury.io/py/forecasting-tools.svg)
+![Python Versions](https://img.shields.io/pypi/pyversions/forecasting-tools.svg)
+![License](https://img.shields.io/badge/License-MIT-blue.svg)
+![Discord](https://img.shields.io/badge/Discord-Join-blue)
+
 Last Update: Nov 3 2024
+
 
 # Quick Install
 Install this package with `pip install forecasting-tools`
 
 # Overview
-This repository contains forecasting and research tools built with Python and Streamlit. The project aims to assist users in making predictions, conducting research, and analyzing data related to hard to answer questions (especially those from Metaculus). Find the demo website here: https://mokoresearch.streamlit.app/
+Demo website: https://mokoresearch.streamlit.app/
 
-Here are the key components and features of the project:
-- Smart Searcher for AI-powered internet research with clickable citations and structured outputs
-- General Forecaster that integrates with the Metaculus AI benchmarking competition
-- Historical Base Rate Researcher for calculating event probabilities
-- Niche List Researcher for analyzing specific lists of events or items
-- Fermi Estimator for breaking down numerical estimates
-- Key Factors Analysis for identifying important variables in forecasting questions
-- Forecast Team for orchestrating a forecast on questions
-- Team Manager for automating forecasts across multiple questions
-- Metaculus API wrapper for interacting with questions and tournaments
-- AI Model wrappers (GPT-4, Claude 3.5, Perplexity) with reliability upgrades and cost management
-- Monetary Cost Manager for tracking AI and API expenses
+This repository contains forecasting and research tools built with Python and Streamlit. The project aims to assist users in making predictions, conducting research, and analyzing data related to hard to answer questions (especially those from Metaculus).
 
-Note: This project is in early stages, inaccuracies are expected (with some tools more
-than others), the package api may change from time to time (though I will shoot to keep it consistent).
+Key features: Tools most likely to be useful to you
+- 🔍 **Perplexity++ Smart Searcher:** Smart Searcher for AI-powered internet powered by Exa.ai that is configurable, more accurate, able to decide on filters, able to link to exact paragraphs, and generally better than Perplexity.ai.
+- 🎯 **Forecasting Bot:** General Forecaster (Forecast Team) that integrates with the Metaculus AI benchmarking competition and really any other question you have.
+- 🔑 **Key Factor Analysis:** Key Factors Analysis for scoring, ranking, and prioritizing important variables in forecasting questions
+
+Here are some other cool components and features of the project:
+- **Base Rate Researcher:** for calculating event probabilities
+- **Niche List Researcher:** for analyzing very specific lists of past events or items
+- **Fermi Estimator:** for breaking down numerical estimates
+- **Team Manager:** for automating forecasts across multiple questions
+- **Metaculus API Wrapper:** for interacting with questions and tournaments
+- **AI Model Wrappers:** (GPT-4, Claude 3.5, Perplexity) with reliability upgrades, cost management, structured outputs, etc
+- **Monetary Cost Manager:** for tracking AI and API expenses
+
+Join the [discord](https://discord.gg/Dtq4JNdXnw) for updates and to give feedback (btw feedback is very appreciated, even just a quick 'thank you' or 'I decided not to use the tool for reason X' is helpful to know)
+
+Note: This project is in beta, AI inaccuracies are expected (with some tools morethan others), and the package api isn't guaranteed to stay consistent (though I will shoot to keep it stable).
+
+
 
 # Examples
 

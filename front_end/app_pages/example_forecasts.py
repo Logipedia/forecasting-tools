@@ -38,7 +38,7 @@ class ExampleForecastsPage(AppPage):
 
     @classmethod
     def get_example_reports(cls) -> list[BinaryReport]:
-        report_file_path = "forecasting_tools/front_end/app_pages/example_forecast_reports.json"
+        report_file_path = "front_end/app_pages/example_forecast_reports.json"
         return BinaryReport.convert_project_file_path_to_object_list(
             report_file_path
         )

@@ -5,6 +5,16 @@ description = "AI forecasting and research tools to help humans reason about and
 authors = ["Benjamin Wilson <mokoresearch@gmail.com>"]
 license = "MIT"
 readme = "README.md"
+discord = "https://discord.gg/Dtq4JNdXnw"
+keywords = ["ai", "forecasting", "research", "metaculus", "prediction"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Programming Language :: Python :: 3.10",
+    "Natural Language :: English",
+    "Operating System :: OS Independent"
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
