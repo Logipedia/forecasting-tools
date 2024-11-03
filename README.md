@@ -30,8 +30,7 @@ Here are some other cool components and features of the project:
 
 Join the [discord](https://discord.gg/Dtq4JNdXnw) for updates and to give feedback (btw feedback is very appreciated, even just a quick 'thank you' or 'I decided not to use the tool for reason X' is helpful to know)
 
-Note: This project is in beta, AI inaccuracies are expected (with some tools morethan others), and the package api isn't guaranteed to stay consistent (though I will shoot to keep it stable).
-
+Note: AI inaccuracies are expected (with some tools morethan others), and the package api isn't guaranteed to stay consistent (though I will shoot to keep it stable).
 
 
 # Examples
