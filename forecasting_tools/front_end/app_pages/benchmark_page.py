@@ -17,14 +17,13 @@ from forecasting_tools.front_end.helpers.report_displayer import (
 
 
 class BenchmarkPage(AppPage):
-    FILE_PATH_IN_FRONT_END_FOLDER: str = "pages/benchmark_page.py"
     PAGE_DISPLAY_NAME: str = "📈  Benchmark"
     URL_PATH: str = "/benchmark"
     BENCHMARK_FILE_SELECTBOX_KEY: str = "benchmark_file_selectbox"
 
     @classmethod
     @CustomAuth.add_access_control()
-    async def async_main(cls) -> None:
+    async def _async_main(cls) -> None:
         header()
         st.title("Benchmarks")
         st.write("")

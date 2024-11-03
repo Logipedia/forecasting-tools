@@ -37,6 +37,13 @@ class CustomLogger:
 
         root_logger = logging.getLogger()
         root_logger.setLevel(logging.DEBUG)
+
+        # Watchdog logs are a little overkill when streaming to stdout
+        watchdog_logger = logging.getLogger(
+            "watchdog.observers.inotify_buffer"
+        )
+        watchdog_logger.setLevel(logging.WARNING)
+
         handlers = []
 
         file_writing_is_allowed = (

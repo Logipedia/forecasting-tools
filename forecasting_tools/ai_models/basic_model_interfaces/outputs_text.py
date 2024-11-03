@@ -265,7 +265,7 @@ class OutputsText(AiModel, ABC):
             return False
         else:
             raise ValueError(
-                f"Model did not return a boolean. Output was: {response}"
+                f"Model did not return a response that could be mapped to a boolean. Response was: {response}"
             )
 
 

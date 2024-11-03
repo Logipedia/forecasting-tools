@@ -102,12 +102,10 @@ class Estimator:
             f"""
             I estimate that there are {number_of_hits} '{self.__type_of_thing_to_estimate}'.
 
-            WARNING: Though the facts section below should be sourcable, if the estimation steps are vague, the AI probably just guessed.
-
             **Facts**:
             {facts_as_markdown}
 
-            **Estimation Steps**:
+            **Estimation Steps and Assumptions**:
             {estimation_reasoning}
             """
         )

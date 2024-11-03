@@ -34,7 +34,7 @@ class KeyFactorsSearcher:
     async def find_key_factors(
         cls,
         metaculus_question: MetaculusQuestion,
-        num_key_factors_to_return: int = 10,
+        num_key_factors_to_return: int = 5,
         num_questions_to_research_with: int = 26,
     ) -> list[ScoredKeyFactor]:
         num_background_questions = num_questions_to_research_with // 2
@@ -259,6 +259,7 @@ class KeyFactorsSearcher:
         assert (
             len(key_factors_to_compare) < 25
         ), "Too many key factors to compare"
+        assert len(key_factors_to_compare) >= num_factors_to_return
         prompt = clean_indents(
             f"""
             You are a superforecaster analyzing key factors for the following question in triple backticks:

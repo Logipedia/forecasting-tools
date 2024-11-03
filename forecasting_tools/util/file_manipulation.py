@@ -16,7 +16,11 @@ def get_absolute_path(path_in_package: str) -> str:
     if os.path.isabs(path_in_package):
         return path_in_package
 
-    path_in_package = os.path.normpath(path_in_package.strip("/"))
+    path_in_package = (
+        os.path.normpath(path_in_package.strip("/"))
+        if path_in_package != ""
+        else ""
+    )
 
     package_name = _get_package_name()
     package_path = _get_absolute_path_of_directory(package_name)
@@ -25,15 +29,15 @@ def get_absolute_path(path_in_package: str) -> str:
         updated_path_in_package = path_in_package.removeprefix(
             package_name
         ).strip("/")
-        file_path = os.path.join(package_path, updated_path_in_package)
+        absolute_path = os.path.join(package_path, updated_path_in_package)
     else:
         one_level_up_path = os.path.dirname(package_path)
         assert os.path.exists(
             os.path.join(one_level_up_path, "pyproject.toml")
         ), "pyproject.toml not found in parent directory"
-        file_path = os.path.join(one_level_up_path, path_in_package)
+        absolute_path = os.path.join(one_level_up_path, path_in_package)
 
-    return file_path
+    return absolute_path.rstrip("/")
 
 
 def _get_package_name() -> str:

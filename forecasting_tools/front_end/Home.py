@@ -30,7 +30,6 @@ from forecasting_tools.util.custom_logger import CustomLogger
 
 
 class HomePage(AppPage):
-    FILE_PATH_IN_FRONT_END_FOLDER: str = "Home.py"
     PAGE_DISPLAY_NAME: str = "🏠 Home"
     URL_PATH: str = "/"
     IS_DEFAULT_PAGE: bool = True
@@ -53,7 +52,7 @@ class HomePage(AppPage):
     ]
 
     @classmethod
-    async def async_main(cls) -> None:
+    async def _async_main(cls) -> None:
         header()
         st.title("What do you want to do?")
         for page in cls.NON_HOME_PAGES:

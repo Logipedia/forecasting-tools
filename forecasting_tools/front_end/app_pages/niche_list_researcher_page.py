@@ -29,7 +29,6 @@ logger = logging.getLogger(__name__)
 
 
 class NicheListResearchPage(AppPage):
-    FILE_PATH_IN_FRONT_END_FOLDER: str = "pages/niche_list_research_page.py"
     PAGE_DISPLAY_NAME: str = "📋 Niche List Researcher"
     URL_PATH: str = "/niche-list-researcher"
 
@@ -37,7 +36,7 @@ class NicheListResearchPage(AppPage):
     QUESTION_FORM = "niche_list_research_form"
 
     @classmethod
-    async def async_main(cls) -> None:
+    async def _async_main(cls) -> None:
         header()
         cls.__display_title_info()
         await cls.__display_niche_list_form()
@@ -98,21 +97,24 @@ class NicheListResearchPage(AppPage):
                 )
                 cost = cost_manager.current_usage
                 st.markdown(f"**Cost:** ${cost:.2f}\n\n{markdown}")
-
-                ForecastDatabaseManager.add_general_report_to_database(
-                    question_text=question_text,
-                    background_info=None,
-                    resolution_criteria=None,
-                    fine_print=None,
-                    prediction=len(fact_checked_items),
-                    explanation=markdown,
-                    page_url=None,
-                    price_estimate=cost,
-                    run_type=ForecastRunType.WEB_APP_NICHE_LIST,
-                )
         except Exception as e:
             logger.exception(f"Unexpected error in niche list research: {e}")
             st.error(f"An unexpected error occurred: {e}")
+
+        try:
+            ForecastDatabaseManager.add_general_report_to_database(
+                question_text=question_text,
+                background_info=None,
+                resolution_criteria=None,
+                fine_print=None,
+                prediction=len(fact_checked_items),
+                explanation=markdown,
+                page_url=None,
+                price_estimate=cost,
+                run_type=ForecastRunType.WEB_APP_NICHE_LIST,
+            )
+        except Exception as e:
+            logger.warning(f"Couldn't add niche list report to database: {e}")
 
 
 if __name__ == "__main__":

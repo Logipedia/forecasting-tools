@@ -2,7 +2,6 @@ import asyncio
 import logging
 import os
 import random
-from typing import Literal
 
 import numpy as np
 import requests
@@ -204,24 +203,25 @@ class Deduplicator:
     def __determine_if_text_is_duplicate_semantically(
         cls,
         text: str,
-        list_to_check: list[str],
-        threshold: float,
-        provider: Literal["openai", "huggingface"] = "huggingface",
+        list_to_compare_to: list[str],
+        semantic_similarity_threshold: float,
     ) -> bool:
         """
         0.85 is good for an item like "1999 Moldovan referendum: description..."
         0.938 is good for a short item like "1999 Moldovan referendum"
         """
-        if provider == "openai":
-            embeddings = cls.__get_embeddings_using_openai(
-                [text] + list_to_check
-            )
-        elif provider == "huggingface":
+        texts_to_get_embeddings_for = [text] + list_to_compare_to
+        try:
             embeddings = cls.__get_embeddings_using_huggingface(
-                [text] + list_to_check
+                texts_to_get_embeddings_for
             )
-        else:
-            raise ValueError(f"Invalid provider: {provider}")
+        except Exception as e:
+            logger.warning(
+                f"Could not get embeddings using huggingface. Instead now getting embeddings with OpenAI. Error: {e}"
+            )
+            embeddings = cls.__get_embeddings_using_openai(
+                texts_to_get_embeddings_for
+            )
 
         text_embedding = embeddings[0]
         list_embeddings = embeddings[1:]
@@ -230,7 +230,7 @@ class Deduplicator:
             similarity = cosine_similarity(
                 np.array([text_embedding]), np.array([list_embedding])
             )[0][0]
-            if similarity > threshold:
+            if similarity > semantic_similarity_threshold:
                 return True
         return False
 
@@ -238,7 +238,7 @@ class Deduplicator:
     def __get_embeddings_using_openai(
         cls, texts: list[str]
     ) -> list[list[float]]:
-        # TODO: Track costs from this in llm cost tracker (but as of Oct 17 2024, its negligible and unused)
+        # TODO: Track costs from this in llm cost tracker
         api_key = os.getenv("OPENAI_API_KEY")
         assert api_key is not None, "OPENAI_API_KEY is not set"
         client = OpenAI(api_key=api_key)

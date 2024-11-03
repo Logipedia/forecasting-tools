@@ -33,14 +33,13 @@ logger = logging.getLogger(__name__)
 
 
 class KeyFactorsPage(AppPage):
-    FILE_PATH_IN_FRONT_END_FOLDER: str = "pages/key_factors_page.py"
     PAGE_DISPLAY_NAME: str = "🔑 Key Factors Researcher"
     URL_PATH: str = "/key-factors"
 
     METACULUS_URL_INPUT = "metaculus_url_input"
 
     @classmethod
-    async def async_main(cls) -> None:
+    async def _async_main(cls) -> None:
         header()
         st.title("Metaculus Question Key Factors")
 
@@ -85,8 +84,8 @@ class KeyFactorsPage(AppPage):
         cls, metaculus_question: MetaculusQuestion
     ) -> None:
         st.markdown(f"## Question: {metaculus_question.question_text}")
-        with st.spinner("Analyzing key factors..."):
-            try:
+        try:
+            with st.spinner("Analyzing key factors..."):
                 with MonetaryCostManager() as cost_manager:
                     num_questions_to_research = 8
                     num_key_factors_to_return = 10
@@ -102,20 +101,22 @@ class KeyFactorsPage(AppPage):
                     )
                     markdown = cls.make_key_factor_markdown(key_factors)
                     st.markdown(markdown)
-
-                    ForecastDatabaseManager.add_general_report_to_database(
-                        question_text=metaculus_question.question_text,
-                        background_info=None,
-                        resolution_criteria=None,
-                        fine_print=None,
-                        prediction=None,
-                        explanation=markdown,
-                        page_url=None,
-                        price_estimate=cost,
-                        run_type=ForecastRunType.WEB_APP_KEY_FACTORS,
-                    )
-            except Exception as e:
-                st.error(f"An error occurred: {str(e)}")
+        except Exception as e:
+            st.error(f"An error occurred: {str(e)}")
+        try:
+            ForecastDatabaseManager.add_general_report_to_database(
+                question_text=metaculus_question.question_text,
+                background_info=None,
+                resolution_criteria=None,
+                fine_print=None,
+                prediction=None,
+                explanation=markdown,
+                page_url=None,
+                price_estimate=cost,
+                run_type=ForecastRunType.WEB_APP_KEY_FACTORS,
+            )
+        except Exception as e:
+            logger.warning(f"Couldn't add key factors report to database: {e}")
 
     @classmethod
     def make_key_factor_markdown(

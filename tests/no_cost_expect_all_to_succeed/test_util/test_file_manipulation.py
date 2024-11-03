@@ -27,6 +27,34 @@ def test_read_file_of_outer_package() -> None:
     assert ".env" in file_contents
 
 
+def test_file_path_self_consistency() -> None:
+    outer_package_path = file_manipulation.get_absolute_path("")
+    inner_package_path = file_manipulation.get_absolute_path(
+        "forecasting_tools"
+    )
+    util_folder_path = file_manipulation.get_absolute_path(
+        "forecasting_tools/util"
+    )
+    logs_path = file_manipulation.get_absolute_path("logs")
+
+    assert outer_package_path.endswith("forecasting-tools")
+    assert inner_package_path.endswith("forecasting_tools")
+    assert util_folder_path.endswith("util")
+    assert logs_path.endswith("logs")
+
+    stripped_inner_package_path = inner_package_path.removesuffix(
+        "/forecasting_tools"
+    )
+    stripped_util_folder_path = util_folder_path.removesuffix(
+        "/forecasting_tools/util"
+    )
+    stripped_logs_path = logs_path.removesuffix("/logs")
+
+    assert outer_package_path == stripped_inner_package_path
+    assert outer_package_path == stripped_util_folder_path
+    assert outer_package_path == stripped_logs_path
+
+
 @patch("builtins.open", new_callable=mock_open)
 @patch("os.makedirs")
 def test_create_or_overwrite_file(mock_makedirs, mock_open_file):
@@ -99,6 +127,12 @@ def find__with_open__usage(
 
 
 def test_no__with_open__usage() -> None:
+    """
+    We need the file_manipulation.py file to be the only place that uses the `with open()`
+    because we need to be able to disable file writing using the FILE_WRITING_ALLOWED
+    environment variable. This allows us to not write to files in the streamlit
+    community cloud environment.
+    """
     file_manipulation_name = file_manipulation.__name__.split(".")[-1] + ".py"
     excluded_files: list[str] = [file_manipulation_name]
 

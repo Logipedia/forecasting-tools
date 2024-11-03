@@ -8,7 +8,6 @@ from streamlit.navigation.page import StreamlitPage
 
 
 class AppPage(ABC):
-    FILE_PATH_IN_FRONT_END_FOLDER: str = NotImplemented
     PAGE_DISPLAY_NAME: str = NotImplemented
     URL_PATH: str = NotImplemented
     IS_DEFAULT_PAGE: bool = False
@@ -17,10 +16,6 @@ class AppPage(ABC):
         super().__init_subclass__(*args, **kwargs)
         is_abstract = ABC in cls.__bases__
         if not is_abstract:
-            if cls.FILE_PATH_IN_FRONT_END_FOLDER is NotImplemented:
-                raise NotImplementedError(
-                    "You forgot to define FILE_PATH_IN_FRONT_END_FOLDER"
-                )
             if cls.PAGE_DISPLAY_NAME is NotImplemented:
                 raise NotImplementedError(
                     "You forgot to define PAGE_DISPLAY_NAME"
@@ -30,11 +25,11 @@ class AppPage(ABC):
 
     @classmethod
     def main(cls) -> None:
-        asyncio.run(cls.async_main())
+        asyncio.run(cls._async_main())
 
     @classmethod
     @abstractmethod
-    async def async_main(cls) -> None:
+    async def _async_main(cls) -> None:
         pass
 
     @classmethod

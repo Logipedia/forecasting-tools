@@ -30,7 +30,6 @@ logger = logging.getLogger(__name__)
 
 
 class BaseRatePage(AppPage):
-    FILE_PATH_IN_FRONT_END_FOLDER: str = "pages/base_rate_page.py"
     PAGE_DISPLAY_NAME: str = "🦕 Find a Historical Base Rate"
     URL_PATH: str = "/base-rate-generator"
 
@@ -38,7 +37,7 @@ class BaseRatePage(AppPage):
     QUESTION_FORM = "base_rate_question_form"
 
     @classmethod
-    async def async_main(cls) -> None:
+    async def _async_main(cls) -> None:
         header()
         cls.__display_title_info()
         await cls.__display_base_rate_form()
@@ -102,9 +101,12 @@ class BaseRatePage(AppPage):
         if "saved_base_rate_list" not in st.session_state:
             st.session_state.saved_base_rate_list = []
         st.session_state.saved_base_rate_list.append(report)
-        ForecastDatabaseManager.add_base_rate_report_to_database(
-            report, ForecastRunType.WEB_APP_BASE_RATE
-        )
+        try:
+            ForecastDatabaseManager.add_base_rate_report_to_database(
+                report, ForecastRunType.WEB_APP_BASE_RATE
+            )
+        except Exception as e:
+            logger.warning(f"Couldn't add base rate report to database: {e}")
 
     @classmethod
     def __display_all_reports(cls) -> None:

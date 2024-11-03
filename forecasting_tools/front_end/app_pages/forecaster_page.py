@@ -29,7 +29,6 @@ logger = logging.getLogger(__name__)
 
 
 class ForecasterPage(AppPage):
-    FILE_PATH_IN_FRONT_END_FOLDER: str = "pages/forecaster_page.py"
     PAGE_DISPLAY_NAME: str = "🔍 Forecast a Question"
     URL_PATH: str = "/forecast"
 
@@ -43,7 +42,7 @@ class ForecasterPage(AppPage):
     BASE_RATE_DEEP_RESEARCH = "base_rate_deep_research"
 
     @classmethod
-    async def async_main(cls) -> None:
+    async def _async_main(cls) -> None:
         header()
         cls.__display_title_info()
         cls.__display_metaculus_url_input()
@@ -188,7 +187,7 @@ class ForecasterPage(AppPage):
                 report, run_type=ForecastRunType.WEB_APP_FORECAST
             )
         except Exception as e:
-            logger.error(f"Error adding report to Coda: {e}")
+            logger.warning(f"Couldn't add forecast report to database: {e}")
 
     @classmethod
     def __display_all_reports(cls) -> None:

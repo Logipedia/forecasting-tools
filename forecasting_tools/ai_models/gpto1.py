@@ -13,7 +13,7 @@ class GptO1(OpenAiTextToTextModel):
     MODEL_NAME: Final[str] = "o1-preview"
     REQUESTS_PER_PERIOD_LIMIT: Final[int] = 8_000
     REQUEST_PERIOD_IN_SECONDS: Final[int] = 60
-    TIMEOUT_TIME: Final[int] = 40
+    TIMEOUT_TIME: Final[int] = 120
     TOKENS_PER_PERIOD_LIMIT: Final[int] = 2_000_000
     TOKEN_PERIOD_IN_SECONDS: Final[int] = 60
 
