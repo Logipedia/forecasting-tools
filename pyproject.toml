@@ -1,11 +1,10 @@
 [tool.poetry]
 name = "forecasting-tools"
-version = "0.1.2"
+version = "0.1.3"
 description = "AI forecasting and research tools to help humans reason about and forecast the future"
 authors = ["Benjamin Wilson <mokoresearch@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-discord = "https://discord.gg/Dtq4JNdXnw"
 keywords = ["ai", "forecasting", "research", "metaculus", "prediction"]
 classifiers = [
     "Development Status :: 4 - Beta",
