@@ -29,7 +29,7 @@ def test_large_lists_fail(things_to_generate: str) -> None:
         asyncio.run(
             NicheListResearcher(
                 things_to_generate
-            ).research_list_of_niche_reference_class()
+            ).research_niche_reference_class()
         )
 
 
@@ -181,9 +181,7 @@ async def test_exhaustive_list_generation(
         all_items_including_incorrect = asyncio.run(
             NicheListResearcher(
                 type_of_thing_to_generate=things_to_generate
-            ).research_list_of_niche_reference_class(
-                include_incorrect_items=True
-            )
+            ).research_niche_reference_class(return_invalid_items=True)
         )
     list_markdown = FactCheckedItem.make_markdown_with_valid_and_invalid_lists(
         all_items_including_incorrect

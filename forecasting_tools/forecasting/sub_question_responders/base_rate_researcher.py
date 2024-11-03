@@ -288,7 +288,7 @@ class BaseRateResearcher(QuestionResponder):
     ) -> ReferenceClassWithCount:
         items_found = await NicheListResearcher(
             reference_class.hit_description_with_dates_included
-        ).research_list_of_niche_reference_class(include_incorrect_items=True)
+        ).research_niche_reference_class(return_invalid_items=True)
         correct_items = [item for item in items_found if item.is_valid]
         markdown_of_items = (
             FactCheckedItem.make_markdown_with_valid_and_invalid_lists(

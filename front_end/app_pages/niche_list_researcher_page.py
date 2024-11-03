@@ -84,8 +84,8 @@ class NicheListResearchPage(AppPage):
             with MonetaryCostManager() as cost_manager:
                 generator = NicheListResearcher(question_text)
                 fact_checked_items = (
-                    await generator.research_list_of_niche_reference_class(
-                        include_incorrect_items=True
+                    await generator.research_niche_reference_class(
+                        return_invalid_items=True
                     )
                 )
 

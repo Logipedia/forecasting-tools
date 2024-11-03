@@ -160,15 +160,15 @@ class NicheListResearcher:
         self.num_llm_calls_to_find_new_items = 2
         self.num_internet_searches_to_find_new_items = 3
 
-    async def research_list_of_niche_reference_class(
-        self, include_incorrect_items: bool = False
+    async def research_niche_reference_class(
+        self, return_invalid_items: bool = False
     ) -> list[FactCheckedItem]:
         if self.reject_inputs_expected_to_exceed_max_size:
             await self.__check_list_is_short_enough()
         initial_items = await self.__brainstorm_all_possible_items()
         deduplicated_list = await self.__deduplicate_list(initial_items)
         fact_checked_list = await self.__fact_check_list(deduplicated_list)
-        if include_incorrect_items:
+        if return_invalid_items:
             return fact_checked_list
         return [result for result in fact_checked_list if result.is_valid]
 
