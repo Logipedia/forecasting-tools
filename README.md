@@ -1,7 +1,7 @@
 ![PyPI version](https://badge.fury.io/py/forecasting-tools.svg)
 ![Python Versions](https://img.shields.io/pypi/pyversions/forecasting-tools.svg)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
-![Discord](https://img.shields.io/badge/Discord-Join-blue)
+[![Discord](https://img.shields.io/badge/Discord-Join-blue)](https://discord.gg/Dtq4JNdXnw)
 
 Last Update: Nov 3 2024
 
@@ -16,8 +16,8 @@ This repository contains forecasting and research tools built with Python and St
 
 Key features: Tools most likely to be useful to you
 - 🔍 **Perplexity++ Smart Searcher:** Smart Searcher for AI-powered internet powered by Exa.ai that is configurable, more accurate, able to decide on filters, able to link to exact paragraphs, and generally better than Perplexity.ai.
-- 🎯 **Forecasting Bot:** General Forecaster (Forecast Team) that integrates with the Metaculus AI benchmarking competition and really any other question you have.
 - 🔑 **Key Factor Analysis:** Key Factors Analysis for scoring, ranking, and prioritizing important variables in forecasting questions
+- 🎯 **Forecasting Bot:** General Forecaster (Forecast Team) that integrates with the Metaculus AI benchmarking competition and really any other question you have.
 
 Here are some other cool components and features of the project:
 - **Base Rate Researcher:** for calculating event probabilities

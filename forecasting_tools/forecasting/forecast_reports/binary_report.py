@@ -28,7 +28,7 @@ class BinaryReport(ForecastReport):
             raise ValueError("Prediction must be between 0 and 1")
         return v
 
-    def publish_report_to_metaculus(self) -> None:
+    async def publish_report_to_metaculus(self) -> None:
         MetaculusApi.post_binary_question_prediction(
             self.question.question_id, self.prediction
         )
