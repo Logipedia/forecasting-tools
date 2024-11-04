@@ -59,7 +59,7 @@ class ReportDisplayer:
         selected_index = st.session_state.selected_report_index
         if selected_index is not None and selected_index < len(sorted_reports):
             selected_report = sorted_reports[selected_index]
-            ReportDisplayer.display_report_as_markdown(selected_report)
+            ReportDisplayer.display_report(selected_report)
         else:
             st.write("Select a report to view.")
 
@@ -80,7 +80,7 @@ class ReportDisplayer:
         return sorted_reports
 
     @classmethod
-    def display_report_as_markdown(cls, report: BinaryReport) -> None:
+    def display_report(cls, report: BinaryReport) -> None:
         sections = report.report_sections
         if not sections:
             logger.warning("No sections found in report")
