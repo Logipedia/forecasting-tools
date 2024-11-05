@@ -275,9 +275,9 @@ print(report.explanation)
 ```
 
 ## Team Manager
-The Team Manager helps automate forecasting across multiple questions, particularly useful for Metaculus AI benchmarking and tournament participation. It can run forecasts on all open questions in a tournament, publish predictions, and benchmark forecast performance.
+The Team Manager helps automate forecasting across multiple questions, particularly useful for Metaculus AI Benchmarking Competition and tournament participation. It can run forecasts on all open questions in a tournament, publish predictions, and can benchmark the Forecast Team's performance.
 
-Note that (as of last update) benchmarking is in beta. It is helpful to have the front end to view results. There may be bias from struggles with multiple choice question wording. Benchmarks are run by comparing the community forecast to the team forecast on a semi-random filtered set of binary open questions. This isn't a perfect way to measure, but better than waiting till the end of a tournament or doing it manually.
+Benchmarks are run by comparing the community forecast to the team forecast on a semi-random filtered set of binary open questions. This isn't a perfect way to measure, but better than waiting till the end of a tournament or doing it manually. Benchmarks can be viewed by plugging it into the front end benchmark page.
 
 
 ```python
@@ -295,10 +295,9 @@ reports = await manager.run_forecasts_on_all_open_questions(
     tournament_id=3672
 )
 
-# Sanity check changes by benchmarking forecast performance
-# Depths: "shallow" (10 questions), "medium" (20), "deep" (30)
+# Score the current iteration of the Forecast Team
 score = await manager.benchmark_forecast_team(
-    evaluation_depth="medium"
+    evaluation_depth="deep"
 )
 print(f"Average deviation score: {score:.3f}")
 ```
