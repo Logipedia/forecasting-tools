@@ -8,7 +8,6 @@ from forecasting_tools.forecasting.forecast_reports.binary_report import (
     BinaryReport,
 )
 from front_end.helpers.app_page import AppPage
-from front_end.helpers.custom_auth import CustomAuth
 from front_end.helpers.report_displayer import ReportDisplayer
 
 
@@ -17,14 +16,13 @@ class BenchmarkPage(AppPage):
     URL_PATH: str = "/benchmark"
     BENCHMARK_FILE_SELECTBOX_KEY: str = "benchmark_file_selectbox"
     BENCHMARK_FILES_TO_SHOW: dict[str, str] = {
-        "Gpt4o plus Gpto1 for reasoning": "2024-11-06_00-05-28__q4_initial_bot__score_0.0079__git_b666874.json",
-        "Research Format Update": "2024-08-30_17-22-42__research_format_update__score_0.0802.json",
-        "Original Bot": "2024-08-30_16-46-19__original_bot__score_0.0657.json",
+        "GPT-4O for research and GPT-O1 for reasoning": "2024-11-06_00-05-28__q4_initial_bot__score_0.0079__git_b666874.json",
+        # "Research Format Update": "2024-08-30_17-22-42__research_format_update__score_0.0802.json",
+        # "Original Bot": "2024-08-30_16-46-19__original_bot__score_0.0657.json",
     }
     BENCHMARK_FOLDER: str = "front_end/benchmarks"
 
     @classmethod
-    @CustomAuth.add_access_control()
     async def _async_main(cls) -> None:
         st.title("Benchmarks")
         st.write("")
