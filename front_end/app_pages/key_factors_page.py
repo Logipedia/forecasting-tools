@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 import os
 import re
@@ -5,6 +7,7 @@ import sys
 
 import dotenv
 import streamlit as st
+from pydantic import BaseModel
 
 dotenv.load_dotenv()
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -18,46 +21,104 @@ from forecasting_tools.forecasting.forecast_database_manager import (
     ForecastDatabaseManager,
     ForecastRunType,
 )
-from forecasting_tools.forecasting.metaculus_api import (
-    MetaculusApi,
-    MetaculusQuestion,
-)
+from forecasting_tools.forecasting.metaculus_api import MetaculusApi
 from forecasting_tools.forecasting.sub_question_responders.key_factors_researcher import (
     KeyFactorsResearcher,
     ScoredKeyFactor,
 )
-from front_end.helpers.app_page import AppPage
-from front_end.helpers.general import footer, header
+from forecasting_tools.util.jsonable import Jsonable
+from front_end.helpers.tool_page import ToolPage
 
 logger = logging.getLogger(__name__)
 
 
-class KeyFactorsPage(AppPage):
+class KeyFactorsInput(Jsonable, BaseModel):
+    metaculus_url: str
+
+
+class KeyFactorsOutput(Jsonable, BaseModel):
+    question_text: str
+    markdown: str
+    cost: float
+
+
+class KeyFactorsPage(ToolPage):
     PAGE_DISPLAY_NAME: str = "🔑 Key Factors Researcher"
     URL_PATH: str = "/key-factors"
-
-    METACULUS_URL_INPUT = "metaculus_url_input"
-
-    @classmethod
-    async def _async_main(cls) -> None:
-        header()
-        st.title("Metaculus Question Key Factors")
-
-        metaculus_url = cls.__display_metaculus_url_input()
-
-        if st.button("Find Key Factors"):
-            if metaculus_url:
-                await cls.fetch_and_analyze_question(metaculus_url)
-            else:
-                st.warning("Please enter a valid Metaculus Question URL.")
-        footer()
+    INPUT_TYPE = KeyFactorsInput
+    OUTPUT_TYPE = KeyFactorsOutput
+    EXAMPLES_FILE_PATH = (
+        "front_end/example_outputs/key_factors_page_examples.json"
+    )
 
     @classmethod
-    def __display_metaculus_url_input(cls) -> str:
-        st.write("Enter a Metaculus question URL to analyze its key factors.")
-        return st.text_input(
-            "Metaculus Question URL", key=cls.METACULUS_URL_INPUT
+    async def _display_intro_text(cls) -> None:
+        # No intro text needed
+        pass
+
+    @classmethod
+    async def _get_input(cls) -> KeyFactorsInput | None:
+        with st.form("key_factors_form"):
+            metaculus_url = st.text_input("Metaculus Question URL")
+            submitted = st.form_submit_button("Find Key Factors")
+            if submitted and metaculus_url:
+                return KeyFactorsInput(metaculus_url=metaculus_url)
+        return None
+
+    @classmethod
+    async def _run_tool(cls, input: KeyFactorsInput) -> KeyFactorsOutput:
+        with st.spinner(
+            "Finding key factors... This may take a minute or two..."
+        ):
+            question_id = cls.__extract_question_id(input.metaculus_url)
+            metaculus_question = MetaculusApi.get_question_by_id(question_id)
+
+            with MonetaryCostManager() as cost_manager:
+                num_questions_to_research = 16
+                num_key_factors_to_return = 7
+                key_factors = await KeyFactorsResearcher.find_key_factors(
+                    metaculus_question,
+                    num_questions_to_research_with=num_questions_to_research,
+                    num_key_factors_to_return=num_key_factors_to_return,
+                )
+                cost = cost_manager.current_usage
+                markdown = cls.make_key_factor_markdown(key_factors)
+
+                return KeyFactorsOutput(
+                    question_text=metaculus_question.question_text,
+                    markdown=markdown,
+                    cost=cost,
+                )
+
+    @classmethod
+    async def _save_run_to_coda(
+        cls,
+        input_to_tool: KeyFactorsInput,
+        output: KeyFactorsOutput,
+        is_premade: bool,
+    ) -> None:
+        if is_premade:
+            output.cost = 0
+        ForecastDatabaseManager.add_general_report_to_database(
+            question_text=output.question_text,
+            background_info=None,
+            resolution_criteria=None,
+            fine_print=None,
+            prediction=None,
+            explanation=output.markdown,
+            page_url=None,
+            price_estimate=output.cost,
+            run_type=ForecastRunType.WEB_APP_KEY_FACTORS,
         )
+
+    @classmethod
+    async def _display_outputs(cls, outputs: list[KeyFactorsOutput]) -> None:
+        for output in outputs:
+            with st.expander(f"Key Factors for: {output.question_text}"):
+                st.success(
+                    f"Key factors analysis completed successfully! Cost: ${output.cost:.2f}"
+                )
+                st.markdown(output.markdown)
 
     @classmethod
     def __extract_question_id(cls, url: str) -> int:
@@ -69,67 +130,15 @@ class KeyFactorsPage(AppPage):
         )
 
     @classmethod
-    async def fetch_and_analyze_question(cls, metaculus_url: str) -> None:
-        try:
-            question_id = cls.__extract_question_id(metaculus_url)
-            metaculus_question = MetaculusApi.get_question_by_id(question_id)
-            await cls.analyze_question(metaculus_question)
-        except Exception as e:
-            st.error(
-                f"An error occurred while fetching the question: {e.__class__.__name__}: {e}"
-            )
-
-    @classmethod
-    async def analyze_question(
-        cls, metaculus_question: MetaculusQuestion
-    ) -> None:
-        st.markdown(f"## Question: {metaculus_question.question_text}")
-        try:
-            with st.spinner("Analyzing key factors..."):
-                with MonetaryCostManager() as cost_manager:
-                    num_questions_to_research = 8
-                    num_key_factors_to_return = 10
-                    key_factors = await KeyFactorsResearcher.find_key_factors(
-                        metaculus_question,
-                        num_questions_to_research_with=num_questions_to_research,
-                        num_key_factors_to_return=num_key_factors_to_return,
-                    )
-
-                    cost = cost_manager.current_usage
-                    st.success(
-                        f"Key factors analysis completed successfully! Cost: ${cost:.2f}"
-                    )
-                    markdown = cls.make_key_factor_markdown(key_factors)
-                    st.markdown(markdown)
-        except Exception as e:
-            st.error(f"An error occurred: {str(e)}")
-        try:
-            ForecastDatabaseManager.add_general_report_to_database(
-                question_text=metaculus_question.question_text,
-                background_info=None,
-                resolution_criteria=None,
-                fine_print=None,
-                prediction=None,
-                explanation=markdown,
-                page_url=None,
-                price_estimate=cost,
-                run_type=ForecastRunType.WEB_APP_KEY_FACTORS,
-            )
-        except Exception as e:
-            logger.warning(f"Couldn't add key factors report to database: {e}")
-
-    @classmethod
     def make_key_factor_markdown(
         cls, key_factors: list[ScoredKeyFactor]
     ) -> str:
         sorted_factors = sorted(
             key_factors, key=lambda x: x.score, reverse=True
         )
-        st.subheader("Key Factors")
-        markdown = ScoredKeyFactor.turn_key_factors_into_markdown_list(
+        return ScoredKeyFactor.turn_key_factors_into_markdown_list(
             sorted_factors
         )
-        return markdown
 
 
 if __name__ == "__main__":

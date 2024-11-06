@@ -131,6 +131,11 @@ instance_of_test_model_2 = TestPydanticModel2(
         ),
         (
             list[str],
+            '```markdown\n["string1","string2"]\n```',
+            ["string1", "string2"],
+        ),
+        (
+            list[str],
             'Here is a list of strings \n["string1","string2"]\n',
             ["string1", "string2"],
         ),

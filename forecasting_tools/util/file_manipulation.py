@@ -97,6 +97,12 @@ def load_json_file(project_file_path: str) -> list[dict]:
         return json.load(file)
 
 
+def load_jsonl_file(file_path_in_package: str) -> list[dict]:
+    full_file_path = get_absolute_path(file_path_in_package)
+    with open(full_file_path, "r") as file:
+        return [json.loads(line) for line in file]
+
+
 def load_text_file(file_path_in_package: str) -> str:
     full_file_path = get_absolute_path(file_path_in_package)
     with open(full_file_path, "r") as file:
@@ -106,6 +112,12 @@ def load_text_file(file_path_in_package: str) -> str:
 def write_json_file(file_path_in_package: str, input: list[dict]) -> None:
     json_string = json.dumps(input, indent=4)
     create_or_overwrite_file(file_path_in_package, json_string)
+
+
+def add_to_jsonl_file(file_path_in_package: str, input: list[dict]) -> None:
+    json_strings = [json.dumps(item) for item in input]
+    jsonl_string = "\n".join(json_strings)
+    create_or_append_to_file(file_path_in_package, jsonl_string)
 
 
 @skip_if_file_writing_not_allowed

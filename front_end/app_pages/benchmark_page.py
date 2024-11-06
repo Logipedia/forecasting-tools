@@ -1,5 +1,4 @@
 import math
-import os
 import textwrap
 
 import dotenv
@@ -10,7 +9,6 @@ from forecasting_tools.forecasting.forecast_reports.binary_report import (
 )
 from front_end.helpers.app_page import AppPage
 from front_end.helpers.custom_auth import CustomAuth
-from front_end.helpers.general import footer, header
 from front_end.helpers.report_displayer import ReportDisplayer
 
 
@@ -18,41 +16,36 @@ class BenchmarkPage(AppPage):
     PAGE_DISPLAY_NAME: str = "📈  Benchmark"
     URL_PATH: str = "/benchmark"
     BENCHMARK_FILE_SELECTBOX_KEY: str = "benchmark_file_selectbox"
+    BENCHMARK_FILES_TO_SHOW: dict[str, str] = {
+        "Gpt4o plus Gpto1 for reasoning": "2024-11-06_00-05-28__q4_initial_bot__score_0.0079__git_b666874.json",
+        "Research Format Update": "2024-08-30_17-22-42__research_format_update__score_0.0802.json",
+        "Original Bot": "2024-08-30_16-46-19__original_bot__score_0.0657.json",
+    }
+    BENCHMARK_FOLDER: str = "front_end/benchmarks"
 
     @classmethod
     @CustomAuth.add_access_control()
     async def _async_main(cls) -> None:
-        header()
         st.title("Benchmarks")
         st.write("")
-        benchmark_files = cls.__get_benchmark_files()
         selected_file = st.selectbox(
             "Select a benchmark file:",
-            benchmark_files,
+            cls.BENCHMARK_FILES_TO_SHOW.keys(),
             key=cls.BENCHMARK_FILE_SELECTBOX_KEY,
         )
 
         if selected_file:
-            reports = cls._load_benchmark_reports(selected_file)
+            corresponding_file_path = f"{cls.BENCHMARK_FOLDER}/{cls.BENCHMARK_FILES_TO_SHOW[selected_file]}"
+            reports = BinaryReport.convert_project_file_path_to_object_list(
+                corresponding_file_path
+            )
             cls.__display_deviation_scores(reports)
             cls.__display_questions_and_forecasts(reports)
             cls.__display_deviation_score_simulation_results()
+            st.divider()
+            st.subheader("Reports from this Benchmark")
+            st.write("")
             ReportDisplayer.display_report_list(reports)
-        footer()
-
-    @staticmethod
-    def __get_benchmark_files() -> list[str]:
-        benchmark_dir = "front_end/mokoresearch_site/benchmarks"
-        file_names = [
-            f for f in os.listdir(benchmark_dir) if f.endswith(".json")
-        ]
-        file_names.sort(reverse=True)
-        return file_names
-
-    @staticmethod
-    def _load_benchmark_reports(file_name: str) -> list[BinaryReport]:
-        file_path = f"front_end/mokoresearch_site/benchmarks/{file_name}"
-        return BinaryReport.convert_project_file_path_to_object_list(file_path)
 
     @classmethod
     def __display_deviation_scores(cls, reports: list[BinaryReport]) -> None:

@@ -120,17 +120,21 @@ class ReportDisplayer:
                     )
                     cls.__display_nested_sections(sub_section.sub_sections)
 
-    @staticmethod
+    @classmethod
     def __display_question_detail_tab(
-        tab: DeltaGenerator, question: BinaryQuestion
+        cls, tab: DeltaGenerator, question: BinaryQuestion
     ) -> None:
         with tab:
             st.write(f"**Question Text:** {question.question_text}")
             st.write(
-                f"**Resolution Criteria:** {question.resolution_criteria}"
+                f"**Resolution Criteria:** {cls.clean_markdown(question.resolution_criteria or 'None')}"
             )
-            st.write(f"**Fine Print:** {question.fine_print}")
-            st.write(f"**Background Info:** {question.background_info}")
+            st.write(
+                f"**Fine Print:** {cls.clean_markdown(question.fine_print or 'None')}"
+            )
+            st.write(
+                f"**Background Info:** {cls.clean_markdown(question.background_info or 'None')}"
+            )
             st.write(f"**Question Type:** {type(question)}")
             st.write(f"**Page URL:** {question.page_url}")
             st.write(f"**Number of Forecasters:** {question.num_forecasters}")
