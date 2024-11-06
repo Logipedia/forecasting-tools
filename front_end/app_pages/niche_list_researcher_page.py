@@ -15,6 +15,7 @@ from forecasting_tools.forecasting.sub_question_responders.niche_list_researcher
     NicheListResearcher,
 )
 from forecasting_tools.util.jsonable import Jsonable
+from front_end.helpers.report_displayer import ReportDisplayer
 from front_end.helpers.tool_page import ToolPage
 
 logger = logging.getLogger(__name__)
@@ -22,9 +23,14 @@ logger = logging.getLogger(__name__)
 
 class NicheListOutput(Jsonable, BaseModel):
     question_text: str
-    markdown_output: str
     niche_list_items: list[FactCheckedItem]
     cost: float
+
+    @property
+    def markdown_output(self) -> str:
+        return FactCheckedItem.make_markdown_with_valid_and_invalid_lists(
+            self.niche_list_items
+        )
 
 
 class NicheListInput(Jsonable, BaseModel):
@@ -77,16 +83,10 @@ class NicheListResearchPage(ToolPage):
                     )
                 )
 
-                markdown = (
-                    FactCheckedItem.make_markdown_with_valid_and_invalid_lists(
-                        fact_checked_items
-                    )
-                )
                 cost = cost_manager.current_usage
 
                 return NicheListOutput(
                     question_text=input.question_text,
-                    markdown_output=markdown,
                     cost=cost,
                     niche_list_items=fact_checked_items,
                 )
@@ -115,10 +115,10 @@ class NicheListResearchPage(ToolPage):
     @classmethod
     async def _display_outputs(cls, outputs: list[NicheListOutput]) -> None:
         for output in outputs:
-            with st.expander("Niche List Research Results"):
-                st.subheader("Niche List Research Results")
+            with st.expander(f"{output.question_text}"):
+                st.markdown(f"**Cost:** ${output.cost:.2f}")
                 st.markdown(
-                    f"**Cost:** ${output.cost:.2f}\n\n{output.markdown_output}"
+                    ReportDisplayer.clean_markdown(output.markdown_output)
                 )
 
 

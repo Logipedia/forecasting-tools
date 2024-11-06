@@ -107,9 +107,7 @@ class EstimatorPage(ToolPage):
             with st.expander(
                 f"Estimate for {output.estimate_type}: {int(output.number):,}"
             ):
-                st.success(
-                    f"Estimate generated successfully! Cost: ${output.cost:.2f}"
-                )
+                st.markdown(f"Cost: ${output.cost:.2f}")
                 st.markdown(output.markdown)
 
 

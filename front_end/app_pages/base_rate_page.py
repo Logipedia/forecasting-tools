@@ -40,6 +40,7 @@ class BaseRatePage(ToolPage):
     EXAMPLES_FILE_PATH = (
         "front_end/example_outputs/base_rate_page_examples.json"
     )
+    QUESTION_TEXT_BOX = "base_rate_question_text"
 
     @classmethod
     async def _display_intro_text(cls) -> None:
@@ -49,7 +50,9 @@ class BaseRatePage(ToolPage):
     @classmethod
     async def _get_input(cls) -> BaseRateInput | None:
         with st.form("base_rate_form"):
-            question_text = st.text_input("Enter your question here")
+            question_text = st.text_input(
+                "Enter your question here", key=cls.QUESTION_TEXT_BOX
+            )
             submitted = st.form_submit_button("Submit")
             if submitted and question_text:
                 input_to_tool = BaseRateInput(question_text=question_text)

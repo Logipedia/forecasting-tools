@@ -70,7 +70,7 @@ class AppPage(ABC):
             "Give feedback on [Discord](https://discord.gg/Dtq4JNdXnw) or email "
             "me at [moko.research@gmail.com](mailto:moko.research@gmail.com). "
             "Let me know what I can do to make this a tool you will want to use "
-            "every day! Let me know if you want to chat (I'll even venmo $10 to "
+            "every day! Let me know if you want to chat (I'll Venmo \\$10 to "
             "anyone willing to do a longer 15-30min interview 😉)"
         )
         # st.write(

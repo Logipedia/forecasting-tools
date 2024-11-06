@@ -1,5 +1,6 @@
 [
     {
+        "short_name": "Meteorites",
         "input": {
             "estimate_type": "Number of of meteorites that will hit the Earth in the next year",
             "previous_research": null
@@ -13,6 +14,7 @@
         }
     },
     {
+        "short_name": "Electricians in Oregon",
         "input": {
             "estimate_type": "Number of electricians in Oregon",
             "previous_research": null

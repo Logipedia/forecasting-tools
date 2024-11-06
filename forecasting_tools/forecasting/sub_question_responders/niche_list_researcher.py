@@ -110,7 +110,11 @@ class FactCheckedItem(InitialListItem):
             )
             if criteria.citation_proving_assessment:
                 url = criteria.url_proving_assessment
-                summary_parts.append(f"{emoji}[{criteria.short_name}]({url})")
+                assert url is not None
+                escaped_url = url.replace("(", "%28").replace(")", "%29")
+                summary_parts.append(
+                    f"{emoji}[{criteria.short_name}]({escaped_url})"
+                )
             else:
                 summary_parts.append(f"{emoji}{criteria.short_name}")
 

@@ -27,6 +27,7 @@ from forecasting_tools.forecasting.sub_question_responders.key_factors_researche
     ScoredKeyFactor,
 )
 from forecasting_tools.util.jsonable import Jsonable
+from front_end.helpers.report_displayer import ReportDisplayer
 from front_end.helpers.tool_page import ToolPage
 
 logger = logging.getLogger(__name__)
@@ -40,6 +41,7 @@ class KeyFactorsOutput(Jsonable, BaseModel):
     question_text: str
     markdown: str
     cost: float
+    scored_key_factors: list[ScoredKeyFactor] | None = None
 
 
 class KeyFactorsPage(ToolPage):
@@ -82,12 +84,14 @@ class KeyFactorsPage(ToolPage):
                     num_key_factors_to_return=num_key_factors_to_return,
                 )
                 cost = cost_manager.current_usage
-                markdown = cls.make_key_factor_markdown(key_factors)
-
+                markdown = ScoredKeyFactor.turn_key_factors_into_markdown_list(
+                    key_factors
+                )
                 return KeyFactorsOutput(
                     question_text=metaculus_question.question_text,
                     markdown=markdown,
                     cost=cost,
+                    scored_key_factors=key_factors,
                 )
 
     @classmethod
@@ -115,10 +119,8 @@ class KeyFactorsPage(ToolPage):
     async def _display_outputs(cls, outputs: list[KeyFactorsOutput]) -> None:
         for output in outputs:
             with st.expander(f"Key Factors for: {output.question_text}"):
-                st.success(
-                    f"Key factors analysis completed successfully! Cost: ${output.cost:.2f}"
-                )
-                st.markdown(output.markdown)
+                st.markdown(f"Cost: ${output.cost:.2f}")
+                st.markdown(ReportDisplayer.clean_markdown(output.markdown))
 
     @classmethod
     def __extract_question_id(cls, url: str) -> int:
@@ -127,17 +129,6 @@ class KeyFactorsPage(ToolPage):
             return int(match.group(1))
         raise ValueError(
             "Invalid Metaculus question URL. Please ensure it's in the format: https://metaculus.com/questions/[ID]/[question-title]/"
-        )
-
-    @classmethod
-    def make_key_factor_markdown(
-        cls, key_factors: list[ScoredKeyFactor]
-    ) -> str:
-        sorted_factors = sorted(
-            key_factors, key=lambda x: x.score, reverse=True
-        )
-        return ScoredKeyFactor.turn_key_factors_into_markdown_list(
-            sorted_factors
         )
 
 

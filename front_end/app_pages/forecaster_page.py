@@ -28,10 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 class ForecastInput(Jsonable, BaseModel):
-    question_text: str
-    resolution_criteria: str | None = None
-    fine_print: str | None = None
-    background_info: str | None = None
+    question: BinaryQuestion
     num_background_questions: int = Field(default=4, ge=1, le=5)
     num_base_rate_questions: int = Field(default=4, ge=1, le=5)
 
@@ -103,11 +100,18 @@ class ForecasterPage(ToolPage):
                 if not question_text:
                     st.error("Question Text is required.")
                     return None
-                return ForecastInput(
+                question = BinaryQuestion(
                     question_text=question_text,
-                    resolution_criteria=resolution_criteria or None,
-                    fine_print=fine_print or None,
-                    background_info=background_info or None,
+                    question_id=0,
+                    state=QuestionState.OTHER,
+                    background_info=background_info,
+                    resolution_criteria=resolution_criteria,
+                    fine_print=fine_print,
+                    page_url="",
+                    api_json={},
+                )
+                return ForecastInput(
+                    question=question,
                     num_background_questions=num_background_questions,
                     num_base_rate_questions=num_base_rate_questions,
                 )
@@ -116,11 +120,8 @@ class ForecasterPage(ToolPage):
     @classmethod
     async def _run_tool(cls, input: ForecastInput) -> BinaryReport:
         with st.spinner("Forecasting... This may take a minute or two..."):
-            metaculus_question = cls.__create_metaculus_question_from_input(
-                input
-            )
             report = await ForecastTeam(
-                metaculus_question,
+                input.question,
                 number_of_reports_to_aggregate=1,
                 number_of_background_questions_to_ask=input.num_background_questions,
                 number_of_base_rate_questions_to_ask=input.num_base_rate_questions,
@@ -195,22 +196,6 @@ class ForecasterPage(ToolPage):
             question.resolution_criteria or ""
         )
         st.session_state[cls.FINE_PRINT_BOX] = question.fine_print or ""
-
-    @classmethod
-    def __create_metaculus_question_from_input(
-        cls,
-        input: ForecastInput,
-    ) -> BinaryQuestion:
-        return BinaryQuestion(
-            question_text=input.question_text,
-            question_id=0,
-            state=QuestionState.OTHER,
-            background_info=input.background_info,
-            resolution_criteria=input.resolution_criteria,
-            fine_print=input.fine_print,
-            page_url="",
-            api_json={},
-        )
 
 
 if __name__ == "__main__":

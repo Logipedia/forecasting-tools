@@ -16,6 +16,8 @@ logger = logging.getLogger(__name__)
 
 
 class Example(Jsonable, BaseModel):
+    short_name: str | None = None
+    notes: str | None = None
     input: dict
     output: dict
 
@@ -68,14 +70,24 @@ class ToolPage(AppPage, ABC):
 
     @classmethod
     async def _show_example_buttons(cls) -> None:
-        examples = await cls._get_example_input_output_pairs()
+        examples = await cls._get_examples()
         if examples:
             with st.expander("📋 Premade Examples", expanded=False):
                 cols = st.columns(len(examples))
                 for index, example in enumerate(examples):
                     with cols[index]:
                         button_label = f"Show Example {index + 1}"
-                        if st.button(button_label, use_container_width=True):
+                        if example.short_name:
+                            button_label += f": {example.short_name}"
+                        example_clicked = st.button(
+                            button_label, use_container_width=True
+                        )
+                        if example.notes:
+                            st.markdown(
+                                f"<div style='text-align: center'>{example.notes}</div>",
+                                unsafe_allow_html=True,
+                            )
+                        if example_clicked:
                             input_to_tool = cls.INPUT_TYPE.from_json(
                                 example.input
                             )
@@ -85,7 +97,7 @@ class ToolPage(AppPage, ABC):
                             )
 
     @classmethod
-    async def _get_example_input_output_pairs(cls) -> list[Example]:
+    async def _get_examples(cls) -> list[Example]:
         if cls.EXAMPLES_FILE_PATH is None:
             return []
         examples_raw = load_json_file(cls.EXAMPLES_FILE_PATH)
@@ -104,19 +116,30 @@ class ToolPage(AppPage, ABC):
 
     @classmethod
     async def _save_run(
-        cls, input_to_tool: Jsonable, output: Jsonable, is_premade=False
+        cls,
+        input_to_tool: Jsonable,
+        output: Jsonable,
+        is_premade: bool = False,
     ) -> None:
         assert isinstance(output, cls.OUTPUT_TYPE)
-        await cls._save_output_to_browser_storage(output)
+        await cls._save_output_to_session_state(output)
+
+        if not is_premade:
+            try:
+                await cls._save_run_to_file(input_to_tool, output)
+            except Exception as e:
+                logger.error(f"Error saving output to file: {e}")
+
+        # Allow manipulation of the class without affecting the original
+        assert isinstance(input_to_tool, BaseModel)
+        assert isinstance(output, BaseModel)
+        input_to_tool = input_to_tool.model_copy(deep=True)
+        output = output.model_copy(deep=True)
+
         try:
             await cls._save_run_to_coda(input_to_tool, output, is_premade)
         except Exception as e:
             logger.error(f"Error saving output to Coda: {e}")
-        if not is_premade:
-            try:
-                await cls._save_output_to_file(input_to_tool, output)
-            except Exception as e:
-                logger.error(f"Error saving output to file: {e}")
 
     @classmethod
     @abstractmethod
@@ -126,7 +149,7 @@ class ToolPage(AppPage, ABC):
         pass
 
     @classmethod
-    async def _save_output_to_browser_storage(cls, output: Jsonable) -> None:
+    async def _save_output_to_session_state(cls, output: Jsonable) -> None:
         assert isinstance(output, cls.OUTPUT_TYPE)
         session_state_key = cls.__get_saved_outputs_key()
         if session_state_key not in st.session_state:
@@ -134,7 +157,7 @@ class ToolPage(AppPage, ABC):
         st.session_state[session_state_key].insert(0, output)
 
     @classmethod
-    async def _save_output_to_file(
+    async def _save_run_to_file(
         cls, input_to_tool: Jsonable, output: Jsonable
     ) -> None:
         assert isinstance(output, cls.OUTPUT_TYPE)
