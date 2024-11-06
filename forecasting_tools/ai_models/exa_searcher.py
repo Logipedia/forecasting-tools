@@ -62,10 +62,10 @@ class SearchInput(BaseModel, Jsonable):
         description="The query to search within each document using semantic similarity"
     )
     include_domains: list[str] = Field(
-        description="List of domains to require in the search results for example: ['youtube.com', 'en.wikipedia.org']. An empty list means no filter."
+        description="List of domains to require in the search results for example: ['youtube.com', 'en.wikipedia.org']. An empty list means no filter. This will constrain search to ONLY results from these domains."
     )
     exclude_domains: list[str] = Field(
-        description="List of domains to exclude from the search results: ['youtube.com', 'en.wikipedia.org']. An empty list means no filter."
+        description="List of domains to exclude from the search results: ['youtube.com', 'en.wikipedia.org']. An empty list means no filter. This will constrain search to exclude results from these domains."
     )
     include_text: str | None = Field(
         description="A 1-5 word phrase that must be exactly present in the text of the search results"
