@@ -78,7 +78,7 @@ class KeyFactorsPage(ToolPage):
             with MonetaryCostManager() as cost_manager:
                 num_questions_to_research = 16
                 num_key_factors_to_return = 7
-                key_factors = await KeyFactorsResearcher.find_key_factors(
+                key_factors = await KeyFactorsResearcher.find_and_sort_key_factors(
                     metaculus_question,
                     num_questions_to_research_with=num_questions_to_research,
                     num_key_factors_to_return=num_key_factors_to_return,

@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 class KeyFactorsResearcher:
 
     @classmethod
-    async def find_key_factors(
+    async def find_and_sort_key_factors(
         cls,
         metaculus_question: MetaculusQuestion,
         num_key_factors_to_return: int = 5,

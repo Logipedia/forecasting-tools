@@ -30,7 +30,7 @@ async def test_find_key_factors_end_to_end(question_url: str) -> None:
     question = MetaculusApi.get_question_by_url(question_url)
 
     with MonetaryCostManager() as cost_manager:
-        key_factors = await KeyFactorsResearcher.find_key_factors(
+        key_factors = await KeyFactorsResearcher.find_and_sort_key_factors(
             question,
             num_key_factors_to_return=num_factors_to_return,
             num_questions_to_research_with=num_questions_to_research_with,

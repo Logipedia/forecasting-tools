@@ -18,8 +18,8 @@ logger = logging.getLogger(__name__)
 class Example(Jsonable, BaseModel):
     short_name: str | None = None
     notes: str | None = None
-    input: dict
-    output: dict
+    input: dict[str, Any]
+    output: dict[str, Any]
 
 
 class ToolPage(AppPage, ABC):
@@ -52,7 +52,7 @@ class ToolPage(AppPage, ABC):
     async def _async_main(cls) -> None:
         st.title(cls.PAGE_DISPLAY_NAME)
         await cls._display_intro_text()
-        await cls._show_example_buttons()
+        await cls._display_example_buttons_expander()
         input_to_tool = await cls._get_input()
         if input_to_tool:
             assert isinstance(input_to_tool, cls.INPUT_TYPE)
@@ -69,32 +69,34 @@ class ToolPage(AppPage, ABC):
         pass
 
     @classmethod
-    async def _show_example_buttons(cls) -> None:
+    async def _display_example_buttons_expander(cls) -> None:
         examples = await cls._get_examples()
         if examples:
             with st.expander("📋 Premade Examples", expanded=False):
                 cols = st.columns(len(examples))
                 for index, example in enumerate(examples):
                     with cols[index]:
-                        button_label = f"Show Example {index + 1}"
-                        if example.short_name:
-                            button_label += f": {example.short_name}"
-                        example_clicked = st.button(
-                            button_label, use_container_width=True
+                        await cls._display_single_example_button(
+                            example, index
                         )
-                        if example.notes:
-                            st.markdown(
-                                f"<div style='text-align: center'>{example.notes}</div>",
-                                unsafe_allow_html=True,
-                            )
-                        if example_clicked:
-                            input_to_tool = cls.INPUT_TYPE.from_json(
-                                example.input
-                            )
-                            output = cls.OUTPUT_TYPE.from_json(example.output)
-                            await cls._save_run(
-                                input_to_tool, output, is_premade=True
-                            )
+
+    @classmethod
+    async def _display_single_example_button(
+        cls, example: Example, example_number: int
+    ) -> None:
+        button_label = f"Show Example {example_number + 1}"
+        if example.short_name:
+            button_label += f": {example.short_name}"
+        example_clicked = st.button(button_label, use_container_width=True)
+        if example.notes:
+            st.markdown(
+                f"<div style='text-align: center'>{example.notes}</div>",
+                unsafe_allow_html=True,
+            )
+        if example_clicked:
+            input_to_tool = cls.INPUT_TYPE.from_json(example.input)
+            output = cls.OUTPUT_TYPE.from_json(example.output)
+            await cls._save_run(input_to_tool, output, is_premade_example=True)
 
     @classmethod
     async def _get_examples(cls) -> list[Example]:
@@ -119,32 +121,37 @@ class ToolPage(AppPage, ABC):
         cls,
         input_to_tool: Jsonable,
         output: Jsonable,
-        is_premade: bool = False,
+        is_premade_example: bool = False,
     ) -> None:
         assert isinstance(output, cls.OUTPUT_TYPE)
         await cls._save_output_to_session_state(output)
 
-        if not is_premade:
+        if not is_premade_example:
             try:
                 await cls._save_run_to_file(input_to_tool, output)
             except Exception as e:
                 logger.error(f"Error saving output to file: {e}")
 
-        # Allow manipulation of the class without affecting the original
+        # Allow manipulation of the output when prepping to save it to database without affecting the original
         assert isinstance(input_to_tool, BaseModel)
         assert isinstance(output, BaseModel)
         input_to_tool = input_to_tool.model_copy(deep=True)
         output = output.model_copy(deep=True)
 
         try:
-            await cls._save_run_to_coda(input_to_tool, output, is_premade)
+            await cls._save_run_to_coda(
+                input_to_tool, output, is_premade_example
+            )
         except Exception as e:
             logger.error(f"Error saving output to Coda: {e}")
 
     @classmethod
     @abstractmethod
     async def _save_run_to_coda(
-        cls, input_to_tool: Jsonable, output: Jsonable, is_premade: bool
+        cls,
+        input_to_tool: Jsonable,
+        output: Jsonable,
+        is_premade_example: bool,
     ) -> None:
         pass
 

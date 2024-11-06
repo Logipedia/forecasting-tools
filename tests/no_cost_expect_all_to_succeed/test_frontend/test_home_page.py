@@ -25,7 +25,7 @@ def test_home_page(page: type[AppPage]) -> None:
     "page_class",
     [page for page in HomePage.NON_HOME_PAGES],
 )
-async def test_all_pages_compile(
+def test_all_pages_compile(
     page_class: type[AppPage],
 ) -> None:
     app_test = FrontEndTestUtils.convert_page_to_app_tester(page_class)
