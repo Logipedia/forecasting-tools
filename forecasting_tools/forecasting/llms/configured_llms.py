@@ -1,10 +1,11 @@
-from forecasting_tools.ai_models.claude35sonnet import Claude35Sonnet
+from forecasting_tools.ai_models.gpt4o import Gpt4o
+from forecasting_tools.ai_models.gpto1 import GptO1
 
 
-class BasicLlm(Claude35Sonnet):
+class BasicLlm(Gpt4o):
     # NOTE: If need be, you can force an API key here through OpenAI Client class variable
     pass
 
 
-class AdvancedLlm(Claude35Sonnet):
+class AdvancedLlm(GptO1):
     pass
