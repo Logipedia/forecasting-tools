@@ -95,7 +95,7 @@ def test_large_lists_fail(things_to_generate: str) -> None:
             ],
         ),
         (
-            "Times a Moldovan (not Transnistrian)  referendum was voted on before Oct 16 2024",
+            "Times a Moldovan (not Transnistrian) referendum was voted on before Oct 16 2024",
             [
                 "1994 Moldovan referendum",
                 "1999 Moldovan constitutional referendum",

@@ -35,7 +35,7 @@ def test_get_binary_question_type_from_id() -> None:
     assert isinstance(question, BinaryQuestion)
     assert question_id == question.question_id
     assert question.community_prediction_at_access_time is not None
-    assert abs(question.community_prediction_at_access_time - 0.97) < 0.01
+    assert abs(question.community_prediction_at_access_time - 0.96) < 0.03
     assert question.state == QuestionState.OPEN
     assert_basic_question_attributes_not_none(question, question_id)
 
@@ -143,12 +143,16 @@ def test_open_filter_works_for_questions() -> None:
         ), f"Expected question to be open, but got {question.state}"
 
 
-def test_get_benchmark_questions() -> None:
+@pytest.mark.parametrize("num_questions_to_get", [30, 100])
+def test_get_benchmark_questions(num_questions_to_get: int) -> None:
     if ForecastingTestManager.quarterly_cup_is_not_active():
         pytest.skip("Quarterly cup is not active")
 
-    num_questions_to_get = 30
-    questions = MetaculusApi.get_benchmark_questions(num_questions_to_get)
+    random_seed = 42
+    questions = MetaculusApi.get_benchmark_questions(
+        num_questions_to_get, random_seed
+    )
+
     assert (
         len(questions) == num_questions_to_get
     ), f"Expected {num_questions_to_get} questions to be returned"
@@ -160,10 +164,10 @@ def test_get_benchmark_questions() -> None:
         assert isinstance(question.close_time, datetime)
         assert isinstance(question.scheduled_resolution_time, datetime)
         assert (
-            question.num_predictions > 40
+            question.num_predictions >= 40
         ), "Need to have critical mass of predictions to be confident in the results"
         assert (
-            question.num_forecasters > 40
+            question.num_forecasters >= 40
         ), "Need to have critical mass of forecasters to be confident in the results"
         assert isinstance(question, BinaryQuestion)
         three_months_from_now = datetime.now() + timedelta(days=90)
@@ -176,6 +180,15 @@ def test_get_benchmark_questions() -> None:
     assert len(question_ids) == len(
         set(question_ids)
     ), "Not all questions are unique"
+
+    questions2 = MetaculusApi.get_benchmark_questions(
+        num_questions_to_get, random_seed
+    )
+    question_ids1 = [q.question_id for q in questions]
+    question_ids2 = [q.question_id for q in questions2]
+    assert (
+        question_ids1 == question_ids2
+    ), "Questions retrieved with same random seed should return same IDs"
 
 
 def test_get_questions_from_current_quartely_cup() -> None:

@@ -19,3 +19,16 @@ def test_home_page(page: type[AppPage]) -> None:
     button.click()
     at.run()
     assert not at.exception, f"Exception occurred: {at.exception}"
+
+
+@pytest.mark.parametrize(
+    "page_class",
+    [page for page in HomePage.NON_HOME_PAGES],
+)
+def test_all_pages_compile(
+    page_class: type[AppPage],
+) -> None:
+    app_test = FrontEndTestUtils.convert_page_to_app_tester(page_class)
+    app_test.run()
+    assert not app_test.exception
+    assert not app_test.error

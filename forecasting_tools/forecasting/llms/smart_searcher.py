@@ -270,6 +270,9 @@ class SmartSearcher(OutputsText, AiModel):
                     last_five_words, safe=""
                 )
                 text_fragment = f"{encoded_first_five_words},{encoded_last_five_words}"  # Comma indicates that anything can be included in between
+            text_fragment = text_fragment.replace("(", "%28").replace(
+                ")", "%29"
+            )
             text_fragment = text_fragment.replace("-", "%2D").strip(",")
             fragment_url = f"{highlight.source.url}#:~:text={text_fragment}"
 

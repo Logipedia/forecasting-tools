@@ -125,6 +125,8 @@ def strip_code_block_markdown(string: str) -> str:
         string = string[7:-3].strip()
     elif string.startswith("```python") and string.endswith("```"):
         string = string[9:-3].strip()
+    elif string.startswith("```markdown") and string.endswith("```"):
+        string = string[11:-3].strip()
     elif string.startswith("```") and string.endswith("```"):
         string = string[3:-3].strip()
     return string

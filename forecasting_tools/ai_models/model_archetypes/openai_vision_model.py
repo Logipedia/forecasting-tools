@@ -1,22 +1,25 @@
 import logging
 from abc import ABC
 
-from forecasting_tools.ai_models.ai_utils.openai_utils import OpenAiUtils
+from forecasting_tools.ai_models.ai_utils.openai_utils import (
+    OpenAiUtils,
+    VisionMessageData,
+)
+from forecasting_tools.ai_models.ai_utils.response_types import (
+    TextTokenCostResponse,
+)
 from forecasting_tools.ai_models.model_archetypes.openai_text_model import (
     OpenAiTextToTextModel,
 )
 
 logger = logging.getLogger(__name__)
-from forecasting_tools.ai_models.ai_utils.openai_utils import VisionMessageData
-from forecasting_tools.ai_models.ai_utils.response_types import (
-    TextTokenCostResponse,
-)
-from tests.no_cost_expect_all_to_succeed.test_ai_models.ai_mock_manager import (
-    AiModelMockManager,
-)
 
 
 class OpenAiVisionToTextModel(OpenAiTextToTextModel, ABC):
+    SMALL_BASE_64_IMAGE = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
+    CHEAP_VISION_MESSAGE_DATA = VisionMessageData(
+        prompt="Hi", b64_image=SMALL_BASE_64_IMAGE, image_resolution="low"
+    )
 
     async def invoke(self, input: VisionMessageData) -> str:
         response: TextTokenCostResponse = (
@@ -40,9 +43,9 @@ class OpenAiVisionToTextModel(OpenAiTextToTextModel, ABC):
         )
         return response
 
-    @staticmethod
-    def _get_cheap_input_for_invoke() -> VisionMessageData:
-        return AiModelMockManager.CHEAP_IMAGE_MESSAGE_DATA
+    @classmethod
+    def _get_cheap_input_for_invoke(cls) -> VisionMessageData:
+        return cls.CHEAP_VISION_MESSAGE_DATA
 
     def create_messages_from_input(self, input: VisionMessageData) -> list:
         if self.system_prompt is None:

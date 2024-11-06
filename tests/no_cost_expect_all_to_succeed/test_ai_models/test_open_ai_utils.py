@@ -1,11 +1,11 @@
 from forecasting_tools.ai_models.ai_utils.openai_utils import OpenAiUtils
-from tests.no_cost_expect_all_to_succeed.test_ai_models.ai_mock_manager import (
-    AiModelMockManager,
+from forecasting_tools.ai_models.model_archetypes.openai_vision_model import (
+    OpenAiVisionToTextModel,
 )
 
 
 ################################## Message Creation Tests ##################################
-def test_user_message_creator_has_only_one_message():
+def test_user_message_creator_has_only_one_message() -> None:
     messages = OpenAiUtils.put_single_user_message_in_list_using_prompt(
         "Hello"
     )
@@ -15,7 +15,7 @@ def test_user_message_creator_has_only_one_message():
     ), "Length of user message from prompt is not 1"
 
 
-def test_system_and_user_message_creator_has_two_messages():
+def test_system_and_user_message_creator_has_two_messages() -> None:
     messages = OpenAiUtils.create_system_and_user_message_from_prompt(
         "Hello", "Hi"
     )
@@ -25,8 +25,8 @@ def test_system_and_user_message_creator_has_two_messages():
     ), "Length of system and user message from prompt is not 2"
 
 
-def test_vision_message_creator_has_one_message():
-    vision_data = AiModelMockManager.CHEAP_IMAGE_MESSAGE_DATA
+def test_vision_message_creator_has_one_message() -> None:
+    vision_data = OpenAiVisionToTextModel.CHEAP_VISION_MESSAGE_DATA
     messages = (
         OpenAiUtils.put_single_image_message_in_list_using_gpt_vision_input(
             vision_data
@@ -38,8 +38,8 @@ def test_vision_message_creator_has_one_message():
     ), "Length of vision message from prompt is not 1"
 
 
-def test_system_and_vision_message_creator_has_two_messages():
-    vision_data = AiModelMockManager.CHEAP_IMAGE_MESSAGE_DATA
+def test_system_and_vision_message_creator_has_two_messages() -> None:
+    vision_data = OpenAiVisionToTextModel.CHEAP_VISION_MESSAGE_DATA
     messages = OpenAiUtils.create_system_and_image_message_from_prompt(
         vision_data, "Hi"
     )

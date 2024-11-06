@@ -53,6 +53,7 @@ class FinalDecisionAgent:
             logger.error(f"Error in making research summary: {e}")
             research_summary = "Error in making research summary"
 
+        logger.info(f"Running {self.number_of_predictions_to_run} predictions")
         final_prediction_coroutines = [
             self.report_type.run_prediction(self.question, research_summary)
             for _ in range(self.number_of_predictions_to_run)
@@ -151,6 +152,9 @@ class FinalDecisionAgent:
         summary_markdown = await model.invoke(prompt)
         cleaned_summary_markdown = strip_code_block_markdown(summary_markdown)
         self.__research_summary = cleaned_summary_markdown
+        logger.info(
+            f"Made research summary: {cleaned_summary_markdown[:100]}..."
+        )
         return cleaned_summary_markdown
 
     async def __create_unified_explanation(

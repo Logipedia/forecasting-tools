@@ -2,7 +2,6 @@ import asyncio
 import logging
 from unittest.mock import Mock
 
-from forecasting_tools.ai_models.ai_utils.openai_utils import VisionMessageData
 from forecasting_tools.ai_models.basic_model_interfaces.ai_model import AiModel
 from forecasting_tools.ai_models.basic_model_interfaces.request_limited_model import (
     RequestLimitedModel,
@@ -22,10 +21,6 @@ from typing import Any
 
 
 class AiModelMockManager:
-    SMALL_BASE64_IMAGE = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
-    CHEAP_IMAGE_MESSAGE_DATA = VisionMessageData(
-        prompt="Hi", b64_image=SMALL_BASE64_IMAGE, image_resolution="low"
-    )
 
     @staticmethod
     def get_direct_call_function_path_as_string(

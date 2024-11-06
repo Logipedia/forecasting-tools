@@ -3,6 +3,7 @@ import re
 
 import dotenv
 import streamlit as st
+from pydantic import BaseModel, Field
 
 from forecasting_tools.forecasting.forecast_database_manager import (
     ForecastDatabaseManager,
@@ -19,41 +20,132 @@ from forecasting_tools.forecasting.metaculus_question import (
     BinaryQuestion,
     QuestionState,
 )
-from front_end.helpers.app_page import AppPage
-from front_end.helpers.general import footer, header
+from forecasting_tools.util.jsonable import Jsonable
 from front_end.helpers.report_displayer import ReportDisplayer
+from front_end.helpers.tool_page import ToolPage
 
 logger = logging.getLogger(__name__)
 
 
-class ForecasterPage(AppPage):
+class ForecastInput(Jsonable, BaseModel):
+    question: BinaryQuestion
+    num_background_questions: int = Field(default=4, ge=1, le=5)
+    num_base_rate_questions: int = Field(default=4, ge=1, le=5)
+
+
+class ForecasterPage(ToolPage):
     PAGE_DISPLAY_NAME: str = "🔍 Forecast a Question"
     URL_PATH: str = "/forecast"
+    INPUT_TYPE = ForecastInput
+    OUTPUT_TYPE = BinaryReport
+    EXAMPLES_FILE_PATH = (
+        "front_end/example_outputs/forecast_page_examples.json"
+    )
 
-    QUESTION_TEXT_BOX = "Question Text Box"
-    BACKGROUND_INFO_BOX = "Background Info Box"
-    RESOLUTION_CRITERIA_BOX = "Resolution Criteria Box"
-    FINE_PRINT_BOX = "Fine Print Box"
-    QUESTION_FORM = "metaculus_question_form"
+    # Form input keys
+    QUESTION_TEXT_BOX = "question_text_box"
+    RESOLUTION_CRITERIA_BOX = "resolution_criteria_box"
+    FINE_PRINT_BOX = "fine_print_box"
+    BACKGROUND_INFO_BOX = "background_info_box"
+    NUM_BACKGROUND_QUESTIONS_BOX = "num_background_questions_box"
+    NUM_BASE_RATE_QUESTIONS_BOX = "num_base_rate_questions_box"
     METACULUS_URL_INPUT = "metaculus_url_input"
     FETCH_BUTTON = "fetch_button"
-    BASE_RATE_DEEP_RESEARCH = "base_rate_deep_research"
 
     @classmethod
-    async def _async_main(cls) -> None:
-        header()
-        cls.__display_title_info()
+    async def _display_intro_text(cls) -> None:
+        # st.write(
+        #     "Enter the information for your question. Exa.ai is used to gather up to date information. Each citation attempts to link to a highlight of the a ~4 sentence quote found with Exa.ai. This project is in beta some inaccuracies are expected."
+        # )
+        pass
+
+    @classmethod
+    async def _get_input(cls) -> ForecastInput | None:
         cls.__display_metaculus_url_input()
-        await cls.__display_forecaster_form()
-        cls.__display_all_reports()
-        footer()
+        with st.form("forecast_form"):
+            question_text = st.text_input(
+                "Yes/No Binary Question", key=cls.QUESTION_TEXT_BOX
+            )
+            resolution_criteria = st.text_area(
+                "Resolution Criteria (optional)",
+                key=cls.RESOLUTION_CRITERIA_BOX,
+            )
+            fine_print = st.text_area(
+                "Fine Print (optional)", key=cls.FINE_PRINT_BOX
+            )
+            background_info = st.text_area(
+                "Background Info (optional)", key=cls.BACKGROUND_INFO_BOX
+            )
+
+            col1, col2 = st.columns(2)
+            with col1:
+                num_background_questions = st.number_input(
+                    "Number of background questions to ask",
+                    min_value=1,
+                    max_value=5,
+                    value=4,
+                    key=cls.NUM_BACKGROUND_QUESTIONS_BOX,
+                )
+            with col2:
+                num_base_rate_questions = st.number_input(
+                    "Number of base rate questions to ask",
+                    min_value=1,
+                    max_value=5,
+                    value=4,
+                    key=cls.NUM_BASE_RATE_QUESTIONS_BOX,
+                )
+            submitted = st.form_submit_button("Submit")
+
+            if submitted:
+                if not question_text:
+                    st.error("Question Text is required.")
+                    return None
+                question = BinaryQuestion(
+                    question_text=question_text,
+                    question_id=0,
+                    state=QuestionState.OTHER,
+                    background_info=background_info,
+                    resolution_criteria=resolution_criteria,
+                    fine_print=fine_print,
+                    page_url="",
+                    api_json={},
+                )
+                return ForecastInput(
+                    question=question,
+                    num_background_questions=num_background_questions,
+                    num_base_rate_questions=num_base_rate_questions,
+                )
+        return None
 
     @classmethod
-    def __display_title_info(cls) -> None:
-        st.title("Forecast a Question with AI")
-        st.write(
-            "Enter the information for your question. Exa.ai is used to gather up to date information. Each citation attempts to link to a highlight of the a ~4 sentence quote found with Exa.ai. This project is in beta some inaccuracies are expected."
+    async def _run_tool(cls, input: ForecastInput) -> BinaryReport:
+        with st.spinner("Forecasting... This may take a minute or two..."):
+            report = await ForecastTeam(
+                input.question,
+                number_of_reports_to_aggregate=1,
+                number_of_background_questions_to_ask=input.num_background_questions,
+                number_of_base_rate_questions_to_ask=input.num_base_rate_questions,
+                number_of_base_rates_to_do_deep_research_on=0,
+            ).run_forecast()
+            assert isinstance(report, BinaryReport)
+            return report
+
+    @classmethod
+    async def _save_run_to_coda(
+        cls,
+        input_to_tool: ForecastInput,
+        output: BinaryReport,
+        is_premade: bool,
+    ) -> None:
+        if is_premade:
+            output.price_estimate = 0
+        ForecastDatabaseManager.add_forecast_report_to_database(
+            output, run_type=ForecastRunType.WEB_APP_FORECAST
         )
+
+    @classmethod
+    async def _display_outputs(cls, outputs: list[BinaryReport]) -> None:
+        ReportDisplayer.display_report_list(outputs)
 
     @classmethod
     def __display_metaculus_url_input(cls) -> None:
@@ -104,127 +196,6 @@ class ForecasterPage(AppPage):
             question.resolution_criteria or ""
         )
         st.session_state[cls.FINE_PRINT_BOX] = question.fine_print or ""
-
-    @classmethod
-    async def __display_forecaster_form(cls) -> None:
-        filled_in_metaculus_question: BinaryQuestion | None = None
-        with st.form(cls.QUESTION_FORM):
-            question_text = st.text_input(
-                "Yes/No Binary Question", key=cls.QUESTION_TEXT_BOX
-            )
-            resolution_criteria = st.text_area(
-                "Resolution Criteria (optional)",
-                key=cls.RESOLUTION_CRITERIA_BOX,
-            )
-            fine_print = st.text_area(
-                "Fine Print (optional)", key=cls.FINE_PRINT_BOX
-            )
-            background_info = st.text_area(
-                "Background Info (optional)", key=cls.BACKGROUND_INFO_BOX
-            )
-
-            col1, col2 = st.columns(2)
-            with col1:
-                num_background_questions = st.number_input(
-                    "Number of background questions to ask",
-                    min_value=1,
-                    max_value=5,
-                    value=4,
-                )
-            with col2:
-                num_base_rate_questions = st.number_input(
-                    "Number of base rate questions to ask",
-                    min_value=1,
-                    max_value=5,
-                    value=4,
-                )
-            submitted = st.form_submit_button("Submit")
-
-            if submitted:
-                try:
-                    filled_in_metaculus_question = (
-                        cls.__create_metaculus_question_from_form(
-                            question_text,
-                            background_info,
-                            resolution_criteria,
-                            fine_print,
-                        )
-                    )
-                except Exception as e:
-                    st.error(f"Error creating MetaculusQuestion: {e}")
-
-        if filled_in_metaculus_question:
-            with st.spinner("Forecasting... This may take a minute or two..."):
-                report = await ForecastTeam(
-                    filled_in_metaculus_question,
-                    number_of_reports_to_aggregate=1,
-                    number_of_background_questions_to_ask=int(
-                        num_background_questions
-                    ),
-                    number_of_base_rate_questions_to_ask=int(
-                        num_base_rate_questions
-                    ),
-                    number_of_base_rates_to_do_deep_research_on=0,
-                ).run_forecast()
-                assert isinstance(
-                    report, BinaryReport
-                ), "Report is not a BinaryReport"
-                cls.__save_forecast_report_to_database_and_session(report)
-
-    @classmethod
-    def __save_forecast_report_to_database_and_session(
-        cls,
-        report: BinaryReport,
-    ) -> None:
-        if "saved_report_list" not in st.session_state:
-            st.session_state.saved_report_list = []
-        st.session_state.saved_report_list.append(report)
-
-        try:
-            ForecastDatabaseManager.add_forecast_report_to_database(
-                report, run_type=ForecastRunType.WEB_APP_FORECAST
-            )
-        except Exception as e:
-            logger.warning(f"Couldn't add forecast report to database: {e}")
-
-    @classmethod
-    def __display_all_reports(cls) -> None:
-        if "saved_report_list" not in st.session_state:
-            st.session_state.saved_report_list = []
-        reports_to_display = st.session_state.saved_report_list
-        ReportDisplayer.display_report_list(reports_to_display)
-
-    @classmethod
-    def __create_metaculus_question_from_form(
-        cls,
-        question_text: str,
-        background_info: str | None,
-        resolution_criteria: str | None,
-        fine_print: str | None,
-    ) -> BinaryQuestion:
-        if question_text == "":
-            raise ValueError("Question Text is required.")
-        if background_info == "":
-            background_info = None
-        if resolution_criteria == "":
-            resolution_criteria = None
-        if fine_print == "":
-            fine_print = None
-        question_state = QuestionState.OTHER
-        page_url = ""
-        question_id = 0
-        api_json = {}
-        metaculus_question = BinaryQuestion(
-            question_text=question_text,
-            question_id=question_id,
-            state=question_state,
-            background_info=background_info,
-            resolution_criteria=resolution_criteria,
-            fine_print=fine_print,
-            page_url=page_url,
-            api_json=api_json,
-        )
-        return metaculus_question
 
 
 if __name__ == "__main__":

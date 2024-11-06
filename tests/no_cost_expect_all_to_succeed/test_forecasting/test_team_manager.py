@@ -41,26 +41,25 @@ async def test_file_is_made_for_benchmark(mocker: Mock) -> None:
         file_path_to_save_reports
     )
 
-    files_before = len(
-        [
-            f
-            for f in os.listdir(absolute_path)
-            if os.path.isfile(os.path.join(absolute_path, f))
-        ]
+    files_before = set(
+        f
+        for f in os.listdir(absolute_path)
+        if os.path.isfile(os.path.join(absolute_path, f))
     )
 
     await manager.benchmark_forecast_team("shallow")
 
-    files_after = len(
-        [
-            f
-            for f in os.listdir(absolute_path)
-            if os.path.isfile(os.path.join(absolute_path, f))
-        ]
+    files_after = set(
+        f
+        for f in os.listdir(absolute_path)
+        if os.path.isfile(os.path.join(absolute_path, f))
     )
-    assert (
-        files_after > files_before
-    ), "No new benchmark report file was created"
+
+    new_files = files_after - files_before
+    assert len(new_files) > 0, "No new benchmark report file was created"
+
+    for new_file in new_files:
+        os.remove(os.path.join(absolute_path, new_file))
 
 
 async def test_each_benchmark_mode_calls_forecaster_more_time(

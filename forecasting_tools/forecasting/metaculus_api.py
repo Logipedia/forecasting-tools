@@ -37,10 +37,8 @@ class MetaculusApi:
     Q4_2024_QUARTERLY_CUP = 3672
     CURRENT_QUARTERLY_CUP_ID = Q4_2024_QUARTERLY_CUP
 
-    METACULUS_TOKEN = os.getenv("METACULUS_TOKEN")
-    AUTH_HEADERS = {"headers": {"Authorization": f"Token {METACULUS_TOKEN}"}}
     API_BASE_URL = "https://www.metaculus.com/api2"
-    MAX_QUESTIONS_FROM_QUESTION_API = 100
+    MAX_QUESTIONS_FROM_QUESTION_API_PER_REQUEST = 100
 
     @classmethod
     def post_question_comment(
@@ -54,7 +52,7 @@ class MetaculusApi:
                 "include_latest_prediction": True,
                 "question": question_id,
             },
-            **cls.AUTH_HEADERS,  # type: ignore
+            **cls.__get_auth_headers(),  # type: ignore
         )
         logger.info(f"Posted comment on question {question_id}")
         raise_for_status_with_additional_info(response)
@@ -70,7 +68,7 @@ class MetaculusApi:
         response = requests.post(
             url,
             json={"prediction": float(prediction_in_decimal)},
-            **cls.AUTH_HEADERS,  # type: ignore
+            **cls.__get_auth_headers(),  # type: ignore
         )
         logger.info(f"Posted prediction on question {question_id}")
         raise_for_status_with_additional_info(response)
@@ -92,7 +90,7 @@ class MetaculusApi:
         url = f"{cls.API_BASE_URL}/questions/{question_id}/"
         response = requests.get(
             url,
-            **cls.AUTH_HEADERS,  # type: ignore
+            **cls.__get_auth_headers(),  # type: ignore
         )
         raise_for_status_with_additional_info(response)
         json_question = json.loads(response.content)
@@ -110,7 +108,7 @@ class MetaculusApi:
     ) -> list[MetaculusQuestion]:
         logger.info(f"Retrieving questions from tournament {tournament_id}")
         url_qparams = {
-            "limit": cls.MAX_QUESTIONS_FROM_QUESTION_API,
+            "limit": cls.MAX_QUESTIONS_FROM_QUESTION_API_PER_REQUEST,
             "offset": 0,
             "has_group": "false",
             "order_by": "-activity",
@@ -128,22 +126,48 @@ class MetaculusApi:
 
     @classmethod
     def get_benchmark_questions(
-        cls, num_of_questions_to_return: int
+        cls, num_of_questions_to_return: int, random_seed: int | None = None
     ) -> list[BinaryQuestion]:
-        assert (
-            num_of_questions_to_return <= 30
-        ), "There are limited questions, with current implementation. You are already losing some randomness at 30"
-        est_num_matching_filter = (
-            150  # As of Aug 29, there were only 160 questions matching filter
+        cls.__validate_requested_benchmark_question_count(
+            num_of_questions_to_return
         )
-        questions: list[BinaryQuestion] = []
-        iterations_to_get_past_estimate = 3
+        questions = cls.__fetch_all_possible_benchmark_questions()
+        filtered_questions = cls.__filter_retrieved_benchmark_questions(
+            questions, num_of_questions_to_return
+        )
+        return cls.__get_random_sample_of_questions(
+            filtered_questions, num_of_questions_to_return, random_seed
+        )
+
+    @classmethod
+    def __get_auth_headers(cls) -> dict[str, dict[str, str]]:
+        METACULUS_TOKEN = os.getenv("METACULUS_TOKEN")
+        if METACULUS_TOKEN is None:
+            raise ValueError("METACULUS_TOKEN environment variable not set")
+        return {"headers": {"Authorization": f"Token {METACULUS_TOKEN}"}}
+
+    @classmethod
+    def __validate_requested_benchmark_question_count(
+        cls, num_of_questions_to_return: int
+    ) -> None:
+        est_num_matching_filter = (
+            130  # As of Nov 5, there were only 130 questions matching filters
+        )
         assert (
             num_of_questions_to_return <= est_num_matching_filter
         ), "There are not enough questions matching the filter"
+        if num_of_questions_to_return > est_num_matching_filter * 0.5:
+            logger.warning(
+                f"There are estimated to only be {est_num_matching_filter} questions matching all the filters. You are requesting {num_of_questions_to_return} questions."
+            )
+
+    @classmethod
+    def __fetch_all_possible_benchmark_questions(cls) -> list[BinaryQuestion]:
+        questions: list[BinaryQuestion] = []
+        iterations_to_get_past_estimate = 3
 
         for i in range(iterations_to_get_past_estimate):
-            limit = cls.MAX_QUESTIONS_FROM_QUESTION_API
+            limit = cls.MAX_QUESTIONS_FROM_QUESTION_API_PER_REQUEST
             offset = i * limit
             new_questions = (
                 cls.__get_general_open_binary_questions_resolving_in_3_months(
@@ -151,24 +175,50 @@ class MetaculusApi:
                 )
             )
             questions.extend(new_questions)
+
         logger.info(
-            f"There are {len(questions)} questions matching filter after iterating through {iterations_to_get_past_estimate} pages of {cls.MAX_QUESTIONS_FROM_QUESTION_API} questions that matched the filter"
+            f"There are {len(questions)} questions matching filter after iterating through {iterations_to_get_past_estimate} pages of {cls.MAX_QUESTIONS_FROM_QUESTION_API_PER_REQUEST} questions that matched the filter"
         )
+        return questions
+
+    @classmethod
+    def __filter_retrieved_benchmark_questions(
+        cls, questions: list[BinaryQuestion], num_of_questions_to_return: int
+    ) -> list[BinaryQuestion]:
         qs_with_enough_forecasters = cls.__filter_questions_by_forecasters(
             questions, min_forecasters=40
         )
-        qs_with_community_vote_and_enough_forecasters = [
+        filtered_questions = [
             question
             for question in qs_with_enough_forecasters
             if question.community_prediction_at_access_time is not None
         ]
+
         logger.info(
-            f"Reduced to {len(qs_with_community_vote_and_enough_forecasters)} questions with enough forecasters"
+            f"Reduced to {len(filtered_questions)} questions with enough forecasters"
         )
-        random_sample = random.sample(
-            qs_with_community_vote_and_enough_forecasters,
-            num_of_questions_to_return,
-        )
+
+        if len(filtered_questions) < num_of_questions_to_return:
+            raise ValueError(
+                f"Not enough questions available ({len(filtered_questions)}) "
+                f"to sample requested number ({num_of_questions_to_return})"
+            )
+        return filtered_questions
+
+    @classmethod
+    def __get_random_sample_of_questions(
+        cls,
+        questions: list[BinaryQuestion],
+        sample_size: int,
+        random_seed: int | None,
+    ) -> list[BinaryQuestion]:
+        if random_seed is not None:
+            previous_state = random.getstate()
+            random.seed(random_seed)
+            random_sample = random.sample(questions, sample_size)
+            random.setstate(previous_state)
+        else:
+            random_sample = random.sample(questions, sample_size)
         return random_sample
 
     @classmethod
@@ -218,10 +268,10 @@ class MetaculusApi:
         num_requested = params.get("limit")
         assert (
             num_requested is None
-            or num_requested <= cls.MAX_QUESTIONS_FROM_QUESTION_API
+            or num_requested <= cls.MAX_QUESTIONS_FROM_QUESTION_API_PER_REQUEST
         ), "You cannot get more than 100 questions at a time"
         url = f"{cls.API_BASE_URL}/questions/"
-        response = requests.get(url, params=params, **cls.AUTH_HEADERS)  # type: ignore
+        response = requests.get(url, params=params, **cls.__get_auth_headers())  # type: ignore
         raise_for_status_with_additional_info(response)
         data = json.loads(response.content)
         questions = [
@@ -235,15 +285,16 @@ class MetaculusApi:
     ) -> MetaculusQuestion:
         question_type = api_json["question"]["type"]  # type: ignore
         if question_type == "binary":
-            return BinaryQuestion.from_metaculus_api_json(api_json)
+            question = BinaryQuestion.from_metaculus_api_json(api_json)
         elif question_type == "numeric":
-            return NumericQuestion.from_metaculus_api_json(api_json)
+            question = NumericQuestion.from_metaculus_api_json(api_json)
         elif question_type == "multiple_choice":
-            return MultipleChoiceQuestion.from_metaculus_api_json(api_json)
+            question = MultipleChoiceQuestion.from_metaculus_api_json(api_json)
         elif question_type == "date":
-            return DateQuestion.from_metaculus_api_json(api_json)
+            question = DateQuestion.from_metaculus_api_json(api_json)
         else:
             raise ValueError(f"Unknown question type: {question_type}")
+        return question
 
     @classmethod
     def __filter_questions_by_forecasters(

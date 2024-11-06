@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import subprocess
 from datetime import datetime
 from typing import Literal, Sequence
 
@@ -62,14 +63,17 @@ class TeamManager:
             await report.publish_report_to_metaculus()
 
     async def benchmark_forecast_team(
-        self, evaluation_depth: Literal["shallow", "medium", "deep"]
+        self,
+        evaluation_depth_or_number_of_questions_to_test: (
+            Literal["shallow", "medium", "deep"] | int
+        ),
     ) -> float:
         """
-        Below are the conclusions of a rough simulation of tournaments and skill levels
+        Below are the conclusions of a rough (and potentially flawed)simulation of tournaments and skill levels
         to help with choosing sample sizes. See https://chatgpt.com/share/3fbc8106-829d-4fb3-a9e6-af0badf266df
 
         lower = decent but lower quality = 50% of my deviation values (prediction - community vote) is above ~0.25
-        higher = decent but higher quality = 50% of my devaiation values (predition -community vote) is above ~0.17
+        higher = decent but higher quality = 50% of my devaiation values (predition - community vote) is above ~0.17
 
         At 10 samples
         - 20% of being lower, but seeming higher
@@ -86,15 +90,21 @@ class TeamManager:
         The chances for misidentification decreases as the bot gains a deviation distribution that leans more towards 0. The chances get higher as it leans more towars 1.
         """
 
-        if evaluation_depth == "shallow":
+        if isinstance(evaluation_depth_or_number_of_questions_to_test, int):
+            num_questions_to_benchmark_on = (
+                evaluation_depth_or_number_of_questions_to_test
+            )
+        elif evaluation_depth_or_number_of_questions_to_test == "shallow":
             num_questions_to_benchmark_on = 10
-        elif evaluation_depth == "medium":
+        elif evaluation_depth_or_number_of_questions_to_test == "medium":
             num_questions_to_benchmark_on = 20
-        elif evaluation_depth == "deep":
+        elif evaluation_depth_or_number_of_questions_to_test == "deep":
             num_questions_to_benchmark_on = 30
 
         questions = MetaculusApi.get_benchmark_questions(
-            num_questions_to_benchmark_on
+            num_questions_to_benchmark_on,
+            random_seed=42,
+            # Choose a random seed so all benchmarks in a similar time period use the same questions
         )
         assert len(questions) == num_questions_to_benchmark_on
         typeguard.check_type(questions, list[BinaryQuestion])
@@ -104,8 +114,27 @@ class TeamManager:
             reports  # type: ignore
         )
         rounded_score = round(average_deviation_score, 4)
-        file_path_to_save_reports = f"logs/forecasts/benchmarks/benchmark_reports__score_{rounded_score}__{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.json"
+        git_hash = self.__get_git_commit_hash()
+        file_path_to_save_reports = (
+            f"logs/forecasts/benchmarks/benchmark_reports__"
+            f"score_{rounded_score}__"
+            f"git_{git_hash}__"
+            f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.json"
+        )
         BinaryReport.save_object_list_to_file_path(
             reports, file_path_to_save_reports
         )
         return average_deviation_score
+
+    @classmethod
+    def __get_git_commit_hash(cls) -> str:
+        try:
+            return (
+                subprocess.check_output(
+                    ["git", "rev-parse", "--short", "HEAD"]
+                )
+                .decode("ascii")
+                .strip()
+            )
+        except Exception:
+            return "no_git_hash"

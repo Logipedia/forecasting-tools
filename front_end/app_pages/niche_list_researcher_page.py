@@ -1,15 +1,7 @@
 import logging
-import os
-import sys
-import textwrap
 
-import dotenv
 import streamlit as st
-
-dotenv.load_dotenv()
-current_dir = os.path.dirname(os.path.abspath(__file__))
-top_level_dir = os.path.abspath(os.path.join(current_dir, "../../../"))
-sys.path.append(top_level_dir)
+from pydantic import BaseModel
 
 from forecasting_tools.ai_models.resource_managers.monetary_cost_manager import (
     MonetaryCostManager,
@@ -22,99 +14,112 @@ from forecasting_tools.forecasting.sub_question_responders.niche_list_researcher
     FactCheckedItem,
     NicheListResearcher,
 )
-from front_end.helpers.app_page import AppPage
-from front_end.helpers.general import footer, header
+from forecasting_tools.util.jsonable import Jsonable
+from front_end.helpers.report_displayer import ReportDisplayer
+from front_end.helpers.tool_page import ToolPage
 
 logger = logging.getLogger(__name__)
 
 
-class NicheListResearchPage(AppPage):
+class NicheListOutput(Jsonable, BaseModel):
+    question_text: str
+    niche_list_items: list[FactCheckedItem]
+    cost: float
+
+    @property
+    def markdown_output(self) -> str:
+        return FactCheckedItem.make_markdown_with_valid_and_invalid_lists(
+            self.niche_list_items
+        )
+
+
+class NicheListInput(Jsonable, BaseModel):
+    question_text: str
+
+
+class NicheListResearchPage(ToolPage):
     PAGE_DISPLAY_NAME: str = "📋 Niche List Researcher"
     URL_PATH: str = "/niche-list-researcher"
-
-    QUESTION_TEXT_BOX = "Question Text Box"
-    QUESTION_FORM = "niche_list_research_form"
-
-    @classmethod
-    async def _async_main(cls) -> None:
-        header()
-        cls.__display_title_info()
-        await cls.__display_niche_list_form()
-        footer()
+    INPUT_TYPE = NicheListInput
+    OUTPUT_TYPE = NicheListOutput
+    EXAMPLES_FILE_PATH = (
+        "front_end/example_outputs/niche_list_page_examples.json"
+    )
 
     @classmethod
-    def __display_title_info(cls) -> None:
-        st.title("Niche List Researcher")
-
-        markdown = textwrap.dedent(
-            """
-            Enter a description of the niche topic you want to research and create a comprehensive list for. The tool will have problems with lists that include more than 15-30 items.
-            The AI will attempt to find all relevant instances and fact-check them. Examples:
-            - Times there has been a declaration of a public health emergency of international concern by the World Health Organization
-            - Times that Apple was successfully sued for patent violations
-            """
-        )
-        st.markdown(markdown)
+    async def _display_intro_text(cls) -> None:
+        # markdown = textwrap.dedent(
+        #     """
+        #     Enter a description of the niche topic you want to research and create a comprehensive list for. The tool will have problems with lists that include more than 15-30 items.
+        #     The AI will attempt to find all relevant instances and fact-check them. Examples:
+        #     - Times there has been a declaration of a public health emergency of international concern by the World Health Organization
+        #     - Times that Apple was successfully sued for patent violations
+        #     """
+        # )
+        # st.markdown(markdown)
+        pass
 
     @classmethod
-    async def __display_niche_list_form(cls) -> None:
-        with st.form(cls.QUESTION_FORM):
+    async def _get_input(cls) -> NicheListInput | None:
+        with st.form("niche_list_form"):
             question_text = st.text_input(
-                "Enter your niche list research query here",
-                key=cls.QUESTION_TEXT_BOX,
+                "Enter your niche list research query here"
             )
-
             submitted = st.form_submit_button("Research and Generate List")
-
-            if submitted:
-                if question_text:
-                    with st.spinner(
-                        "Researching and fact-checking... This may take several minutes..."
-                    ):
-                        await cls.__run_niche_list_research(question_text)
-                else:
-                    st.error("Please enter a research query.")
+            if submitted and question_text:
+                return NicheListInput(question_text=question_text)
+        return None
 
     @classmethod
-    async def __run_niche_list_research(
-        cls,
-        question_text: str,
-    ) -> None:
-        try:
+    async def _run_tool(cls, input: NicheListInput) -> NicheListOutput:
+        with st.spinner(
+            "Researching and fact-checking... This may take several minutes..."
+        ):
             with MonetaryCostManager() as cost_manager:
-                generator = NicheListResearcher(question_text)
+                generator = NicheListResearcher(input.question_text)
                 fact_checked_items = (
                     await generator.research_niche_reference_class(
                         return_invalid_items=True
                     )
                 )
 
-                st.subheader("Niche List Research Results")
-                markdown = (
-                    FactCheckedItem.make_markdown_with_valid_and_invalid_lists(
-                        fact_checked_items
-                    )
-                )
                 cost = cost_manager.current_usage
-                st.markdown(f"**Cost:** ${cost:.2f}\n\n{markdown}")
-        except Exception as e:
-            logger.exception(f"Unexpected error in niche list research: {e}")
-            st.error(f"An unexpected error occurred: {e}")
 
-        try:
-            ForecastDatabaseManager.add_general_report_to_database(
-                question_text=question_text,
-                background_info=None,
-                resolution_criteria=None,
-                fine_print=None,
-                prediction=len(fact_checked_items),
-                explanation=markdown,
-                page_url=None,
-                price_estimate=cost,
-                run_type=ForecastRunType.WEB_APP_NICHE_LIST,
-            )
-        except Exception as e:
-            logger.warning(f"Couldn't add niche list report to database: {e}")
+                return NicheListOutput(
+                    question_text=input.question_text,
+                    cost=cost,
+                    niche_list_items=fact_checked_items,
+                )
+
+    @classmethod
+    async def _save_run_to_coda(
+        cls,
+        input_to_tool: NicheListInput,
+        output: NicheListOutput,
+        is_premade: bool,
+    ) -> None:
+        if is_premade:
+            output.cost = 0
+        ForecastDatabaseManager.add_general_report_to_database(
+            question_text=input_to_tool.question_text,
+            background_info=None,
+            resolution_criteria=None,
+            fine_print=None,
+            prediction=len(output.niche_list_items),
+            explanation=output.markdown_output,
+            page_url=None,
+            price_estimate=output.cost,
+            run_type=ForecastRunType.WEB_APP_NICHE_LIST,
+        )
+
+    @classmethod
+    async def _display_outputs(cls, outputs: list[NicheListOutput]) -> None:
+        for output in outputs:
+            with st.expander(f"{output.question_text}"):
+                st.markdown(f"**Cost:** ${output.cost:.2f}")
+                st.markdown(
+                    ReportDisplayer.clean_markdown(output.markdown_output)
+                )
 
 
 if __name__ == "__main__":

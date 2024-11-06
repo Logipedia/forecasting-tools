@@ -6,7 +6,7 @@ repos:
     rev: v4.6.0
     hooks:
     -   id: check-added-large-files
-        args: ['--maxkb=10000']
+        args: ['--maxkb=50000']
     -   id: check-yaml
         args: [--allow-multiple-documents]
     -   id: check-toml
